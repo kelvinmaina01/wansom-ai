@@ -1,0 +1,7 @@
+{
+  "name": "Lawlify Legal AI - East Africa",
+  "description": "A professional AI-powered workspace for Kenyan and East African lawyers to draft contracts, review documents, and prepare for cases with real-time transcription and search grounding.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
