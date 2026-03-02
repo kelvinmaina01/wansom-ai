@@ -1,31 +1,5 @@
 # Lawlify AI - Technical Documentation
 
-## 📋 Project Type and Nature
-
-**Lawlify AI** is a legal technology platform specifically designed for East African legal professionals (Kenya, Tanzania, Uganda, Rwanda). It's a React 18 + TypeScript + Vite web application with the following characteristics:
-
-### **Project Type:**
-- **Legal Tech SaaS Platform** - AI-powered legal assistant
-- **B2B/B2C** - Targeting law firms, advocates, in-house counsels
-- **Regional Focus** - Specialized for East African jurisdictions
-- **MVP/Production-Ready** - Has authentication, multiple views, and core features
-
-### **Key Features Present:**
-- **Multi-panel interface** (Global Rail, Contextual Sidebar, Main Content)
-- **Legal AI Chat** - AI-powered legal assistance
-- **Legal Specialists** - Pre-configured legal expert personas
-- **Case Management** - Workspace for legal cases
-- **Document Management** - Files and document storage
-- **Notification System** - Legal news and updates
-- **Authentication Flow** - Landing → Auth → Onboarding → App
-
-### **Technical Stack:**
-- **Frontend**: React 18, TypeScript, Vite
-- **Styling**: Tailwind CSS, Framer Motion
-- **Icons**: Lucide React, Heroicons
-- **AI Integration**: Google GenAI (@google/genai)
-- **Charts**: Recharts for data visualization
-
 ## 🏗️ Architecture Overview
 
 Lawlify AI is a modern, single-page application (SPA) built using React 18, TypeScript, and Vite. It leverages a component-based architecture with a focus on modularity, reusability, and performance.
