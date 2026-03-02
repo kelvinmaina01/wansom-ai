@@ -2,74 +2,71 @@
 
 ## 🏗️ Architecture Overview
 
-Lawlify AI is a single-page application (SPA) built with React 18, TypeScript, and Vite. It leverages a component-based architecture with a centralized state management approach for navigation and feature toggling.
+Lawlify AI is a modern, single-page application (SPA) built using React 18, TypeScript, and Vite. It leverages a component-based architecture with a focus on modularity, reusability, and performance.
 
-### 📂 Directory Structure
+### Directory Structure
 
--   `/src`: Source code root.
-    -   `/components`: Reusable UI components and page-level views.
-        -   `LandingPage.tsx`: The main marketing landing page with features, testimonials, and CTAs.
-        -   `AuthPage.tsx`: Authentication page with login options (Google, Microsoft, LinkedIn, Apple, SSO) and a dynamic testimonial carousel.
-        -   `OnboardingPage.tsx`: Multi-step onboarding flow for new users (Email verification, Discovery source, Terms acceptance, Team setup).
-        -   `PricingPage.tsx`: Detailed pricing plans (Free, Personal, Teams) with monthly/annual toggles and enterprise options.
-    -   `App.tsx`: Main application entry point. Manages global `viewState` (landing, auth, onboarding, pricing, app).
-    -   `index.css`: Global styles, Tailwind directives, and custom animations.
-    -   `main.tsx`: React root rendering.
+```
+/src
+  /components       # Reusable UI components and page-specific components
+    /layout         # Layout components (GlobalRail, ContextualSidebar)
+    /LandingPage.tsx # Main landing page
+    /PricingPage.tsx # Pricing page
+    /LegalAI.tsx    # Core AI chat interface
+    /LegalSpecialists.tsx # Specialist selection interface
+    ...
+  /types.ts         # Global TypeScript type definitions
+  /App.tsx          # Main application component and routing logic
+  /main.tsx         # Application entry point
+  /index.css        # Global styles and Tailwind configuration
+```
 
-### 🧩 Key Components
+## 🧩 Key Components
 
-#### 1. `App.tsx` (State Management)
--   **State**: `viewState` ('landing' | 'auth' | 'onboarding' | 'pricing' | 'app') controls which page is rendered.
--   **Logic**: Handles transitions between views based on user actions (e.g., clicking "Launch App" sets state to 'auth', completing onboarding sets state to 'app').
+### 1. `App.tsx`
+The central component that manages the application state (`viewState`) and handles client-side routing between different views (Landing, Auth, Onboarding, App, Pricing). It also manages the global layout structure, including the sidebar and top navigation.
 
-#### 2. `LandingPage.tsx`
--   **Features**:
-    -   Hero section with "Launch App" CTA.
-    -   "Trusted By" marquee with logos of major East African law firms.
-    -   Features grid showcasing core capabilities (Research, Drafting, Vault, etc.).
-    -   Security section highlighting ISO 27001 certification.
-    -   Footer with resource links.
--   **Props**: `onEnterApp` (navigates to Auth), `onPricingClick` (navigates to Pricing).
+### 2. `LandingPage.tsx`
+The public-facing landing page designed to showcase the product's value proposition. It features a responsive design, hero section, feature highlights, and a call-to-action for user acquisition.
 
-#### 3. `AuthPage.tsx`
--   **Layout**: Split screen design.
-    -   **Left Panel**: Branding, value proposition, and an auto-sliding testimonial carousel featuring East African legal professionals.
-    -   **Right Panel**: Authentication form with social login buttons and email input.
--   **State**: Manages carousel index and auto-slide timer.
--   **Props**: `onLogin` (navigates to Onboarding).
+### 3. `PricingPage.tsx`
+A dedicated page for displaying subscription plans. It includes interactive elements like monthly/annual toggles and detailed feature comparisons. It follows the application's dark theme (`bg-ai-studio`).
 
-#### 4. `OnboardingPage.tsx`
--   **Flow**: 4-step process:
-    1.  **Account Setup**: Verify email, connect socials.
-    2.  **Discovery**: How did you hear about us?
-    3.  **Legal**: Terms of Service & Privacy Policy acceptance.
-    4.  **Team**: Set team name and invite members.
--   **State**: `currentStep` (1-4), `formData` (stores user inputs).
--   **Props**: `onComplete` (navigates to main App).
+### 4. `LegalAI.tsx`
+The core feature of the application, providing an interface for users to interact with the AI. It handles message history, input processing, and displays AI responses.
 
-#### 5. `PricingPage.tsx`
--   **Features**:
-    -   Monthly/Annual pricing toggle.
-    -   Three tier cards: Free, Personal (highlighted), Teams.
-    -   Enterprise custom quote section.
-    -   Education/Non-profit discount section.
--   **State**: `isAnnual` (boolean toggle for pricing).
--   **Props**: `onBack` (returns to Landing), `onGetStarted` (navigates to Auth).
+### 5. `LegalSpecialists.tsx`
+Allows users to select specialized AI agents tailored to specific legal domains (e.g., Conveyancing, Commercial Law).
+
+##  state Management
+
+The application uses React's built-in `useState` and `useEffect` hooks for local state management.
+- **`viewState`**: Controls the high-level view (Landing, Auth, App, Pricing).
+- **`currentView`**: Manages the active module within the main app (Overview, Legal AI, Specialists, etc.).
+- **`notifications`**: Manages the list of user notifications.
 
 ## 🎨 Styling & Theming
 
--   **Framework**: Tailwind CSS.
--   **Design System**: Custom color palette (Primary Red, Secondary Blue/Green), Inter font family, and specific UI patterns like glassmorphism and oversized cards.
--   **Animations**: `framer-motion` is used for page transitions, carousel slides, and interactive elements.
+- **Tailwind CSS**: Used for utility-first styling.
+- **Custom Theme**: Defined in `index.css` under the `@theme` directive.
+  - **Colors**: `primary` (#ef4444), `secondary-green` (#22c55e), `secondary-blue` (#3b82f6), `sidebar` (#000000).
+  - **Fonts**: `Inter` (sans-serif) and `Poppins` (display).
+  - **Backgrounds**: `bg-ai-studio` for the signature dark gradient background.
+- **Animations**: `framer-motion` is used for smooth transitions and interactive elements.
 
-## 🚀 Development Workflow
+## 🤖 AI Integration
 
-1.  **Run Dev Server**: `npm run dev` (starts Vite server on port 3000).
-2.  **Linting**: `npm run lint` (checks for code quality issues).
-3.  **Build**: `npm run build` (generates production-ready assets in `/dist`).
+The application integrates with the Google Gemini API via the `@google/genai` SDK.
+- **Model**: Uses `gemini-2.5-flash` for fast and efficient text generation.
+- **Context**: The AI is provided with system instructions to act as a legal assistant specialized in East African law.
 
 ## 🔒 Security Considerations
 
--   **Authentication**: Placeholder for OAuth integration (Google, Microsoft, etc.).
--   **Data Handling**: Onboarding data is currently stored in local component state. In a production environment, this would be sent to a secure backend API.
--   **Compliance**: The UI emphasizes GDPR and ISO 27001 compliance, reflecting the platform's commitment to data security.
+- **Environment Variables**: API keys are stored in `.env` and accessed via `import.meta.env` (client-side) or `process.env` (server-side if applicable).
+- **Data Handling**: Sensitive client data is intended to be stored securely. The frontend implements UI for a "Document Vault" to represent this capability.
+
+## 🚀 Build & Deployment
+
+- **Build Tool**: Vite is used for fast development and optimized production builds.
+- **Command**: `npm run build` generates static assets in the `dist` folder.
+- **Deployment**: The app is designed to be deployed to any static hosting service (e.g., Vercel, Netlify, Google Cloud Run).

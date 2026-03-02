@@ -1,54 +1,58 @@
-# Lawlify AI
+# Lawlify AI - Next-Gen Legal Intelligence for East Africa
 
-**The AI Co-pilot for Legal Excellence in East Africa.**
+Lawlify AI is the premier legal technology platform purpose-built for the East African legal ecosystem. We empower advocates, in-house counsels, and law firms across Kenya, Tanzania, Uganda, and Rwanda with next-generation AI tools designed to streamline workflows, enhance research accuracy, and secure sensitive data.
 
-Lawlify AI is a next-generation legal technology platform designed specifically for legal professionals in Kenya, Tanzania, Uganda, and Rwanda. It empowers advocates, in-house counsels, and law firms with AI-driven research, document analysis, and case intelligence tailored to regional jurisdictions.
+## 🚀 Features
 
-## 🚀 Key Features
-
--   **Intelligent Research**: Instantly search thousands of East African statutes, case laws, and precedents.
--   **AI Drafting & Review**: Automated contract review and document drafting with risk identification.
--   **Document Vault**: Secure, AI-indexed storage for legal documents with natural language search.
--   **Smart Workflows**: Automate repetitive tasks and track deadlines across your firm.
--   **Regional Focus**: Specialized knowledge base covering EAC regional treaties and local statutes.
--   **Enterprise-Grade Security**: ISO 27001 certified architecture with end-to-end encryption.
+- **Intelligent Research**: Instantly access and analyze thousands of East African statutes, case laws, and precedents with natural language search.
+- **Judicial Analytics**: Gain strategic insights into specific judges' ruling tendencies, win/loss rates, and preferred citation styles to tailor your arguments.
+- **AI-Powered Drafting**: Generate high-quality legal documents, contracts, and opinions with AI-driven precision and risk assessment.
+- **Document Vault**: Securely store and manage sensitive client data with our ISO 27001 certified, encrypted Document Vault.
+- **Legal Specialists**: Access specialized AI agents trained in specific areas of law (e.g., Conveyancing, Commercial Law, Litigation).
+- **Case Management**: Organize and track client matters efficiently.
 
 ## 🛠️ Tech Stack
 
--   **Frontend**: React 18, TypeScript, Vite
--   **Styling**: Tailwind CSS
--   **Animations**: Framer Motion
--   **Icons**: Lucide React
--   **State Management**: React Context / Local State (for MVP)
+- **Frontend**: React 18+, TypeScript, Vite
+- **Styling**: Tailwind CSS, Framer Motion (for animations)
+- **Icons**: Lucide React
+- **AI Integration**: Google Gemini API (@google/genai)
 
 ## 🏁 Getting Started
 
-1.  **Clone the repository**:
-    ```bash
-    git clone https://github.com/your-org/lawlify-ai.git
-    ```
+1.  **Clone the repository**
 2.  **Install dependencies**:
     ```bash
     npm install
     ```
-3.  **Start the development server**:
+3.  **Set up Environment Variables**:
+    Create a `.env` file in the root directory and add your Gemini API key:
+    ```env
+    GEMINI_API_KEY=your_api_key_here
+    ```
+4.  **Run the development server**:
     ```bash
     npm run dev
     ```
-4.  **Build for production**:
+5.  **Build for production**:
     ```bash
     npm run build
     ```
 
-## 📂 Project Structure
+## 🌍 Regional Focus
 
--   `/src/components`: Core UI components (Landing, Auth, Onboarding, Pricing).
--   `/src/App.tsx`: Main application entry point and routing logic.
--   `/src/index.css`: Global styles and Tailwind configuration.
+Lawlify AI is specifically tailored for the legal frameworks of:
+- 🇰🇪 Kenya
+- 🇹🇿 Tanzania
+- 🇺🇬 Uganda
+- 🇷🇼 Rwanda
 
-## 🌍 Regional Impact
+## 🔒 Security
 
-Lawlify AI is trusted by leading law firms and legal departments across East Africa, including Bowmans, ALN Africa, and ENSafrica. We are committed to empowering the next generation of legal advocates with accessible, high-performance tools.
+We prioritize data security and confidentiality. Our platform is designed with:
+- End-to-end encryption
+- ISO 27001 compliance standards
+- Secure document storage
 
 ## 📄 License
 

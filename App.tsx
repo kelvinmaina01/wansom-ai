@@ -12,6 +12,8 @@ import Settings from './components/Settings';
 import Files from './components/Files';
 import AuthPage from './components/AuthPage';
 import OnboardingPage from './components/OnboardingPage';
+import PricingPage from './components/PricingPage';
+import JudicialAnalytics from './components/JudicialAnalytics';
 import { WorkspaceType, AppView, LegalSpecialist, Notification } from './types';
 import { ChevronRight, Bell, HelpCircle, Scale, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 
@@ -46,7 +48,7 @@ const MOCK_NOTIFICATIONS: Notification[] = [
 ];
 
 const App: React.FC = () => {
-  const [viewState, setViewState] = useState<'landing' | 'auth' | 'onboarding' | 'app'>('landing');
+  const [viewState, setViewState] = useState<'landing' | 'auth' | 'onboarding' | 'app' | 'pricing'>('landing');
   const [currentView, setCurrentView] = useState<AppView>(AppView.LEGAL_AI);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [activeSpecialist, setActiveSpecialist] = useState<LegalSpecialist | null>(null);
@@ -83,6 +85,8 @@ const App: React.FC = () => {
         return <LegalAI userEmail={user.email} activeSpecialist={activeSpecialist} subView={legalAISubView} />;
       case AppView.INTEGRATIONS:
         return <PlaceholderView title="Integrations" />;
+      case AppView.JUDICIAL_ANALYTICS:
+        return <JudicialAnalytics />;
       case AppView.FILES:
         return <Files />;
       case AppView.LEGAL_SPECIALISTS:

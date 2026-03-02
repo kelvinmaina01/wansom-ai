@@ -9,7 +9,8 @@ import {
   History,
   HelpCircle,
   LogOut,
-  Blocks
+  Blocks,
+  Gavel
 } from 'lucide-react';
 import { AppView } from '../../types';
 
@@ -51,6 +52,12 @@ const GlobalRail: React.FC<GlobalRailProps> = ({ currentView, onViewChange, user
           active={currentView === AppView.LEGAL_SPECIALISTS}
           onClick={() => onViewChange(AppView.LEGAL_SPECIALISTS)}
           label="Legal Specialists"
+        />
+        <RailItem 
+          icon={<Gavel className="w-5 h-5" />} 
+          active={currentView === AppView.JUDICIAL_ANALYTICS}
+          onClick={() => onViewChange(AppView.JUDICIAL_ANALYTICS)}
+          label="Judicial Analytics"
         />
         <RailItem 
           icon={<Blocks className="w-5 h-5" />} 

@@ -7,7 +7,8 @@ export enum AppView {
   SETTINGS = 'settings',
   LEGAL_AI = 'legal-ai',
   HISTORY = 'history',
-  INTEGRATIONS = 'integrations'
+  INTEGRATIONS = 'integrations',
+  JUDICIAL_ANALYTICS = 'judicial-analytics'
 }
 
 export enum WorkspaceType {
