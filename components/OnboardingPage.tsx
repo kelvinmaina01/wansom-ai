@@ -66,7 +66,7 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({ onComplete }) => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-8 font-sans text-black">
+    <div className="min-h-screen bg-ai-studio text-white flex flex-col items-center justify-center p-8 font-sans">
       <div className="w-full max-w-5xl flex flex-col h-full">
         {/* Header */}
         <div className="pb-12 flex justify-between items-end">
@@ -78,10 +78,10 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({ onComplete }) => {
               <span className="text-2xl">Lawlify AI</span>
             </div>
             <h1 className="text-5xl font-bold tracking-tight mb-4 leading-tight">{STEPS[currentStep - 1].title}</h1>
-            <p className="text-xl text-gray-500 font-medium max-w-2xl">{STEPS[currentStep - 1].subtitle}</p>
+            <p className="text-xl text-gray-400 font-medium max-w-2xl">{STEPS[currentStep - 1].subtitle}</p>
           </div>
           <div className="flex flex-col items-end gap-4">
-            <div className="bg-gray-100 px-4 py-2 rounded-full text-xs font-bold text-gray-500 uppercase tracking-widest border border-gray-200">
+            <div className="bg-white/5 px-4 py-2 rounded-full text-xs font-bold text-gray-400 uppercase tracking-widest border border-white/10">
               Step {currentStep} of {STEPS.length}
             </div>
           </div>
@@ -94,7 +94,7 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({ onComplete }) => {
               <div 
                 key={step.id} 
                 className={`h-2 rounded-full flex-1 transition-all duration-700 ${
-                  step.id <= currentStep ? 'bg-primary' : 'bg-gray-100'
+                  step.id <= currentStep ? 'bg-primary' : 'bg-white/10'
                 }`}
               />
             ))}
@@ -151,11 +151,11 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({ onComplete }) => {
                       className={`w-full p-8 rounded-[2rem] border text-left font-medium transition-all flex items-center gap-6 group hover:scale-[1.02] active:scale-[0.98] ${
                         formData.discoverySource === option 
                           ? 'bg-primary text-white border-primary shadow-xl shadow-primary/30' 
-                          : 'bg-gray-50 border-transparent text-gray-600 hover:bg-white hover:border-gray-200 hover:shadow-lg hover:shadow-gray-100'
+                          : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:border-white/20'
                       }`}
                     >
                       <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors shrink-0 ${
-                        formData.discoverySource === option ? 'bg-white/20 text-white' : 'bg-white text-gray-400 group-hover:text-primary shadow-sm'
+                        formData.discoverySource === option ? 'bg-white/20 text-white' : 'bg-white/5 text-gray-400 group-hover:text-primary'
                       }`}>
                         {option === 'Search (Google/Bing)' && <Search className="w-6 h-6" />}
                         {option.includes('AI Search') && <MessageSquare className="w-6 h-6" />}
@@ -172,35 +172,35 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({ onComplete }) => {
 
               {currentStep === 3 && (
                 <div className="flex flex-col md:flex-row gap-12 h-full">
-                  <div className="flex-1 bg-gray-50 p-10 rounded-[2.5rem] border border-gray-100 overflow-y-auto max-h-[500px] text-base text-gray-600 leading-relaxed shadow-inner">
-                    <h3 className="font-bold text-black mb-6 text-2xl tracking-tight">TERMS OF USE / SERVICE AGREEMENT</h3>
+                  <div className="flex-[1.5] bg-white/5 p-10 rounded-[2.5rem] border border-white/10 overflow-y-auto max-h-[500px] text-base text-gray-300 leading-relaxed backdrop-blur-xl no-scrollbar">
+                    <h3 className="font-bold text-white mb-6 text-2xl tracking-tight">TERMS OF USE / SERVICE AGREEMENT</h3>
                     <p className="mb-6">Last Updated: March 2026</p>
                     <p className="mb-6">Welcome to Lawlify AI. By accessing or using our platform, you agree to be bound by these Terms of Service and our Privacy Policy.</p>
-                    <p className="mb-4 font-bold text-black text-lg">1. Acceptance of Terms</p>
+                    <p className="mb-4 font-bold text-white text-lg">1. Acceptance of Terms</p>
                     <p className="mb-6">By creating an account, accessing, or using the Service, you agree to be bound by these Terms. If you do not agree to these Terms, do not use the Service.</p>
-                    <p className="mb-4 font-bold text-black text-lg">2. Data Privacy & Security</p>
+                    <p className="mb-4 font-bold text-white text-lg">2. Data Privacy & Security</p>
                     <p className="mb-6">We take your data privacy seriously. All client data is encrypted and stored securely. We do not use your confidential data to train our public models.</p>
-                    <p className="mb-4 font-bold text-black text-lg">3. Professional Responsibility</p>
+                    <p className="mb-4 font-bold text-white text-lg">3. Professional Responsibility</p>
                     <p>Lawlify AI is a tool to assist legal professionals. It does not provide legal advice and should not be relied upon as a substitute for professional legal judgment.</p>
                   </div>
 
-                  <div className="w-full md:w-96 space-y-6 flex flex-col justify-center">
+                  <div className="w-full md:w-80 space-y-6 flex flex-col justify-center shrink-0">
                     <div 
                       onClick={() => setFormData({...formData, agreedToTerms: !formData.agreedToTerms})}
                       className={`flex items-center justify-between p-8 rounded-[2rem] border transition-all cursor-pointer group ${
                         formData.agreedToTerms 
-                          ? 'bg-primary/5 border-primary shadow-lg shadow-primary/10' 
-                          : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-lg hover:shadow-gray-100'
+                          ? 'bg-primary/10 border-primary shadow-lg shadow-primary/20' 
+                          : 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10'
                       }`}
                     >
                       <div className="flex-1 pr-4">
-                        <label className="text-lg font-bold text-black cursor-pointer block mb-1">
+                        <label className="text-lg font-bold text-white cursor-pointer block mb-1">
                           Accept Terms
                         </label>
-                        <p className="text-sm text-gray-500 font-medium">I agree to Lawlify AI's Terms of Service and Privacy Policy.</p>
+                        <p className="text-sm text-gray-400 font-medium">I agree to Lawlify AI's Terms of Service and Privacy Policy.</p>
                       </div>
                       <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${
-                        formData.agreedToTerms ? 'bg-primary border-primary' : 'border-gray-300 bg-white'
+                        formData.agreedToTerms ? 'bg-primary border-primary' : 'border-white/20 bg-white/5'
                       }`}>
                         {formData.agreedToTerms && <Check className="w-5 h-5 text-white" />}
                       </div>
@@ -210,18 +210,18 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({ onComplete }) => {
                       onClick={() => setFormData({...formData, updates: !formData.updates})}
                       className={`flex items-center justify-between p-8 rounded-[2rem] border transition-all cursor-pointer group ${
                         formData.updates 
-                          ? 'bg-primary/5 border-primary shadow-lg shadow-primary/10' 
-                          : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-lg hover:shadow-gray-100'
+                          ? 'bg-primary/10 border-primary shadow-lg shadow-primary/20' 
+                          : 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10'
                       }`}
                     >
                       <div className="flex-1 pr-4">
-                        <label className="text-lg font-bold text-black cursor-pointer block mb-1">
+                        <label className="text-lg font-bold text-white cursor-pointer block mb-1">
                           Product Updates
                         </label>
-                        <p className="text-sm text-gray-500 font-medium">I want to receive product updates and launch emails.</p>
+                        <p className="text-sm text-gray-400 font-medium">I want to receive product updates and launch emails.</p>
                       </div>
                       <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${
-                        formData.updates ? 'bg-primary border-primary' : 'border-gray-300 bg-white'
+                        formData.updates ? 'bg-primary border-primary' : 'border-white/20 bg-white/5'
                       }`}>
                         {formData.updates && <Check className="w-5 h-5 text-white" />}
                       </div>
@@ -239,10 +239,10 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({ onComplete }) => {
                         type="text" 
                         value={formData.teamName}
                         onChange={(e) => setFormData({...formData, teamName: e.target.value})}
-                        className="flex-1 px-8 py-6 rounded-[2rem] bg-gray-50 border-2 border-transparent focus:bg-white focus:border-primary focus:outline-none transition-all text-2xl font-bold tracking-tight placeholder:text-gray-300"
+                        className="flex-1 px-8 py-6 rounded-[2rem] bg-white/5 border-2 border-white/10 focus:bg-white/10 focus:border-primary focus:outline-none transition-all text-2xl font-bold tracking-tight placeholder:text-gray-600 text-white"
                         placeholder="e.g. Maina & Associates"
                       />
-                      <button className="px-10 py-6 bg-black text-white font-bold rounded-[2rem] hover:bg-gray-900 transition-all shadow-xl shadow-black/10 active:scale-95">
+                      <button className="px-10 py-6 bg-primary text-white font-bold rounded-[2rem] hover:bg-primary-hover transition-all shadow-xl shadow-primary/20 active:scale-95">
                         Save
                       </button>
                     </div>
@@ -250,20 +250,20 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({ onComplete }) => {
 
                   <div>
                     <label className="block text-sm font-bold text-gray-400 mb-4 uppercase tracking-widest pl-2">Invite Members</label>
-                    <div className="bg-gray-50 p-2 rounded-[2.5rem] border border-gray-100">
+                    <div className="bg-white/5 p-2 rounded-[2.5rem] border border-white/10 backdrop-blur-xl">
                       <div className="flex gap-2">
                         <input 
                           type="email" 
                           placeholder="Enter email address"
                           value={formData.inviteEmail}
                           onChange={(e) => setFormData({...formData, inviteEmail: e.target.value})}
-                          className="flex-1 px-8 py-5 rounded-[2rem] bg-white border border-transparent focus:border-gray-200 focus:outline-none transition-all text-lg font-medium"
+                          className="flex-1 px-8 py-5 rounded-[2rem] bg-white/10 border border-transparent focus:border-white/20 focus:outline-none transition-all text-lg font-medium text-white placeholder:text-gray-500"
                         />
                         <div className="relative w-48">
-                          <select className="w-full h-full px-6 bg-white border border-transparent rounded-[2rem] text-base font-bold text-gray-700 focus:outline-none appearance-none cursor-pointer hover:bg-gray-50 transition-colors">
-                            <option>Member</option>
-                            <option>Admin</option>
-                            <option>Viewer</option>
+                          <select className="w-full h-full px-6 bg-white/10 border border-transparent rounded-[2rem] text-base font-bold text-white focus:outline-none appearance-none cursor-pointer hover:bg-white/20 transition-colors">
+                            <option className="bg-black text-white">Member</option>
+                            <option className="bg-black text-white">Admin</option>
+                            <option className="bg-black text-white">Viewer</option>
                           </select>
                           <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
                             <ChevronRight className="w-4 h-4 text-gray-400 rotate-90" />
@@ -296,20 +296,20 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({ onComplete }) => {
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           key={index} 
-                          className="flex items-center justify-between p-6 bg-white rounded-[2rem] border border-gray-100 shadow-sm"
+                          className="flex items-center justify-between p-6 bg-white/5 rounded-[2rem] border border-white/10 backdrop-blur-xl"
                         >
                           <div className="flex items-center gap-6">
-                            <div className="w-12 h-12 bg-gradient-to-br from-primary to-orange-600 rounded-2xl flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-primary/20">
+                            <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-primary/20">
                               {email.charAt(0).toUpperCase()}
                             </div>
                             <div>
-                              <span className="text-lg font-bold text-black block">{email}</span>
+                              <span className="text-lg font-bold text-white block">{email}</span>
                               <span className="text-sm font-medium text-gray-400">Member</span>
                             </div>
                           </div>
                           <div className="flex items-center gap-4">
-                            <span className="text-xs font-bold text-orange-500 uppercase tracking-wider bg-orange-50 px-4 py-2 rounded-xl border border-orange-100">Pending</span>
-                            <button className="p-2 text-gray-300 hover:text-red-500 transition-colors">
+                            <span className="text-xs font-bold text-primary uppercase tracking-wider bg-primary/10 px-4 py-2 rounded-xl border border-primary/20">Pending</span>
+                            <button className="p-2 text-gray-400 hover:text-primary transition-colors">
                               <div className="w-1.5 h-1.5 bg-current rounded-full"></div>
                             </button>
                           </div>
@@ -324,24 +324,24 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({ onComplete }) => {
         </div>
 
         {/* Footer Actions */}
-        <div className="pt-8 border-t border-gray-100 flex justify-between items-center">
+        <div className="pt-8 border-t border-white/5 flex justify-between items-center">
           {currentStep > 1 ? (
             <button 
               onClick={handleBack}
-              className="px-10 py-5 bg-gray-50 border border-transparent rounded-[2rem] text-base font-bold text-gray-600 hover:bg-white hover:border-gray-200 hover:shadow-lg hover:shadow-gray-100 transition-all flex items-center gap-3"
+              className="px-10 py-5 bg-white/5 border border-white/10 rounded-[2rem] text-base font-bold text-gray-300 hover:bg-white/10 hover:border-white/20 transition-all flex items-center gap-3"
             >
               <ChevronLeft className="w-5 h-5" />
               Back
             </button>
           ) : (
-            <div></div> // Spacer
+            <div></div>
           )}
 
           <div className="flex items-center gap-6">
             {currentStep > 1 && (
               <button 
                 onClick={handleSkip}
-                className="px-8 py-5 text-base font-bold text-gray-400 hover:text-black transition-colors flex items-center gap-2"
+                className="px-8 py-5 text-base font-bold text-gray-400 hover:text-white transition-colors flex items-center gap-2"
               >
                 Skip
                 <ChevronRight className="w-5 h-5" />
@@ -369,30 +369,30 @@ const TaskCard = ({ title, description, claimed, onClick, disabled }: { title: s
     onClick={!disabled ? onClick : undefined}
     className={`p-10 rounded-[2.5rem] border-2 transition-all cursor-pointer group relative overflow-hidden h-full flex flex-col justify-between ${
       claimed 
-        ? 'bg-green-50 border-green-200' 
-        : 'bg-gray-50 border-transparent hover:bg-white hover:border-primary/20 hover:shadow-2xl hover:shadow-primary/10'
+        ? 'bg-primary/10 border-primary' 
+        : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10'
     }`}
   >
     <div className="relative z-10">
-      <h3 className={`font-bold mb-3 text-2xl tracking-tight ${claimed ? 'text-green-800' : 'text-black'}`}>{title}</h3>
-      <p className={`text-base font-medium leading-relaxed ${claimed ? 'text-green-600' : 'text-gray-500'}`}>{description}</p>
+      <h3 className={`font-bold mb-3 text-2xl tracking-tight ${claimed ? 'text-white' : 'text-white'}`}>{title}</h3>
+      <p className={`text-base font-medium leading-relaxed ${claimed ? 'text-gray-300' : 'text-gray-400'}`}>{description}</p>
     </div>
     
     <div className="relative z-10 mt-8">
       {claimed ? (
-        <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-white rounded-xl border border-green-200 text-xs font-bold text-green-700 uppercase tracking-wider shadow-sm">
+        <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary rounded-xl border border-primary text-xs font-bold text-white uppercase tracking-wider shadow-sm">
           <Check className="w-4 h-4" />
           Claimed
         </div>
       ) : (
-        <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-white rounded-xl border border-gray-200 text-xs font-bold text-gray-400 uppercase tracking-wider group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all shadow-sm">
+        <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 rounded-xl border border-white/20 text-xs font-bold text-gray-400 uppercase tracking-wider group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all shadow-sm">
           Action Required
         </div>
       )}
     </div>
 
     {/* Decorative background element */}
-    <div className={`absolute -bottom-10 -right-10 w-40 h-40 rounded-full blur-3xl transition-opacity duration-500 ${claimed ? 'bg-green-400/20 opacity-100' : 'bg-primary/10 opacity-0 group-hover:opacity-100'}`} />
+    <div className={`absolute -bottom-10 -right-10 w-40 h-40 rounded-full blur-3xl transition-opacity duration-500 ${claimed ? 'bg-primary/20 opacity-100' : 'bg-primary/10 opacity-0 group-hover:opacity-100'}`} />
   </div>
 );
 

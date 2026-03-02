@@ -14,6 +14,7 @@ import AuthPage from './components/AuthPage';
 import OnboardingPage from './components/OnboardingPage';
 import PricingPage from './components/PricingPage';
 import JudicialAnalytics from './components/JudicialAnalytics';
+import Integrations from './components/Integrations';
 import { WorkspaceType, AppView, LegalSpecialist, Notification } from './types';
 import { ChevronRight, Bell, HelpCircle, Scale, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 
@@ -84,7 +85,7 @@ const App: React.FC = () => {
       case AppView.LEGAL_AI:
         return <LegalAI userEmail={user.email} activeSpecialist={activeSpecialist} subView={legalAISubView} />;
       case AppView.INTEGRATIONS:
-        return <PlaceholderView title="Integrations" />;
+        return <Integrations />;
       case AppView.JUDICIAL_ANALYTICS:
         return <JudicialAnalytics />;
       case AppView.FILES:

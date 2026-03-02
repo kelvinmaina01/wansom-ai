@@ -1,5 +1,6 @@
 
-import React from 'react';
+import React, { useState } from 'react';
+import TermsModal from './TermsModal';
 import { 
   Scale, 
   ShieldCheck, 
@@ -12,7 +13,12 @@ import {
   CheckCircle2,
   Lock,
   EyeOff,
-  Server
+  Server,
+  Heart,
+  GraduationCap,
+  School,
+  Building2,
+  Check
 } from 'lucide-react';
 
 const ADOPTED_COMPANIES = [
@@ -34,6 +40,14 @@ interface LandingPageProps {
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick }) => {
+  const [termsModalOpen, setTermsModalOpen] = useState(false);
+  const [termsModalType, setTermsModalType] = useState<'terms' | 'privacy'>('terms');
+
+  const openTermsModal = (type: 'terms' | 'privacy') => {
+    setTermsModalType(type);
+    setTermsModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-ai-studio text-white font-sans selection:bg-primary/30">
       {/* Navigation */}
@@ -43,7 +57,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
             <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
               <Scale className="w-6 h-6 text-white" />
             </div>
-            <span className="text-xl font-bold tracking-tighter">Lawlify</span>
+            <span className="text-xl font-bold tracking-tighter">Lawlify AI</span>
           </div>
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Features</a>
@@ -82,7 +96,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
               Get started for free
               <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
             </button>
-            <button className="w-full sm:w-auto px-10 py-5 bg-white/5 text-white border border-white/20 rounded-2xl text-lg font-bold hover:bg-white/10 transition-all">
+            <button className="w-full sm:w-auto px-10 py-5 bg-white/5 text-white border border-white/20 rounded-2xl text-lg font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-3">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
               Book a demo
             </button>
           </div>
@@ -134,17 +151,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
               <div key={index} className="flex items-center gap-6 mx-16 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-700 cursor-default scale-110 md:scale-125">
                 <div className="relative w-12 h-12 md:w-16 md:h-16 flex items-center justify-center">
                   <img 
-                    src={`https://logo.clearbit.com/${company.domain}?size=256`} 
+                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(company.name)}&background=1a1a1a&color=ef4444&size=128&bold=true`}
                     alt={company.name} 
-                    className="max-h-full max-w-full object-contain"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      if (target.src.includes('clearbit')) {
-                        target.src = `https://www.google.com/s2/favicons?domain=${company.domain}&sz=128`;
-                      } else if (target.src.includes('google')) {
-                        target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(company.name)}&background=333&color=fff&size=128`;
-                      }
-                    }}
+                    className="max-h-full max-w-full object-contain rounded-lg"
                     referrerPolicy="no-referrer"
                   />
                 </div>
@@ -156,17 +165,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
               <div key={`dup-${index}`} className="flex items-center gap-6 mx-16 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-700 cursor-default scale-110 md:scale-125">
                 <div className="relative w-12 h-12 md:w-16 md:h-16 flex items-center justify-center">
                   <img 
-                    src={`https://logo.clearbit.com/${company.domain}?size=256`} 
+                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(company.name)}&background=1a1a1a&color=ef4444&size=128&bold=true`}
                     alt={company.name} 
-                    className="max-h-full max-w-full object-contain"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      if (target.src.includes('clearbit')) {
-                        target.src = `https://www.google.com/s2/favicons?domain=${company.domain}&sz=128`;
-                      } else if (target.src.includes('google')) {
-                        target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(company.name)}&background=333&color=fff&size=128`;
-                      }
-                    }}
+                    className="max-h-full max-w-full object-contain rounded-lg"
                     referrerPolicy="no-referrer"
                   />
                 </div>
@@ -199,13 +200,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
               icon={<FileText className="w-8 h-8" />}
               title="Draft & Review"
               description="AI-powered document drafting and automated contract review. Identify risks and key obligations in seconds."
-              color="blue"
+              color="red"
             />
             <FeatureCard 
               icon={<ShieldCheck className="w-8 h-8" />}
               title="Document Vault"
               description="Secure, AI-indexed storage for all your legal documents. Find any clause or detail with natural language."
-              color="green"
+              color="red"
             />
             <FeatureCard 
               icon={<Zap className="w-8 h-8" />}
@@ -217,13 +218,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
               icon={<Globe className="w-8 h-8" />}
               title="Knowledge Base"
               description="A centralized repository of firm intelligence, past precedents, and institutional legal knowledge."
-              color="blue"
+              color="red"
             />
             <FeatureCard 
               icon={<MessageSquare className="w-8 h-8" />}
               title="AI Assistant"
               description="A dedicated legal co-pilot that understands the nuances of regional law and helps you draft better."
-              color="green"
+              color="red"
             />
           </div>
         </div>
@@ -291,30 +292,33 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
               </p>
               <div className="flex flex-wrap gap-8 items-center">
                 <div className="group relative">
-                  <img 
-                    src="https://www.vanta.com/static/iso27001-badge.svg" 
-                    alt="ISO 27001 Certified" 
-                    className="h-16 w-auto opacity-80 group-hover:opacity-100 transition-all duration-500"
-                    referrerPolicy="no-referrer"
-                  />
+                  <div className="h-20 w-20 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center backdrop-blur-xl hover:bg-white/10 hover:border-primary/30 transition-all">
+                    <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 2L2 7V12C2 16.55 5.84 20.74 12 22C18.16 20.74 22 16.55 22 12V7L12 2Z" fill="#ef4444" opacity="0.2"/>
+                      <path d="M12 2L2 7V12C2 16.55 5.84 20.74 12 22C18.16 20.74 22 16.55 22 12V7L12 2Z" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M9 12L11 14L15 10" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
                   <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[8px] font-bold text-gray-500 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">ISO 27001 Certified</span>
                 </div>
                 <div className="group relative">
-                  <img 
-                    src="https://www.vanta.com/static/gdpr-badge.svg" 
-                    alt="GDPR Compliant" 
-                    className="h-16 w-auto opacity-80 group-hover:opacity-100 transition-all duration-500"
-                    referrerPolicy="no-referrer"
-                  />
+                  <div className="h-20 w-20 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center backdrop-blur-xl hover:bg-white/10 hover:border-primary/30 transition-all">
+                    <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none">
+                      <rect x="3" y="3" width="18" height="18" rx="2" fill="#ef4444" opacity="0.2"/>
+                      <rect x="3" y="3" width="18" height="18" rx="2" stroke="#ef4444" strokeWidth="2"/>
+                      <path d="M8 12L11 15L16 9" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
                   <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[8px] font-bold text-gray-500 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">GDPR Compliant</span>
                 </div>
                 <div className="group relative">
-                  <img 
-                    src="https://www.vanta.com/static/soc2-badge.svg" 
-                    alt="SOC 2 Type II" 
-                    className="h-16 w-auto opacity-80 group-hover:opacity-100 transition-all duration-500"
-                    referrerPolicy="no-referrer"
-                  />
+                  <div className="h-20 w-20 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center backdrop-blur-xl hover:bg-white/10 hover:border-primary/30 transition-all">
+                    <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="9" fill="#ef4444" opacity="0.2"/>
+                      <circle cx="12" cy="12" r="9" stroke="#ef4444" strokeWidth="2"/>
+                      <path d="M12 8V12L14.5 14.5" stroke="#ef4444" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                  </div>
                   <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[8px] font-bold text-gray-500 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">SOC 2 Type II</span>
                 </div>
               </div>
@@ -340,15 +344,97 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
         </div>
       </section>
 
+      {/* Education Support Section */}
+      <section className="relative py-24 px-6 border-t border-white/5">
+        <div className="absolute inset-0 bg-primary/5 blur-[100px] pointer-events-none"></div>
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary font-bold text-[10px] uppercase tracking-widest mb-6 border border-primary/20">
+              <Heart className="w-3 h-3" />
+              <span>Supporting Education</span>
+            </div>
+            <h2 className="text-4xl font-bold mb-4">We believe in empowering the next generation</h2>
+            <p className="text-gray-400 text-lg font-medium max-w-2xl mx-auto">
+              The future of law depends on accessible tools. That's why we offer students and academic researchers massive discounts because breakthrough legal work shouldn't be limited by budget.
+            </p>
+          </div>
+
+          <div className="bg-[#0a0a0a] p-2 rounded-[2.5rem] shadow-2xl shadow-primary/5 border border-white/10 flex flex-col md:flex-row overflow-hidden">
+            {/* Left Panel: Discounts List */}
+            <div className="flex-1 p-10 space-y-8">
+              <div className="flex gap-6 group">
+                <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                  <GraduationCap className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold mb-1 group-hover:text-primary transition-colors">90% Student Discount</h3>
+                  <p className="text-gray-400 text-sm font-medium">Full Personal features for just $1.50/month. Same powerful AI, same unlimited analysis.</p>
+                </div>
+              </div>
+
+              <div className="flex gap-6 group">
+                <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all duration-300">
+                  <School className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold mb-1 group-hover:text-blue-500 transition-colors">50% Academic Institution</h3>
+                  <p className="text-gray-400 text-sm font-medium">Universities, research institutions, and legal clinics qualify for institutional discounts on team plans.</p>
+                </div>
+              </div>
+
+              <div className="flex gap-6 group">
+                <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-green-500 group-hover:bg-green-500 group-hover:text-white transition-all duration-300">
+                  <Building2 className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold mb-1 group-hover:text-green-500 transition-colors">Non-Profit Organizations</h3>
+                  <p className="text-gray-400 text-sm font-medium">Registered non-profits advancing justice receive 50% off all plans.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Panel: Verification Card */}
+            <div className="w-full md:w-[400px] bg-white/5 rounded-[2rem] p-10 flex flex-col justify-center border border-white/5 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 blur-[50px] rounded-full pointer-events-none"></div>
+              
+              <div className="mb-6 relative z-10">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-gray-500 line-through text-lg font-medium">$15</span>
+                  <span className="text-5xl font-bold text-primary">$1.50</span>
+                  <span className="text-gray-400 font-medium">/mo</span>
+                </div>
+                <p className="text-sm text-gray-400 font-medium mt-2">Personal plan with student discount</p>
+              </div>
+
+              <ul className="space-y-3 mb-8 relative z-10">
+                {['Full AI analysis suite', 'Unlimited workspaces', '5 GB storage', 'Priority support'].map((item, i) => (
+                  <li key={i} className="flex items-center gap-2 text-sm font-medium text-gray-300">
+                    <Check className="w-4 h-4 text-primary" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+
+              <button className="w-full py-4 bg-primary text-white rounded-xl font-bold hover:bg-primary-hover transition-colors shadow-lg shadow-primary/20 relative z-10">
+                Verify Student Status
+              </button>
+              <p className="text-center text-xs text-gray-500 font-medium mt-4 relative z-10">
+                Instant verification with .edu email
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-40 px-6 relative bg-cta-glow border-y border-white/5">
-        <div className="max-w-4xl mx-auto text-center relative z-10">
+        <div className="max-w-5xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-bold tracking-widest uppercase text-primary mb-12">
             <Zap className="w-3 h-3" />
             Join the legal revolution
           </div>
-          <h2 className="text-5xl md:text-8xl font-bold tracking-tight mb-10 leading-[0.9]">
-            Ready to transform your <span className="text-primary">practice?</span>
+          <h2 className="text-5xl md:text-8xl font-semibold tracking-tight mb-10 leading-[0.9] whitespace-nowrap">
+            Ready to transform<br />your <span className="text-primary">practice?</span>
           </h2>
           <div className="flex flex-col items-center gap-8">
             <button 
@@ -358,9 +444,18 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
               Get started for free
               <ArrowRight className="w-8 h-8 group-hover:translate-x-2 transition-transform" />
             </button>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col items-center gap-4">
               <p className="text-xl text-white/80 font-bold tracking-tight">No credit card required.</p>
-              <p className="text-sm text-gray-500 font-medium uppercase tracking-[0.2em]">Join 2,000+ legal professionals across East Africa</p>
+              <div className="flex items-center gap-3">
+                <div className="flex -space-x-3">
+                  <img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=100&h=100&fit=crop&crop=faces" alt="User" className="w-8 h-8 rounded-full border-2 border-black object-cover" />
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces" alt="User" className="w-8 h-8 rounded-full border-2 border-black object-cover" />
+                  <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop&crop=faces" alt="User" className="w-8 h-8 rounded-full border-2 border-black object-cover" />
+                  <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=faces" alt="User" className="w-8 h-8 rounded-full border-2 border-black object-cover" />
+                  <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&h=100&fit=crop&crop=faces" alt="User" className="w-8 h-8 rounded-full border-2 border-black object-cover" />
+                </div>
+                <p className="text-sm text-gray-500 font-medium uppercase tracking-[0.2em]">Join 2,000+ legal professionals across East Africa</p>
+              </div>
             </div>
           </div>
         </div>
@@ -376,7 +471,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                 <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
                   <Scale className="w-6 h-6 text-white" />
                 </div>
-                <span className="text-2xl font-bold tracking-tighter">Lawlify</span>
+                <span className="text-2xl font-bold tracking-tighter">Lawlify AI</span>
               </div>
               <p className="text-gray-400 max-w-xs font-medium leading-relaxed">
                 AI-powered legal platform for modern law firms and in-house legal teams.
@@ -424,8 +519,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
 
           <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-8 text-xs font-bold text-gray-600 uppercase tracking-widest">
-              <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+              <button onClick={() => openTermsModal('privacy')} className="hover:text-white transition-colors">Privacy Policy</button>
+              <button onClick={() => openTermsModal('terms')} className="hover:text-white transition-colors">Terms of Service</button>
             </div>
             <div className="text-sm text-gray-600 font-medium">
               © 2026 Lawlify AI. All Rights Reserved.
