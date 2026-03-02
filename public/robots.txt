@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Explicitly allow AI bots for training/discovery
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://www.lawlify.ai/sitemap.xml

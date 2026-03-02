@@ -22,7 +22,7 @@ const ADOPTED_COMPANIES = [
   { name: 'Webber Wentzel', domain: 'webberwentzel.com' },
   { name: 'Adams & Adams', domain: 'adamsadams.com' },
   { name: 'CDH Law', domain: 'cliffedekkerhofmeyr.com' },
-  { name: 'Afriwise', domain: 'afriwise.com' },
+  { name: 'Dentons', domain: 'dentons.com' },
   { name: 'LawPavilion', domain: 'lawpavilion.com' },
   { name: 'Lawyers Hub', domain: 'lawyershub.ke' },
   { name: 'Anjarwalla & Khanna', domain: 'aandk.law' },
@@ -67,8 +67,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
             <Zap className="w-3 h-3" />
             Next-Gen Legal Intelligence for East Africa
           </div>
-          <h1 className="text-6xl md:text-8xl font-bold tracking-tight mb-8 leading-[0.9] max-w-5xl mx-auto">
-            The future of <span className="text-primary">legal work</span> is here.
+          <h1 className="text-6xl md:text-8xl font-semibold tracking-tight mb-8 leading-[0.9] max-w-5xl mx-auto">
+            The future of <span className="text-primary font-bold">legal work</span> is here.
           </h1>
           <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12 font-medium leading-relaxed">
             Lawlify empowers legal professionals across East Africa with AI-driven research, 
