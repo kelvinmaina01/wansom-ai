@@ -3,12 +3,13 @@ import {
   LayoutDashboard, 
   Files, 
   Briefcase, 
-  Workflow, 
+  LayoutGrid, 
   Settings, 
   Scale,
   History,
   HelpCircle,
-  LogOut
+  LogOut,
+  Blocks
 } from 'lucide-react';
 import { AppView } from '../../types';
 
@@ -23,14 +24,16 @@ const GlobalRail: React.FC<GlobalRailProps> = ({ currentView, onViewChange, user
     <div className="w-16 h-screen bg-black flex flex-col items-center py-6 shrink-0 z-50 border-r border-white/5">
       {/* Logo */}
       <div 
-        className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-black shadow-lg mb-10 cursor-pointer hover:rotate-12 transition-transform"
+        className="w-12 h-12 mb-10 cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
         onClick={() => onViewChange(AppView.OVERVIEW)}
       >
-        L
+        <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+          <Scale className="w-6 h-6 text-white" />
+        </div>
       </div>
 
       {/* Nav Icons */}
-      <nav className="flex-1 flex flex-col gap-4">
+      <nav className="flex-1 flex flex-col gap-4 no-scrollbar overflow-y-auto">
         <RailItem 
           icon={<LayoutDashboard className="w-5 h-5" />} 
           active={currentView === AppView.OVERVIEW}
@@ -44,22 +47,28 @@ const GlobalRail: React.FC<GlobalRailProps> = ({ currentView, onViewChange, user
           label="Legal AI"
         />
         <RailItem 
+          icon={<Briefcase className="w-5 h-5" />} 
+          active={currentView === AppView.LEGAL_SPECIALISTS}
+          onClick={() => onViewChange(AppView.LEGAL_SPECIALISTS)}
+          label="Legal Specialists"
+        />
+        <RailItem 
+          icon={<Blocks className="w-5 h-5" />} 
+          active={currentView === AppView.INTEGRATIONS}
+          onClick={() => onViewChange(AppView.INTEGRATIONS)}
+          label="Integrations"
+        />
+        <RailItem 
           icon={<Files className="w-5 h-5" />} 
           active={currentView === AppView.FILES}
           onClick={() => onViewChange(AppView.FILES)}
           label="Files"
         />
         <RailItem 
-          icon={<Briefcase className="w-5 h-5" />} 
-          active={currentView === AppView.WORKSPACES}
-          onClick={() => onViewChange(AppView.WORKSPACES)}
-          label="Workspaces"
-        />
-        <RailItem 
-          icon={<Workflow className="w-5 h-5" />} 
-          active={currentView === AppView.WORKFLOWS}
-          onClick={() => onViewChange(AppView.WORKFLOWS)}
-          label="Workflows"
+          icon={<LayoutGrid className="w-5 h-5" />} 
+          active={currentView === AppView.WORKSPACE}
+          onClick={() => onViewChange(AppView.WORKSPACE)}
+          label="Workspace"
         />
         <RailItem 
           icon={<History className="w-5 h-5" />} 
@@ -83,7 +92,7 @@ const GlobalRail: React.FC<GlobalRailProps> = ({ currentView, onViewChange, user
             alt="User" 
             className="w-10 h-10 rounded-xl border-2 border-primary/20 cursor-pointer hover:border-primary transition-colors" 
           />
-          <div className="absolute left-full ml-4 px-3 py-2 bg-black text-white text-[10px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-[100]">
+          <div className="absolute left-full ml-4 px-3 py-2 bg-black text-white text-[10px] font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-[100]">
             Profile
           </div>
         </div>
@@ -105,7 +114,7 @@ const RailItem = ({ icon, active, onClick, label }: { icon: React.ReactNode, act
       {icon}
     </button>
     {/* Tooltip */}
-    <div className="absolute left-full ml-4 px-3 py-2 bg-black text-white text-[10px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-[100]">
+    <div className="absolute left-full ml-4 px-3 py-2 bg-black text-white text-[10px] font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-[100]">
       {label}
     </div>
   </div>

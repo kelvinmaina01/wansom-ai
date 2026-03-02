@@ -8,7 +8,15 @@ import {
   TrendingUp,
   Users,
   Clock,
-  Scale
+  Scale,
+  FileText,
+  CheckCircle,
+  AlertCircle,
+  MoreHorizontal,
+  PenTool,
+  Briefcase,
+  Play,
+  Zap
 } from 'lucide-react';
 import { 
   BarChart, 
@@ -21,6 +29,7 @@ import {
   AreaChart,
   Area
 } from 'recharts';
+import { Project, Activity } from '../types';
 
 const data = [
   { name: 'Mon', usage: 40, tokens: 2400 },
@@ -32,48 +41,154 @@ const data = [
   { name: 'Sun', usage: 34, tokens: 4300 },
 ];
 
+const MOCK_PROJECTS: Project[] = [
+  {
+    id: '1',
+    name: 'M-Pesa Integration Contract',
+    client: 'Safaricom PLC',
+    status: 'In Progress',
+    progress: 75,
+    dueDate: new Date('2024-03-15'),
+    type: 'Contract Review'
+  },
+  {
+    id: '2',
+    name: 'Land Dispute - Karen',
+    client: 'Karen Residents Association',
+    status: 'On Hold',
+    progress: 30,
+    dueDate: new Date('2024-04-01'),
+    type: 'Litigation'
+  },
+  {
+    id: '3',
+    name: 'Employment Policy Update',
+    client: 'Tech Solutions Ltd',
+    status: 'Completed',
+    progress: 100,
+    dueDate: new Date('2024-02-28'),
+    type: 'Advisory'
+  }
+];
+
+const MOCK_ACTIVITIES: Activity[] = [
+  {
+    id: '1',
+    user: 'You',
+    action: 'drafted',
+    target: 'NDA for Project Alpha',
+    timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 mins ago
+    icon: 'FileText'
+  },
+  {
+    id: '2',
+    user: 'System',
+    action: 'analyzed',
+    target: 'Employment Act 2007',
+    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
+    icon: 'Scale'
+  },
+  {
+    id: '3',
+    user: 'You',
+    action: 'completed',
+    target: 'Client Onboarding - John Doe',
+    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5), // 5 hours ago
+    icon: 'CheckCircle'
+  }
+];
+
 const Overview: React.FC = () => {
   return (
-    <div className="flex-1 overflow-y-auto bg-white bg-dots p-8">
+    <div className="flex-1 overflow-y-auto bg-white bg-dots p-8 no-scrollbar">
       <div className="max-w-6xl mx-auto">
         {/* Welcome Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-black mb-4 tracking-tight">Welcome</h1>
-          <p className="text-gray-500 text-lg font-medium">Organize your work and improve your performance with us here.</p>
+        <div className="text-left mb-12">
+          <h1 className="text-6xl font-bold text-black mb-4 tracking-tighter">Welcome back, Kelvin</h1>
+          <p className="text-gray-400 text-lg font-medium">Here's what's happening with your legal projects today.</p>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="flex flex-wrap gap-4 mb-12 justify-center">
+          {[
+            { label: 'Draft A Contract', icon: PenTool },
+            { label: 'Review Documents', icon: FileText },
+            { label: 'Prepare for A Case', icon: Briefcase },
+            { label: 'Start A Project', icon: Plus },
+            { label: 'Start A Workflow', icon: Zap },
+          ].map((action) => (
+            <button key={action.label} className="flex items-center gap-3 px-6 py-3 bg-white border border-gray-200 rounded-2xl text-sm font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+              <div className="p-1.5 bg-blue-50 rounded-lg text-blue-600">
+                <action.icon className="w-4 h-4" />
+              </div>
+              {action.label}
+            </button>
+          ))}
         </div>
 
         {/* Action Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          <ActionCard 
-            icon={<Plus className="w-6 h-6 text-primary" />}
-            title="Create New Project"
-            description="Start a new project, upload files, and assign a Persona to streamline your workflow."
-            buttonText="Create project"
-            iconBg="bg-primary/10"
-          />
-          <ActionCard 
-            icon={<FolderOpen className="w-6 h-6 text-white" />}
-            title="Open Existing Project"
-            description="Access and manage your saved projects, review files, and continue your work seamlessly."
-            buttonText="View projects"
-            iconBg="bg-black"
-            isDark
-          />
-          <ActionCard 
-            icon={<MessageSquare className="w-6 h-6 text-primary" />}
-            title="Quick Q&A Only"
-            description="Get instant AI-powered answers without creating a full project for simple inquiries."
-            buttonText="Open Q&A"
-            iconBg="bg-primary/10"
-          />
+          {/* Card 1: Create New Project */}
+          <div className="relative overflow-hidden p-8 rounded-[2.5rem] shadow-xl bg-blue-600 text-white group hover:scale-[1.02] transition-transform duration-300">
+            <div className="absolute -right-10 -top-10 w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors"></div>
+            <div className="relative z-10">
+              <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-8 backdrop-blur-md shadow-inner border border-white/10">
+                <Plus className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold mb-4 tracking-tighter">Create New Project</h3>
+              <p className="text-blue-100 text-base leading-relaxed mb-10 font-medium">
+                Start a new project, upload files, and assign a Persona to streamline your workflow.
+              </p>
+              <button className="flex items-center gap-2 px-6 py-3 bg-white text-blue-600 rounded-xl font-bold hover:bg-blue-50 transition-colors shadow-lg shadow-black/10">
+                Create project
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Card 2: Open Existing Project */}
+          <div className="relative overflow-hidden p-8 rounded-[2.5rem] shadow-xl bg-purple-600 text-white group hover:scale-[1.02] transition-transform duration-300">
+            <div className="absolute -right-10 -top-10 w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors"></div>
+            <div className="relative z-10">
+              <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-8 backdrop-blur-md shadow-inner border border-white/10">
+                <FolderOpen className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold mb-4 tracking-tighter">Open Existing Project</h3>
+              <p className="text-purple-100 text-base leading-relaxed mb-10 font-medium">
+                Access and manage your saved projects, review files, and continue your work seamlessly.
+              </p>
+              <button className="flex items-center gap-2 px-6 py-3 bg-white text-purple-600 rounded-xl font-bold hover:bg-purple-50 transition-colors shadow-lg shadow-black/10">
+                View projects
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Card 3: Quick Q&A Only */}
+          <div className="relative overflow-hidden p-8 rounded-[2.5rem] shadow-xl bg-orange-500 text-white group hover:scale-[1.02] transition-transform duration-300">
+            <div className="absolute -right-10 -top-10 w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors"></div>
+            <div className="relative z-10">
+              <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-8 backdrop-blur-md shadow-inner border border-white/10">
+                <MessageSquare className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold mb-4 tracking-tighter">Quick Q&A Only</h3>
+              <p className="text-orange-100 text-base leading-relaxed mb-10 font-medium">
+                Get instant AI-powered answers without creating a full project for simple inquiries.
+              </p>
+              <button className="flex items-center gap-2 px-6 py-3 bg-white text-orange-600 rounded-xl font-bold hover:bg-orange-50 transition-colors shadow-lg shadow-black/10">
+                Open Q&A
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           <div className="lg:col-span-2 bg-white p-8 rounded-3xl border border-gray-100 shadow-xl shadow-black/5">
             <div className="flex items-center justify-between mb-8">
-              <h3 className="text-xl font-bold text-black">AI Usage Overview</h3>
-              <select className="text-sm font-bold border border-gray-200 bg-white rounded-xl px-4 py-2 text-black focus:ring-2 focus:ring-primary/20 outline-none transition-all">
+              <h3 className="text-xl font-semibold text-black">AI Usage Overview</h3>
+              <select className="text-sm font-medium border border-gray-200 bg-white rounded-xl px-4 py-2 text-black focus:ring-2 focus:ring-primary/20 outline-none transition-all">
                 <option>Last 7 days</option>
                 <option>Last 30 days</option>
               </select>
@@ -83,8 +198,8 @@ const Overview: React.FC = () => {
                 <AreaChart data={data}>
                   <defs>
                     <linearGradient id="colorUsage" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#F27D26" stopOpacity={0.2}/>
-                      <stop offset="95%" stopColor="#F27D26" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2}/>
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
@@ -93,19 +208,97 @@ const Overview: React.FC = () => {
                   <Tooltip 
                     contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)', fontWeight: 600 }}
                   />
-                  <Area type="monotone" dataKey="usage" stroke="#F27D26" strokeWidth={4} fillOpacity={1} fill="url(#colorUsage)" />
+                  <Area type="monotone" dataKey="usage" stroke="#3b82f6" strokeWidth={4} fillOpacity={1} fill="url(#colorUsage)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </div>
 
           <div className="bg-black p-8 rounded-3xl shadow-xl shadow-black/20 text-white">
-            <h3 className="text-xl font-bold mb-8">Quick Stats</h3>
+            <h3 className="text-xl font-semibold mb-8">Quick Stats</h3>
             <div className="space-y-8">
-              <StatItem icon={<TrendingUp className="w-5 h-5" />} label="Total Queries" value="1,284" change="+12.5%" isDark />
-              <StatItem icon={<Users className="w-5 h-5" />} label="Active Projects" value="12" change="+2" isDark />
-              <StatItem icon={<Clock className="w-5 h-5" />} label="Time Saved" value="48h" change="+5h" isDark />
-              <StatItem icon={<Scale className="w-5 h-5" />} label="Statutes Indexed" value="450+" change="Updated" isDark />
+              <StatItem icon={<TrendingUp className="w-5 h-5" />} label="Total Queries" value="1,284" change="+12.5%" isDark color="red" />
+              <StatItem icon={<Users className="w-5 h-5" />} label="Active Projects" value="12" change="+2" isDark color="green" />
+              <StatItem icon={<Clock className="w-5 h-5" />} label="Time Saved" value="48h" change="+5h" isDark color="blue" />
+              <StatItem icon={<Scale className="w-5 h-5" />} label="Statutes Indexed" value="450+" change="Updated" isDark color="red" />
+            </div>
+          </div>
+        </div>
+
+        {/* Projects and Activity Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Active Projects */}
+          <div className="lg:col-span-2 bg-white p-8 rounded-3xl border border-gray-100 shadow-xl shadow-black/5">
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="text-xl font-semibold text-black">Active Projects</h3>
+              <button className="text-sm font-bold text-primary hover:text-primary-hover transition-colors">View All</button>
+            </div>
+            <div className="space-y-6">
+              {MOCK_PROJECTS.map((project) => (
+                <div key={project.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:border-gray-200 transition-all group">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                      project.status === 'Completed' ? 'bg-green-100 text-green-600' :
+                      project.status === 'On Hold' ? 'bg-amber-100 text-amber-600' :
+                      'bg-blue-100 text-blue-600'
+                    }`}>
+                      <FolderOpen className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-black group-hover:text-primary transition-colors">{project.name}</h4>
+                      <p className="text-xs text-gray-500 font-medium">{project.client} • {project.type}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-6">
+                    <div className="text-right hidden sm:block">
+                      <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Due Date</p>
+                      <p className="text-sm font-bold text-black">{project.dueDate.toLocaleDateString()}</p>
+                    </div>
+                    <div className="w-24 hidden sm:block">
+                      <div className="flex justify-between text-[10px] font-bold text-gray-400 mb-1">
+                        <span>Progress</span>
+                        <span>{project.progress}%</span>
+                      </div>
+                      <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full rounded-full ${
+                            project.status === 'Completed' ? 'bg-green-500' :
+                            project.status === 'On Hold' ? 'bg-amber-500' :
+                            'bg-blue-500'
+                          }`} 
+                          style={{ width: `${project.progress}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    <button className="p-2 text-gray-300 hover:text-black transition-colors">
+                      <MoreHorizontal className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Recent Activity */}
+          <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-xl shadow-black/5">
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="text-xl font-semibold text-black">Recent Activity</h3>
+              <button className="text-sm font-bold text-gray-400 hover:text-black transition-colors">View All</button>
+            </div>
+            <div className="relative pl-4 border-l-2 border-gray-100 space-y-8">
+              {MOCK_ACTIVITIES.map((activity) => (
+                <div key={activity.id} className="relative">
+                  <div className={`absolute -left-[21px] top-1 w-3 h-3 rounded-full border-2 border-white shadow-sm ${
+                    activity.action === 'completed' ? 'bg-green-500' : 'bg-primary'
+                  }`}></div>
+                  <p className="text-xs text-gray-400 font-bold mb-1">
+                    {activity.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                  <p className="text-sm text-black leading-relaxed">
+                    <span className="font-bold">{activity.user}</span> {activity.action} <span className="font-medium text-primary">{activity.target}</span>
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -114,35 +307,29 @@ const Overview: React.FC = () => {
   );
 };
 
-const ActionCard = ({ icon, title, description, buttonText, iconBg, isDark }: { icon: React.ReactNode, title: string, description: string, buttonText: string, iconBg: string, isDark?: boolean }) => (
-  <div className={`flex flex-col p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-black/5 transition-all hover:shadow-2xl hover:-translate-y-1 bg-white`}>
-    <div className={`w-14 h-14 ${iconBg} rounded-2xl flex items-center justify-center mb-8 shadow-inner`}>
-      {icon}
-    </div>
-    <h3 className="text-2xl font-bold text-black mb-4 tracking-tight">{title}</h3>
-    <p className="text-gray-500 text-base leading-relaxed mb-10 flex-1 font-medium">{description}</p>
-    <button className={`flex items-center justify-center gap-2 py-4 px-8 rounded-2xl font-bold transition-all ${isDark ? 'bg-black text-white hover:bg-gray-900' : 'bg-white text-black border-2 border-black hover:bg-black hover:text-white'}`}>
-      {buttonText}
-      <ArrowRight className="w-5 h-5" />
-    </button>
-  </div>
-);
+const StatItem = ({ icon, label, value, change, isDark, color = 'red' }: { icon: React.ReactNode, label: string, value: string, change: string, isDark?: boolean, color?: 'red' | 'green' | 'blue' }) => {
+  const colorClasses = {
+    red: isDark ? 'bg-primary/20 text-primary' : 'bg-primary/10 text-primary',
+    green: isDark ? 'bg-secondary-green/20 text-secondary-green' : 'bg-secondary-green/10 text-secondary-green',
+    blue: isDark ? 'bg-secondary-blue/20 text-secondary-blue' : 'bg-secondary-blue/10 text-secondary-blue',
+  };
 
-const StatItem = ({ icon, label, value, change, isDark }: { icon: React.ReactNode, label: string, value: string, change: string, isDark?: boolean }) => (
-  <div className="flex items-center justify-between">
-    <div className="flex items-center gap-4">
-      <div className={`p-3 rounded-2xl ${isDark ? 'bg-white/10 text-white' : 'bg-gray-50 text-gray-400'}`}>
-        {icon}
+  return (
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-4">
+        <div className={`p-3 rounded-2xl ${isDark ? 'bg-white/10 text-white' : 'bg-gray-50 text-gray-400'}`}>
+          {icon}
+        </div>
+        <div>
+          <p className={`text-[10px] font-bold ${isDark ? 'text-gray-500' : 'text-gray-400'} mb-1`}>{label}</p>
+          <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-black'} tracking-tight`}>{value}</p>
+        </div>
       </div>
-      <div>
-        <p className={`text-xs font-bold uppercase tracking-widest ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{label}</p>
-        <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-black'}`}>{value}</p>
-      </div>
+      <span className={`text-xs font-medium px-3 py-1.5 rounded-xl ${change.startsWith('+') ? colorClasses[color] : (isDark ? 'bg-white/10 text-white' : 'bg-gray-100 text-gray-600')}`}>
+        {change}
+      </span>
     </div>
-    <span className={`text-xs font-bold px-3 py-1.5 rounded-xl ${change.startsWith('+') ? (isDark ? 'bg-primary/20 text-primary' : 'bg-primary/10 text-primary') : (isDark ? 'bg-white/10 text-white' : 'bg-gray-100 text-gray-600')}`}>
-      {change}
-    </span>
-  </div>
-);
+  );
+};
 
 export default Overview;

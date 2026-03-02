@@ -34,6 +34,33 @@ export async function askLegalAssistant(prompt: string, history: any[] = []) {
   }
 }
 
+export async function askLegalAssistantStream(prompt: string, onChunk: (text: string) => void, customInstruction?: string) {
+  try {
+    const chat = ai.chats.create({
+      model: 'gemini-3-pro-preview',
+      config: {
+        systemInstruction: customInstruction || `You are an elite legal assistant specializing in East African law, with primary focus on Kenyan statutes (Constitution of Kenya, Companies Act, Employment Act, etc.). 
+        Provide professional, accurate, and structured legal advice. Always cite relevant sections where possible. 
+        If the user asks for drafting, provide high-quality legal templates customized for Kenyan jurisdiction.`,
+        tools: [{ googleSearch: {} }]
+      }
+    });
+
+    const result = await chat.sendMessageStream({ message: prompt });
+    
+    let fullText = "";
+    for await (const chunk of result) {
+      const chunkText = chunk.text || "";
+      fullText += chunkText;
+      onChunk(fullText);
+    }
+
+    return { text: fullText };
+  } catch (error) {
+    console.error("Legal AI Streaming Error:", error);
+    throw error;
+  }
+}
 export async function transcribeLegalAudio(base64Audio: string) {
   try {
     const response = await ai.models.generateContent({

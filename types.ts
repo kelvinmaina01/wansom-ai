@@ -2,11 +2,12 @@
 export enum AppView {
   OVERVIEW = 'overview',
   FILES = 'files',
-  WORKSPACES = 'workspaces',
-  WORKFLOWS = 'workflows',
+  LEGAL_SPECIALISTS = 'legal-specialists',
+  WORKSPACE = 'workspace',
   SETTINGS = 'settings',
   LEGAL_AI = 'legal-ai',
-  HISTORY = 'history'
+  HISTORY = 'history',
+  INTEGRATIONS = 'integrations'
 }
 
 export enum WorkspaceType {
@@ -32,9 +33,126 @@ export interface LegalMessage {
   isDraft?: boolean;
 }
 
+export interface LegalSpecialist {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  practiceAreas: string[];
+  instructions: string;
+  isPremade?: boolean;
+  category?: string;
+  color?: string;
+  links?: Array<{ label: string; url: string }>;
+}
+
+export interface Case {
+  id: string;
+  title: string;
+  clientName: string;
+  status: 'Open' | 'Closed' | 'Pending';
+  practiceArea: string;
+  nextHearingDate?: Date;
+  documents: Array<{ name: string; type: string; date: Date }>;
+}
+
+export interface UserSettings {
+  profile: {
+    name: string;
+    email: string;
+    phone: string;
+    firmName: string;
+  };
+  notifications: {
+    email: boolean;
+    push: boolean;
+    caseUpdates: boolean;
+    newsDigest: boolean;
+  };
+  security: {
+    twoFactorEnabled: boolean;
+  };
+  billing: {
+    plan: 'Free' | 'Pro' | 'Enterprise';
+    nextBillingDate: Date;
+  };
+  integrations: {
+    [key: string]: boolean;
+  };
+}
+
 export interface Workspace {
   id: string;
   name: string;
   type: WorkspaceType;
   lastModified: Date;
+}
+
+export interface SavedPrompt {
+  id: string;
+  title: string;
+  content: string;
+  category: string;
+  lastUsed: Date;
+}
+
+export interface Persona {
+  id: string;
+  name: string;
+  role: string;
+  description: string;
+  instructions: string;
+  avatar?: string;
+}
+
+export interface Draft {
+  id: string;
+  title: string;
+  content: string;
+  type: 'document' | 'email' | 'advice';
+  lastModified: Date;
+}
+
+export interface ChatHistory {
+  id: string;
+  title: string;
+  lastMessage: string;
+  timestamp: Date;
+  messages: LegalMessage[];
+}
+
+export interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  type: 'info' | 'warning' | 'success' | 'error';
+  timestamp: Date;
+  read: boolean;
+  category?: 'Case Law' | 'Regulation' | 'System' | 'Update';
+}
+
+export interface CaseType {
+  id: string;
+  name: string;
+  description?: string;
+  color: string;
+}
+
+export interface Project {
+  id: string;
+  name: string;
+  client: string;
+  status: 'In Progress' | 'Completed' | 'On Hold';
+  progress: number;
+  dueDate: Date;
+  type: string;
+}
+
+export interface Activity {
+  id: string;
+  user: string;
+  action: string;
+  target: string;
+  timestamp: Date;
+  icon?: string;
 }

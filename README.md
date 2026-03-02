@@ -1,20 +1,55 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Lawlify AI
 
-# Run and deploy your AI Studio app
+**The AI Co-pilot for Legal Excellence in East Africa.**
 
-This contains everything you need to run your app locally.
+Lawlify AI is a next-generation legal technology platform designed specifically for legal professionals in Kenya, Tanzania, Uganda, and Rwanda. It empowers advocates, in-house counsels, and law firms with AI-driven research, document analysis, and case intelligence tailored to regional jurisdictions.
 
-View your app in AI Studio: https://ai.studio/apps/b4d38004-ddb1-424e-b7bc-99eb2b064e53
+## 🚀 Key Features
 
-## Run Locally
+-   **Intelligent Research**: Instantly search thousands of East African statutes, case laws, and precedents.
+-   **AI Drafting & Review**: Automated contract review and document drafting with risk identification.
+-   **Document Vault**: Secure, AI-indexed storage for legal documents with natural language search.
+-   **Smart Workflows**: Automate repetitive tasks and track deadlines across your firm.
+-   **Regional Focus**: Specialized knowledge base covering EAC regional treaties and local statutes.
+-   **Enterprise-Grade Security**: ISO 27001 certified architecture with end-to-end encryption.
 
-**Prerequisites:**  Node.js
+## 🛠️ Tech Stack
 
+-   **Frontend**: React 18, TypeScript, Vite
+-   **Styling**: Tailwind CSS
+-   **Animations**: Framer Motion
+-   **Icons**: Lucide React
+-   **State Management**: React Context / Local State (for MVP)
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## 🏁 Getting Started
+
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/your-org/lawlify-ai.git
+    ```
+2.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
+3.  **Start the development server**:
+    ```bash
+    npm run dev
+    ```
+4.  **Build for production**:
+    ```bash
+    npm run build
+    ```
+
+## 📂 Project Structure
+
+-   `/src/components`: Core UI components (Landing, Auth, Onboarding, Pricing).
+-   `/src/App.tsx`: Main application entry point and routing logic.
+-   `/src/index.css`: Global styles and Tailwind configuration.
+
+## 🌍 Regional Impact
+
+Lawlify AI is trusted by leading law firms and legal departments across East Africa, including Bowmans, ALN Africa, and ENSafrica. We are committed to empowering the next generation of legal advocates with accessible, high-performance tools.
+
+## 📄 License
+
+Proprietary software. All rights reserved.
