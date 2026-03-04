@@ -44,6 +44,7 @@ export interface LegalSpecialist {
   isPremade?: boolean;
   category?: string;
   color?: string;
+  jurisdictions?: string[];
   links?: Array<{ label: string; url: string }>;
 }
 
