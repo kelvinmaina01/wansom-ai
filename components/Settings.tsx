@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  User, 
-  Bell, 
-  Shield, 
-  CreditCard, 
-  Check, 
-  ChevronRight, 
-  ToggleLeft, 
+import {
+  User,
+  Bell,
+  Shield,
+  CreditCard,
+  Check,
+  ChevronRight,
+  ToggleLeft,
   ToggleRight,
   LogOut,
   AlertTriangle,
@@ -148,17 +148,19 @@ const Settings: React.FC = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                  activeTab === tab.id 
-                    ? 'bg-black text-white shadow-lg shadow-black/10' 
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeTab === tab.id
+                    ? 'bg-primary/10 text-primary border border-primary/15 shadow-sm'
                     : 'text-gray-500 hover:bg-gray-50 hover:text-black'
-                }`}
+                  }`}
               >
                 <tab.icon className={`w-4 h-4 ${activeTab === tab.id ? 'text-primary' : ''}`} />
                 {tab.label}
+                {activeTab === tab.id && (
+                  <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary" />
+                )}
               </button>
             ))}
-            
+
             <div className="pt-8 mt-8 border-t border-gray-100">
               <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 transition-colors">
                 <LogOut className="w-4 h-4" />
@@ -181,11 +183,18 @@ const Settings: React.FC = () => {
                   <div className="space-y-6">
                     <h2 className="text-xl font-bold text-black mb-6">Profile Information</h2>
                     <div className="flex items-center gap-6 mb-8">
-                      <div className="w-20 h-20 bg-gray-100 rounded-full overflow-hidden border-4 border-white shadow-lg">
-                        <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${settings.profile.name}`} alt="Avatar" className="w-full h-full object-cover" />
+                      <div className="relative">
+                        <div className="w-20 h-20 bg-gray-100 rounded-full overflow-hidden border-4 border-white shadow-lg ring-2 ring-primary/20">
+                          <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${settings.profile.name}`} alt="Avatar" className="w-full h-full object-cover" />
+                        </div>
+                        <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-primary rounded-full flex items-center justify-center border-2 border-white shadow-sm cursor-pointer hover:bg-primary/90 transition-colors">
+                          <User className="w-3.5 h-3.5 text-white" />
+                        </div>
                       </div>
                       <div>
-                        <button className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs font-bold hover:bg-gray-100 transition-colors">
+                        <p className="text-lg font-bold text-black">{settings.profile.name}</p>
+                        <p className="text-xs text-gray-400 font-medium">{settings.profile.email}</p>
+                        <button className="mt-2 px-4 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-[11px] font-bold hover:bg-gray-100 transition-colors text-gray-600">
                           Change Avatar
                         </button>
                       </div>
@@ -194,44 +203,48 @@ const Settings: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Full Name</label>
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           value={settings.profile.name}
-                          onChange={(e) => setSettings({...settings, profile: {...settings.profile, name: e.target.value}})}
+                          onChange={(e) => setSettings({ ...settings, profile: { ...settings.profile, name: e.target.value } })}
                           className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                         />
                       </div>
                       <div>
                         <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Email Address</label>
-                        <input 
-                          type="email" 
+                        <input
+                          type="email"
                           value={settings.profile.email}
-                          onChange={(e) => setSettings({...settings, profile: {...settings.profile, email: e.target.value}})}
+                          onChange={(e) => setSettings({ ...settings, profile: { ...settings.profile, email: e.target.value } })}
                           className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                         />
                       </div>
                       <div>
                         <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Phone Number</label>
-                        <input 
-                          type="tel" 
+                        <input
+                          type="tel"
                           value={settings.profile.phone}
-                          onChange={(e) => setSettings({...settings, profile: {...settings.profile, phone: e.target.value}})}
+                          onChange={(e) => setSettings({ ...settings, profile: { ...settings.profile, phone: e.target.value } })}
                           className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                         />
                       </div>
                       <div>
                         <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Firm Name</label>
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           value={settings.profile.firmName}
-                          onChange={(e) => setSettings({...settings, profile: {...settings.profile, firmName: e.target.value}})}
+                          onChange={(e) => setSettings({ ...settings, profile: { ...settings.profile, firmName: e.target.value } })}
                           className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                         />
                       </div>
                     </div>
-                    
-                    <div className="pt-6 flex justify-end">
-                      <button className="px-6 py-3 bg-black text-white rounded-xl text-xs font-bold hover:bg-gray-900 transition-all shadow-lg shadow-black/10">
+
+                    <div className="pt-6 flex justify-end gap-3">
+                      <button className="px-5 py-2.5 bg-gray-50 border border-gray-200 text-gray-600 rounded-xl text-xs font-bold hover:bg-gray-100 transition-all">
+                        Cancel
+                      </button>
+                      <button className="px-6 py-2.5 bg-primary text-white rounded-xl text-xs font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
+                        <Check className="w-4 h-4" />
                         Save Changes
                       </button>
                     </div>
@@ -241,7 +254,7 @@ const Settings: React.FC = () => {
                 {activeTab === 'notifications' && (
                   <div className="space-y-6">
                     <h2 className="text-xl font-bold text-black mb-6">Notification Preferences</h2>
-                    
+
                     <div className="space-y-4">
                       {Object.entries(settings.notifications).map(([key, value]) => (
                         <div key={key} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
@@ -249,7 +262,7 @@ const Settings: React.FC = () => {
                             <h3 className="text-sm font-bold text-black capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</h3>
                             <p className="text-xs text-gray-400 font-medium">Receive notifications via {key}</p>
                           </div>
-                          <button 
+                          <button
                             onClick={() => handleToggle('notifications', key)}
                             className={`text-2xl transition-colors ${value ? 'text-primary' : 'text-gray-300'}`}
                           >
@@ -264,7 +277,7 @@ const Settings: React.FC = () => {
                 {activeTab === 'security' && (
                   <div className="space-y-6">
                     <h2 className="text-xl font-bold text-black mb-6">Security Settings</h2>
-                    
+
                     <div className="p-6 bg-blue-50 border border-blue-100 rounded-2xl mb-6">
                       <div className="flex items-start gap-4">
                         <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 shrink-0">
@@ -275,13 +288,12 @@ const Settings: React.FC = () => {
                           <p className="text-xs text-blue-700/80 mb-4 leading-relaxed">
                             Add an extra layer of security to your account by enabling 2FA. We'll send a code to your phone when you sign in.
                           </p>
-                          <button 
+                          <button
                             onClick={() => handleToggle('security', 'twoFactorEnabled')}
-                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors ${
-                              settings.security.twoFactorEnabled 
-                                ? 'bg-green-500 text-white hover:bg-green-600' 
+                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors ${settings.security.twoFactorEnabled
+                                ? 'bg-green-500 text-white hover:bg-green-600'
                                 : 'bg-blue-600 text-white hover:bg-blue-700'
-                            }`}
+                              }`}
                           >
                             {settings.security.twoFactorEnabled ? 'Enabled' : 'Enable 2FA'}
                           </button>
@@ -302,22 +314,26 @@ const Settings: React.FC = () => {
                 {activeTab === 'billing' && (
                   <div className="space-y-6">
                     <h2 className="text-xl font-bold text-black mb-6">Billing & Subscription</h2>
-                    
-                    <div className="bg-black text-white p-8 rounded-[2rem] shadow-2xl shadow-black/20 relative overflow-hidden mb-8">
+
+                    <div className="bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white p-8 rounded-[2rem] shadow-2xl shadow-black/20 relative overflow-hidden mb-8">
                       <div className="relative z-10">
                         <div className="flex justify-between items-start mb-8">
                           <div>
                             <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Current Plan</p>
                             <h3 className="text-3xl font-bold text-white">Pro Plan</h3>
                           </div>
-                          <span className="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold border border-white/10">Active</span>
+                          <span className="px-3 py-1.5 bg-green-500/20 backdrop-blur-md rounded-full text-xs font-bold border border-green-400/20 text-green-400 flex items-center gap-1.5">
+                            <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
+                            Active
+                          </span>
                         </div>
                         <div className="flex items-center gap-2 text-sm font-medium text-gray-300">
                           <CreditCard className="w-4 h-4" />
-                          Next billing date: <span className="text-white">{settings.billing.nextBillingDate.toLocaleDateString()}</span>
+                          Next billing date: <span className="text-white font-bold">{settings.billing.nextBillingDate.toLocaleDateString()}</span>
                         </div>
                       </div>
-                      <div className="absolute top-0 right-0 w-64 h-64 bg-primary rounded-full blur-[100px] opacity-20 -translate-y-1/2 translate-x-1/2"></div>
+                      <div className="absolute top-0 right-0 w-64 h-64 bg-primary rounded-full blur-[100px] opacity-30 -translate-y-1/2 translate-x-1/2"></div>
+                      <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500 rounded-full blur-[80px] opacity-10 translate-y-1/2 -translate-x-1/4"></div>
                     </div>
 
                     <div className="space-y-4">
@@ -372,16 +388,14 @@ const Settings: React.FC = () => {
                                       Connected
                                     </span>
                                   )}
-                                  <button 
+                                  <button
                                     onClick={() => handleIntegrationToggle(item.name)}
-                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 ${
-                                      settings.integrations[item.name] ? 'bg-black' : 'bg-gray-200'
-                                    }`}
+                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 ${settings.integrations[item.name] ? 'bg-black' : 'bg-gray-200'
+                                      }`}
                                   >
                                     <span
-                                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                        settings.integrations[item.name] ? 'translate-x-6' : 'translate-x-1'
-                                      }`}
+                                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${settings.integrations[item.name] ? 'translate-x-6' : 'translate-x-1'
+                                        }`}
                                     />
                                   </button>
                                 </div>
@@ -397,7 +411,7 @@ const Settings: React.FC = () => {
                 {activeTab === 'advanced' && (
                   <div className="space-y-8">
                     <h2 className="text-xl font-bold text-black mb-6">Advanced Settings</h2>
-                    
+
                     <div className="p-6 bg-gray-50 rounded-2xl border border-gray-100">
                       <h3 className="text-sm font-bold text-black mb-4 flex items-center gap-2">
                         <RefreshCw className="w-4 h-4 text-gray-500" />
