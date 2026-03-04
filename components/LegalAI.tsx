@@ -162,23 +162,18 @@ const LegalAI: React.FC<LegalAIProps> = ({ userEmail, activeSpecialist, subView 
               </div>
               <h2 className="text-sm font-bold text-primary mb-2 tracking-[0.3em] uppercase opacity-90">HELLO {firstName}</h2>
               {activeSpecialist && (
-                <div className="flex justify-center mb-4">
-                  <div className="px-4 py-2 bg-primary/10 border border-primary/20 rounded-2xl flex items-center gap-2">
-                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                    <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Active Specialist: {activeSpecialist.name}</span>
-                  </div>
-                </div>
+                <div className="mb-4"></div>
               )}
               <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black tracking-tight leading-tight mb-8 max-w-none mx-auto whitespace-nowrap">
-                {activeSpecialist ? `How can the ${activeSpecialist.name} assist you?` : 'What are you working on today?'}
+                {activeSpecialist ? <span>Let the <span className="text-red-500">{activeSpecialist.name}</span> assist you</span> : 'What are you working on today?'}
               </h1>
             </div>
 
-            <div className="w-full max-w-4xl">
-              <LegalInput onSendMessage={handleSendMessage} isLoading={isLoading} variant="initial" />
+            <div className="w-full max-w-5xl px-4">
+              <LegalInput onSendMessage={handleSendMessage} isLoading={isLoading} variant="initial" activeSpecialistName={activeSpecialist?.name} />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 w-full max-w-6xl px-4">
               <QuickActionButton 
                 icon={<DocumentTextIcon className="w-6 h-6" />} 
                 label="Conveyancing Guide" 
@@ -222,7 +217,7 @@ const LegalAI: React.FC<LegalAIProps> = ({ userEmail, activeSpecialist, subView 
       {messages.length > 0 && (
         <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-white via-white/40 to-transparent pointer-events-none">
            <div className="max-w-[1400px] mx-auto pointer-events-auto">
-              <LegalInput onSendMessage={handleSendMessage} isLoading={isLoading} variant="compact" />
+              <LegalInput onSendMessage={handleSendMessage} isLoading={isLoading} variant="compact" activeSpecialistName={activeSpecialist?.name} />
            </div>
         </div>
       )}
@@ -423,18 +418,18 @@ const QuickActionButton = ({ icon, label, description, onClick, color = 'red' }:
     grey: 'bg-gray-100 text-gray-600 group-hover:bg-gray-600 group-hover:text-white',
   };
 
-  const cardBorderMap = {
-    red: 'hover:border-red-200',
-    black: 'hover:border-gray-300',
-    blue: 'hover:border-blue-200',
-    green: 'hover:border-green-200',
-    grey: 'hover:border-gray-300',
+  const cardBgMap = {
+    red: 'bg-red-50 border-red-100 hover:border-red-200',
+    black: 'bg-gray-100 border-gray-200 hover:border-gray-300',
+    blue: 'bg-blue-50 border-blue-100 hover:border-blue-200',
+    green: 'bg-green-50 border-green-100 hover:border-green-200',
+    grey: 'bg-amber-50 border-amber-100 hover:border-amber-200',
   };
 
   return (
     <button 
       onClick={onClick}
-      className={`flex flex-col items-start gap-1 px-8 py-6 bg-white border border-gray-100 rounded-3xl text-left hover:shadow-2xl ${cardBorderMap[color]} transition-all group relative overflow-hidden`}
+      className={`flex flex-col items-start gap-1 px-8 py-6 ${cardBgMap[color]} rounded-3xl text-left hover:shadow-2xl transition-all group relative overflow-hidden`}
     >
       <div className={`p-3 rounded-2xl ${colorMap[color]} transition-all mb-4 shadow-sm`}>
         {icon}
