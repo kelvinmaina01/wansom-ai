@@ -147,7 +147,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin }) => {
         <div className="w-full max-w-md space-y-8">
           <div className="text-center md:text-left">
             <h2 className="text-3xl font-bold tracking-tight text-black mb-2">Welcome back</h2>
-            <p className="text-gray-500 font-medium">Sign in to access your workspace</p>
+            <p className="text-red-500 font-medium">Sign in to access your workspace</p>
           </div>
 
           <div className="space-y-4">
@@ -197,7 +197,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin }) => {
               <div className="w-full border-t border-gray-200"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-400 font-medium">Or for Enterprise</span>
+              <span className="px-2 bg-white text-red-500 font-medium">Or for Enterprise</span>
             </div>
           </div>
 
@@ -209,7 +209,22 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin }) => {
             Continue with SSO
           </button>
 
-          <p className="text-center text-xs text-gray-400 font-medium mt-8">
+          <div className="flex items-center justify-center gap-6 mt-6">
+            <div className="flex flex-col items-center gap-1.5">
+              <img src="/badges/gdpr-compliant.png" alt="GDPR Compliant" className="h-12 object-contain hover:scale-105 transition-transform" />
+              <span className="text-[9px] text-red-500 font-medium text-center leading-tight">Your data, always your property</span>
+            </div>
+            <div className="flex flex-col items-center gap-1.5">
+              <img src="/badges/aicpa-soc.png" alt="AICPA SOC" className="h-12 object-contain hover:scale-105 transition-transform" />
+              <span className="text-[9px] text-red-500 font-medium text-center leading-tight">Audited controls protect every case</span>
+            </div>
+            <div className="flex flex-col items-center gap-1.5">
+              <img src="/badges/iso-42001.png" alt="ISO 42001" className="h-12 object-contain hover:scale-105 transition-transform" />
+              <span className="text-[9px] text-red-500 font-medium text-center leading-tight">Responsible AI, ethically governed</span>
+            </div>
+          </div>
+
+          <p className="text-center text-xs text-gray-400 font-medium mt-4">
             By clicking continue, you agree to our{' '}
             <button onClick={() => openTermsModal('terms')} className="underline hover:text-black">
               Terms of Service
