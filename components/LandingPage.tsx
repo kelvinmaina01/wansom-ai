@@ -292,34 +292,22 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
               </p>
               <div className="flex flex-wrap gap-8 items-center">
                 <div className="group relative">
-                  <div className="h-20 w-20 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center backdrop-blur-xl hover:bg-white/10 hover:border-primary/30 transition-all">
-                    <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none">
-                      <path d="M12 2L2 7V12C2 16.55 5.84 20.74 12 22C18.16 20.74 22 16.55 22 12V7L12 2Z" fill="#ef4444" opacity="0.2"/>
-                      <path d="M12 2L2 7V12C2 16.55 5.84 20.74 12 22C18.16 20.74 22 16.55 22 12V7L12 2Z" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M9 12L11 14L15 10" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+                  <div className="h-20 w-20 bg-white border border-white/20 rounded-2xl flex items-center justify-center backdrop-blur-xl hover:bg-white/10 hover:border-primary/30 transition-all p-2.5">
+                    <img src="/badges/gdpr-compliant.png" alt="GDPR Compliant" className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" />
                   </div>
-                  <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[8px] font-bold text-gray-500 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">ISO 27001 Certified</span>
+                  <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[8px] font-bold text-gray-500 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Your data, always your property</span>
                 </div>
                 <div className="group relative">
-                  <div className="h-20 w-20 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center backdrop-blur-xl hover:bg-white/10 hover:border-primary/30 transition-all">
-                    <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none">
-                      <rect x="3" y="3" width="18" height="18" rx="2" fill="#ef4444" opacity="0.2"/>
-                      <rect x="3" y="3" width="18" height="18" rx="2" stroke="#ef4444" strokeWidth="2"/>
-                      <path d="M8 12L11 15L16 9" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+                  <div className="h-20 w-20 bg-white border border-white/20 rounded-2xl flex items-center justify-center backdrop-blur-xl hover:bg-white/10 hover:border-primary/30 transition-all p-2.5">
+                    <img src="/badges/aicpa-soc.png" alt="AICPA SOC" className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" />
                   </div>
-                  <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[8px] font-bold text-gray-500 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">GDPR Compliant</span>
+                  <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[8px] font-bold text-gray-500 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Audited controls protect every case</span>
                 </div>
                 <div className="group relative">
-                  <div className="h-20 w-20 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center backdrop-blur-xl hover:bg-white/10 hover:border-primary/30 transition-all">
-                    <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none">
-                      <circle cx="12" cy="12" r="9" fill="#ef4444" opacity="0.2"/>
-                      <circle cx="12" cy="12" r="9" stroke="#ef4444" strokeWidth="2"/>
-                      <path d="M12 8V12L14.5 14.5" stroke="#ef4444" strokeWidth="2" strokeLinecap="round"/>
-                    </svg>
+                  <div className="h-20 w-20 bg-white border border-white/20 rounded-2xl flex items-center justify-center backdrop-blur-xl hover:bg-white/10 hover:border-primary/30 transition-all p-2.5">
+                    <img src="/badges/iso-42001.png" alt="ISO 42001" className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" />
                   </div>
-                  <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[8px] font-bold text-gray-500 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">SOC 2 Type II</span>
+                  <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[8px] font-bold text-gray-500 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Responsible AI, ethically governed</span>
                 </div>
               </div>
             </div>
