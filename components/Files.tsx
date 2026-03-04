@@ -1,10 +1,10 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
-import { 
-  Upload, 
-  Search, 
-  MoreVertical, 
-  Download, 
-  Trash2, 
+import {
+  Upload,
+  Search,
+  MoreVertical,
+  Download,
+  Trash2,
   Filter,
   FolderPlus,
   Folder as FolderIcon,
@@ -20,9 +20,6 @@ import {
   X,
   Star,
   Shield,
-  Lock,
-  Globe,
-  Award,
   ArrowUpDown
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -102,7 +99,7 @@ const Files: React.FC = () => {
     const totalFiles = files.length;
     const totalFolders = folders.length;
     const totalSize = files.reduce((acc, file) => acc + file.size, 0);
-    
+
     // File type breakdown
     const typeCounts: Record<string, number> = {};
     files.forEach(f => {
@@ -153,7 +150,7 @@ const Files: React.FC = () => {
       tags: [],
       isStarred: false
     }));
-    
+
     setFiles(prev => [...processedFiles, ...prev]);
 
     // Simulate analysis completion
@@ -265,7 +262,7 @@ const Files: React.FC = () => {
   const formatTimeAgo = (date: Date) => {
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-    
+
     if (diffInSeconds < 60) return 'less than a minute ago';
     if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
     if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
@@ -273,7 +270,7 @@ const Files: React.FC = () => {
   };
 
   // --- Filtering ---
-  const filteredFolders = folders.filter(f => 
+  const filteredFolders = folders.filter(f =>
     !currentFolderId && // Only show folders at root (simple 1-level depth for now, or could be recursive if we added parentId)
     f.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -291,9 +288,9 @@ const Files: React.FC = () => {
     visibleFiles.sort((a, b) => {
       const aValue = a[sortConfig.key];
       const bValue = b[sortConfig.key];
-      
+
       if (aValue === undefined || bValue === undefined) return 0;
-      
+
       if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
       if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
       return 0;
@@ -303,7 +300,7 @@ const Files: React.FC = () => {
   return (
     <div className="flex-1 overflow-y-auto bg-[#fafafa] bg-dots p-8 h-full">
       <div className="max-w-7xl mx-auto space-y-8">
-        
+
         {/* Header & Overview */}
         <div className="space-y-6">
           <div>
@@ -355,18 +352,18 @@ const Files: React.FC = () => {
             {/* Types Card */}
             <div className="relative overflow-hidden p-6 rounded-3xl border border-white/20 shadow-xl bg-emerald-600/90 backdrop-blur-xl text-white group hover:scale-[1.02] transition-transform duration-300">
               <div className="absolute -right-10 -top-10 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors"></div>
-               <div className="flex items-center gap-4 mb-4 relative z-10">
+              <div className="flex items-center gap-4 mb-4 relative z-10">
                 <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-md shadow-inner">
                   <PieChart className="w-6 h-6 text-white" />
                 </div>
                 <span className="text-emerald-100 text-xs font-bold uppercase tracking-wider">Types</span>
               </div>
               <div className="flex flex-wrap gap-2 mt-1 relative z-10">
-                 {Object.entries(stats.typeCounts).slice(0, 4).map(([type, count]) => (
-                   <div key={type} className="px-3 py-1.5 bg-white/20 backdrop-blur-md rounded-lg text-[10px] font-bold uppercase text-white border border-white/10 shadow-sm">
-                     {type}: {count}
-                   </div>
-                 ))}
+                {Object.entries(stats.typeCounts).slice(0, 4).map(([type, count]) => (
+                  <div key={type} className="px-3 py-1.5 bg-white/20 backdrop-blur-md rounded-lg text-[10px] font-bold uppercase text-white border border-white/10 shadow-sm">
+                    {type}: {count}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -377,12 +374,12 @@ const Files: React.FC = () => {
           <div className="mb-6">
             <div className="flex items-center gap-3 mb-2">
               <Upload className="w-6 h-6 text-blue-600" />
-              <h2 className="text-xl font-bold text-black">Upload Dataset</h2>
+              <h2 className="text-xl font-bold text-black">Upload Documents</h2>
             </div>
             <p className="text-blue-600 text-sm font-medium mb-6">
-              Upload CSV, Excel, JSON or PDF files with automatic profiling and quality assessment.
+              Upload legal documents for AI-powered analysis, indexing, and case management.
             </p>
-            
+
             {/* File Type Badges */}
             <div className="flex flex-wrap gap-3">
               {[
@@ -400,12 +397,11 @@ const Files: React.FC = () => {
             </div>
           </div>
 
-          <div 
-            className={`relative border-2 border-dashed rounded-[2rem] p-16 text-center transition-all cursor-pointer group ${
-              isDragging 
-                ? 'border-blue-500 bg-[#ffe4c2]' 
+          <div
+            className={`relative border-2 border-dashed rounded-[2rem] p-16 text-center transition-all cursor-pointer group ${isDragging
+                ? 'border-blue-500 bg-[#ffe4c2]'
                 : 'border-gray-200 bg-[#fffbf0] hover:border-blue-400'
-            }`}
+              }`}
             style={{ backgroundColor: isDragging ? '#ffe4c2' : '#fffbf0' }} // Using a very light cream/yellow similar to the image, user asked for #ffe4c2 which is quite strong, so I'll use it on drag or maybe as a base if they insist. Let's try to match the "cream" look but respect the hex if it's the intended background.
             // Actually, the user said "appy this color #ffe4c2 on thedrop files to upload document space". I will apply it as the background color.
             // #ffe4c2 is Bisque.
@@ -414,19 +410,19 @@ const Files: React.FC = () => {
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
           >
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              className="hidden" 
-              multiple 
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              multiple
               onChange={handleFileSelect}
             />
-            
+
             <div className="flex flex-col items-center justify-center gap-6">
               <div className="p-4 bg-white rounded-2xl shadow-sm border border-gray-100 group-hover:scale-110 transition-transform duration-300">
                 <Upload className="w-6 h-6 text-gray-400" />
               </div>
-              
+
               <div>
                 <h3 className="text-lg font-bold text-black mb-2">
                   Drop your file here or click to browse
@@ -435,7 +431,7 @@ const Files: React.FC = () => {
                   Supports CSV, Excel, JSON, and ZIP archives up to 50MB
                 </p>
               </div>
-              
+
               {/* Bottom Icons */}
               <div className="flex items-center gap-4 mt-2 opacity-40">
                 <FileIcon className="w-5 h-5 text-gray-400" />
@@ -454,7 +450,7 @@ const Files: React.FC = () => {
             <div className="flex items-center gap-4">
               {currentFolderId ? (
                 <div className="flex items-center gap-2">
-                  <button 
+                  <button
                     onClick={() => setCurrentFolderId(null)}
                     className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
                   >
@@ -471,20 +467,19 @@ const Files: React.FC = () => {
             </div>
 
             <div className="flex gap-3">
-              <button 
+              <button
                 onClick={() => setShowStarredOnly(!showStarredOnly)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                  showStarredOnly 
-                    ? 'bg-yellow-50 text-yellow-600 border border-yellow-200' 
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${showStarredOnly
+                    ? 'bg-yellow-50 text-yellow-600 border border-yellow-200'
                     : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
-                }`}
+                  }`}
               >
                 <Star className={`w-4 h-4 ${showStarredOnly ? 'fill-yellow-600' : ''}`} />
                 Starred
               </button>
 
               {!currentFolderId && (
-                <button 
+                <button
                   onClick={handleCreateFolder}
                   className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-xl text-xs font-bold hover:bg-gray-800 transition-all"
                 >
@@ -494,9 +489,9 @@ const Files: React.FC = () => {
               )}
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input 
-                  type="text" 
-                  placeholder="Search..." 
+                <input
+                  type="text"
+                  placeholder="Search..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-black/5"
@@ -508,7 +503,7 @@ const Files: React.FC = () => {
           {/* Selection Banner */}
           <AnimatePresence>
             {selectedFileIds.size > 0 && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
@@ -522,20 +517,20 @@ const Files: React.FC = () => {
                     <Sparkles className="w-4 h-4" />
                     Review in Chat
                   </button>
-                  <button 
+                  <button
                     onClick={() => openMoveModal()}
                     className="flex items-center gap-2 px-4 py-2 bg-white border border-green-200 rounded-xl text-xs font-bold text-green-700 hover:bg-green-50 transition-colors"
                   >
                     <FolderInput className="w-4 h-4" />
                     Move to Folder
                   </button>
-                  <button 
+                  <button
                     onClick={() => setSelectedFileIds(new Set())}
                     className="px-4 py-2 bg-white border border-green-200 rounded-xl text-xs font-bold text-green-700 hover:bg-green-50 transition-colors"
                   >
                     Cancel
                   </button>
-                  <button 
+                  <button
                     onClick={handleDeleteSelected}
                     className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-xl text-xs font-bold hover:bg-red-600 transition-colors shadow-sm"
                   >
@@ -553,7 +548,7 @@ const Files: React.FC = () => {
             {visibleFolders.length > 0 && (
               <div className="p-6 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 border-b border-gray-50">
                 {visibleFolders.map(folder => (
-                  <button 
+                  <button
                     key={folder.id}
                     onClick={() => setCurrentFolderId(folder.id)}
                     className="p-4 bg-gray-50 hover:bg-blue-50 border border-transparent hover:border-blue-100 rounded-2xl flex flex-col items-center gap-3 transition-all group text-center"
@@ -574,20 +569,20 @@ const Files: React.FC = () => {
                 <div className="grid grid-cols-[auto_auto_1fr_auto_auto_auto_auto_auto] gap-4 p-4 border-b border-gray-100 text-xs font-bold text-gray-400 uppercase tracking-wider items-center">
                   <div className="w-5"></div> {/* Checkbox column */}
                   <div className="w-5"></div> {/* Star column */}
-                  <div 
+                  <div
                     className="cursor-pointer hover:text-black flex items-center gap-1"
                     onClick={() => handleSort('name')}
                   >
                     Name <ArrowUpDown className="w-3 h-3" />
                   </div>
                   <div className="w-20 text-center">Type</div>
-                  <div 
+                  <div
                     className="w-24 cursor-pointer hover:text-black flex items-center gap-1"
                     onClick={() => handleSort('size')}
                   >
                     Size <ArrowUpDown className="w-3 h-3" />
                   </div>
-                  <div 
+                  <div
                     className="w-40 cursor-pointer hover:text-black flex items-center gap-1"
                     onClick={() => handleSort('uploadDate')}
                   >
@@ -600,14 +595,14 @@ const Files: React.FC = () => {
                 {/* Table Rows */}
                 <div className="divide-y divide-gray-50">
                   {visibleFiles.map((file) => (
-                    <div 
-                      key={file.id} 
+                    <div
+                      key={file.id}
                       className={`grid grid-cols-[auto_auto_1fr_auto_auto_auto_auto_auto] gap-4 p-4 items-center hover:bg-gray-50 transition-colors group ${selectedFileIds.has(file.id) ? 'bg-gray-50' : ''}`}
                     >
                       {/* Checkbox */}
                       <div className="w-5 flex justify-center">
-                        <input 
-                          type="checkbox" 
+                        <input
+                          type="checkbox"
                           checked={selectedFileIds.has(file.id)}
                           onChange={() => toggleSelection(file.id)}
                           className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
@@ -623,8 +618,17 @@ const Files: React.FC = () => {
 
                       {/* Name & Tags */}
                       <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-8 h-8 flex-shrink-0 bg-white rounded-lg flex items-center justify-center border border-gray-100 shadow-sm">
+                        <div className="relative w-8 h-8 flex-shrink-0 bg-white rounded-lg flex items-center justify-center border border-gray-100 shadow-sm">
                           {getFileIcon(file.type)}
+                          {file.status === 'analyzing' && (
+                            <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-amber-400 rounded-full border-2 border-white animate-pulse" />
+                          )}
+                          {file.status === 'error' && (
+                            <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white" />
+                          )}
+                          {file.status === 'completed' && (
+                            <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white" />
+                          )}
                         </div>
                         <div className="flex flex-col min-w-0">
                           <span className="text-sm font-bold text-black truncate" title={file.name}>{file.name}</span>
@@ -664,7 +668,7 @@ const Files: React.FC = () => {
 
                       {/* Actions */}
                       <div className="w-10 flex justify-end relative action-menu">
-                        <button 
+                        <button
                           onClick={(e) => {
                             e.stopPropagation();
                             setActiveDropdownId(activeDropdownId === file.id ? null : file.id);
@@ -677,7 +681,7 @@ const Files: React.FC = () => {
                         {/* Dropdown Menu */}
                         <AnimatePresence>
                           {activeDropdownId === file.id && (
-                            <motion.div 
+                            <motion.div
                               initial={{ opacity: 0, scale: 0.95, y: 10 }}
                               animate={{ opacity: 1, scale: 1, y: 0 }}
                               exit={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -696,7 +700,7 @@ const Files: React.FC = () => {
                                   <Download className="w-4 h-4" />
                                   Download
                                 </button>
-                                <button 
+                                <button
                                   onClick={() => openMoveModal(file.id)}
                                   className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors text-left"
                                 >
@@ -704,7 +708,7 @@ const Files: React.FC = () => {
                                   Move to Folder
                                 </button>
                                 <div className="h-px bg-gray-100 my-1"></div>
-                                <button 
+                                <button
                                   onClick={() => handleDeleteFile(file.id)}
                                   className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors text-left"
                                 >
@@ -726,7 +730,15 @@ const Files: React.FC = () => {
                   <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
                     <FolderIcon className="w-8 h-8 text-gray-300" />
                   </div>
-                  <p className="text-gray-400 text-sm font-medium">This folder is empty.</p>
+                  <p className="text-gray-500 text-sm font-bold mb-1">No files here yet</p>
+                  <p className="text-gray-400 text-xs mb-4">Upload legal documents to get started with AI analysis.</p>
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-all shadow-md shadow-blue-200 flex items-center gap-2"
+                  >
+                    <Upload className="w-4 h-4" />
+                    Upload Documents
+                  </button>
                 </div>
               )
             )}
@@ -743,30 +755,30 @@ const Files: React.FC = () => {
                   Your files are encrypted and stored securely in compliance with global standards.
                 </p>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="flex flex-col items-center gap-1 group">
-                  <div className="w-12 h-12 bg-white border border-gray-200 rounded-xl flex items-center justify-center shadow-sm group-hover:border-blue-500 transition-colors">
-                    <Lock className="w-6 h-6 text-gray-400 group-hover:text-blue-500" />
-                  </div>
-                  <span className="text-[10px] font-bold text-gray-400 uppercase">AES-256</span>
+              <div className="flex items-center gap-6">
+                <div className="group cursor-pointer flex flex-col items-center gap-1.5">
+                  <img 
+                    src="/badges/gdpr-compliant.png" 
+                    alt="GDPR Compliant" 
+                    className="w-16 h-16 object-contain group-hover:scale-110 transition-transform duration-300 drop-shadow-md" 
+                  />
+                  <span className="text-[9px] text-red-500 font-medium text-center leading-tight">Your data, always your property</span>
                 </div>
-                <div className="flex flex-col items-center gap-1 group">
-                  <div className="w-12 h-12 bg-white border border-gray-200 rounded-xl flex items-center justify-center shadow-sm group-hover:border-blue-500 transition-colors">
-                    <Globe className="w-6 h-6 text-gray-400 group-hover:text-blue-500" />
-                  </div>
-                  <span className="text-[10px] font-bold text-gray-400 uppercase">GDPR</span>
+                <div className="group cursor-pointer flex flex-col items-center gap-1.5">
+                  <img 
+                    src="/badges/aicpa-soc.png" 
+                    alt="AICPA SOC" 
+                    className="w-16 h-16 object-contain group-hover:scale-110 transition-transform duration-300 drop-shadow-md" 
+                  />
+                  <span className="text-[9px] text-red-500 font-medium text-center leading-tight">Audited controls protect every case</span>
                 </div>
-                <div className="flex flex-col items-center gap-1 group">
-                  <div className="w-12 h-12 bg-white border border-gray-200 rounded-xl flex items-center justify-center shadow-sm group-hover:border-blue-500 transition-colors">
-                    <Award className="w-6 h-6 text-gray-400 group-hover:text-blue-500" />
-                  </div>
-                  <span className="text-[10px] font-bold text-gray-400 uppercase">ISO 27001</span>
-                </div>
-                <div className="flex flex-col items-center gap-1 group">
-                  <div className="w-12 h-12 bg-white border border-gray-200 rounded-xl flex items-center justify-center shadow-sm group-hover:border-blue-500 transition-colors">
-                    <Shield className="w-6 h-6 text-gray-400 group-hover:text-blue-500" />
-                  </div>
-                  <span className="text-[10px] font-bold text-gray-400 uppercase">SOC 2</span>
+                <div className="group cursor-pointer flex flex-col items-center gap-1.5">
+                  <img 
+                    src="/badges/iso-42001.png" 
+                    alt="ISO 42001" 
+                    className="w-16 h-16 object-contain group-hover:scale-110 transition-transform duration-300 drop-shadow-md" 
+                  />
+                  <span className="text-[9px] text-red-500 font-medium text-center leading-tight">Responsible AI, ethically governed</span>
                 </div>
               </div>
             </div>
@@ -778,7 +790,7 @@ const Files: React.FC = () => {
       <AnimatePresence>
         {isMoveModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
@@ -786,7 +798,7 @@ const Files: React.FC = () => {
             >
               <div className="p-6 border-b border-gray-100 flex items-center justify-between">
                 <h3 className="text-lg font-bold text-black">Move to Folder</h3>
-                <button 
+                <button
                   onClick={() => setIsMoveModalOpen(false)}
                   className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                 >
@@ -804,7 +816,7 @@ const Files: React.FC = () => {
                     </div>
                     <span className="font-medium text-gray-700">All Files (Root)</span>
                   </button>
-                  
+
                   {folders.map(folder => (
                     <button
                       key={folder.id}
