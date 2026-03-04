@@ -18,9 +18,10 @@ interface LegalInputProps {
   onSendMessage: (msg: string) => void;
   isLoading: boolean;
   variant?: 'initial' | 'compact';
+  activeSpecialistName?: string;
 }
 
-const LegalInput: React.FC<LegalInputProps> = ({ onSendMessage, isLoading, variant = 'initial' }) => {
+const LegalInput: React.FC<LegalInputProps> = ({ onSendMessage, isLoading, variant = 'initial', activeSpecialistName }) => {
   const [input, setInput] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [placeholder, setPlaceholder] = useState('');
@@ -29,7 +30,9 @@ const LegalInput: React.FC<LegalInputProps> = ({ onSendMessage, isLoading, varia
 
   const isCompact = variant === 'compact';
 
-  const fullPlaceholder = "Ask Lawlify anything... (e.g., 'Help me draft a contract')";
+  const fullPlaceholder = activeSpecialistName 
+    ? `Ask ${activeSpecialistName} anything...` 
+    : "Ask Lawlify anything... (e.g., 'Help me draft a contract')";
 
   useEffect(() => {
     let i = 0;
@@ -41,7 +44,7 @@ const LegalInput: React.FC<LegalInputProps> = ({ onSendMessage, isLoading, varia
       }
     }, 30);
     return () => clearInterval(interval);
-  }, []);
+  }, [fullPlaceholder]);
 
   const handleSend = () => {
     if (input.trim() && !isLoading) {
@@ -111,7 +114,7 @@ const LegalInput: React.FC<LegalInputProps> = ({ onSendMessage, isLoading, varia
               Tools
             </button>
             <ToolButton icon={<Globe className={`${isCompact ? 'w-4 h-4' : 'w-5 h-5'}`} />} />
-            <ToolButton icon={<Zap className={`${isCompact ? 'w-4 h-4' : 'w-5 h-5'}`} />} />
+            <ToolButton icon={<Zap className={`${isCompact ? 'w-4 h-4' : 'w-5 h-5'}`} />} active={!!activeSpecialistName} />
             <ToolButton icon={<Folder className={`${isCompact ? 'w-4 h-4' : 'w-5 h-5'}`} />} />
           </div>
 
@@ -144,8 +147,8 @@ const LegalInput: React.FC<LegalInputProps> = ({ onSendMessage, isLoading, varia
   );
 };
 
-const ToolButton = ({ icon, onClick }: { icon: React.ReactNode, onClick?: () => void }) => (
-  <button onClick={onClick} className="p-2.5 text-gray-400 hover:text-black transition-all border border-transparent hover:border-gray-200 hover:bg-gray-50 rounded-xl">
+const ToolButton = ({ icon, onClick, active }: { icon: React.ReactNode, onClick?: () => void, active?: boolean }) => (
+  <button onClick={onClick} className={`p-2.5 transition-all border rounded-xl ${active ? 'text-red-500 border-red-200 bg-red-50' : 'text-gray-400 hover:text-black border-transparent hover:border-gray-200 hover:bg-gray-50'}`}>
     {icon}
   </button>
 );
