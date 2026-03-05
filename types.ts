@@ -3,10 +3,6 @@ export enum AppView {
   OVERVIEW = 'overview',
   FILES = 'files',
   LEGAL_SPECIALISTS = 'legal-specialists',
-  WORKSPACE = 'workspace',
-  SETTINGS = 'settings',
-  LEGAL_AI = 'legal-ai',
-  HISTORY = 'history',
   INTEGRATIONS = 'integrations',
   JUDICIAL_ANALYTICS = 'judicial-analytics'
 }
@@ -47,16 +43,6 @@ export interface LegalSpecialist {
   color?: string;
   jurisdictions?: string[];
   links?: Array<{ label: string; url: string }>;
-}
-
-export interface Case {
-  id: string;
-  title: string;
-  clientName: string;
-  status: 'Open' | 'Closed' | 'Pending';
-  practiceArea: string;
-  nextHearingDate?: Date;
-  documents: Array<{ name: string; type: string; date: Date }>;
 }
 
 export interface UserSettings {
@@ -132,23 +118,6 @@ export interface Notification {
   timestamp: Date;
   read: boolean;
   category?: 'Case Law' | 'Regulation' | 'System' | 'Update';
-}
-
-export interface CaseType {
-  id: string;
-  name: string;
-  description?: string;
-  color: string;
-}
-
-export interface Project {
-  id: string;
-  name: string;
-  client: string;
-  status: 'In Progress' | 'Completed' | 'On Hold';
-  progress: number;
-  dueDate: Date;
-  type: string;
 }
 
 export interface Activity {

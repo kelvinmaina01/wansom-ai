@@ -6,10 +6,9 @@ import {
   LayoutGrid, 
   Settings, 
   Scale,
-  History,
   HelpCircle,
   LogOut,
-  Blocks,
+  Puzzle,
   Gavel
 } from 'lucide-react';
 import { AppView } from '../../types';
@@ -34,61 +33,49 @@ const GlobalRail: React.FC<GlobalRailProps> = ({ currentView, onViewChange, user
       </div>
 
       {/* Nav Icons */}
-      <nav className="flex-1 flex flex-col gap-4 no-scrollbar overflow-y-auto">
+      <nav className="flex-1 flex flex-col gap-6 no-scrollbar overflow-y-auto">
         <RailItem 
-          icon={<LayoutDashboard className="w-5 h-5" />} 
+          icon={<LayoutDashboard className="w-6 h-6" />} 
           active={currentView === AppView.OVERVIEW}
           onClick={() => onViewChange(AppView.OVERVIEW)}
           label="Dashboard"
         />
         <RailItem 
-          icon={<Scale className="w-5 h-5" />} 
+          icon={<Scale className="w-6 h-6" />} 
           active={currentView === AppView.LEGAL_AI}
           onClick={() => onViewChange(AppView.LEGAL_AI)}
           label="Legal AI"
         />
         <RailItem 
-          icon={<Briefcase className="w-5 h-5" />} 
+          icon={<Briefcase className="w-6 h-6" />} 
           active={currentView === AppView.LEGAL_SPECIALISTS}
           onClick={() => onViewChange(AppView.LEGAL_SPECIALISTS)}
           label="Legal Specialists"
         />
         <RailItem 
-          icon={<Gavel className="w-5 h-5" />} 
+          icon={<Gavel className="w-6 h-6" />} 
           active={currentView === AppView.JUDICIAL_ANALYTICS}
           onClick={() => onViewChange(AppView.JUDICIAL_ANALYTICS)}
           label="Judicial Analytics"
         />
         <RailItem 
-          icon={<Blocks className="w-5 h-5" />} 
+          icon={<Puzzle className="w-6 h-6" />} 
           active={currentView === AppView.INTEGRATIONS}
           onClick={() => onViewChange(AppView.INTEGRATIONS)}
           label="Integrations"
         />
         <RailItem 
-          icon={<Files className="w-5 h-5" />} 
+          icon={<Files className="w-6 h-6" />} 
           active={currentView === AppView.FILES}
           onClick={() => onViewChange(AppView.FILES)}
           label="Files"
         />
-        <RailItem 
-          icon={<LayoutGrid className="w-5 h-5" />} 
-          active={currentView === AppView.WORKSPACE}
-          onClick={() => onViewChange(AppView.WORKSPACE)}
-          label="Workspace"
-        />
-        <RailItem 
-          icon={<History className="w-5 h-5" />} 
-          active={currentView === AppView.HISTORY}
-          onClick={() => onViewChange(AppView.HISTORY)}
-          label="History"
-        />
       </nav>
 
       {/* Bottom Icons */}
-      <div className="flex flex-col gap-4 mt-auto">
+      <div className="flex flex-col gap-6 mt-auto">
         <RailItem 
-          icon={<Settings className="w-5 h-5" />} 
+          icon={<Settings className="w-6 h-6" />} 
           active={currentView === AppView.SETTINGS}
           onClick={() => onViewChange(AppView.SETTINGS)}
           label="Settings"
@@ -109,13 +96,13 @@ const GlobalRail: React.FC<GlobalRailProps> = ({ currentView, onViewChange, user
 };
 
 const RailItem = ({ icon, active, onClick, label }: { icon: React.ReactNode, active: boolean, onClick: () => void, label: string }) => (
-  <div className="relative group">
+  <div className="relative group px-3">
     <button 
       onClick={onClick}
-      className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+      className={`w-10 h-10 flex items-center justify-center transition-all ${
         active 
-          ? 'bg-primary text-white shadow-lg shadow-primary/20' 
-          : 'text-gray-500 hover:text-white hover:bg-white/5'
+          ? 'text-primary drop-shadow-[0_0_8px_rgba(239,68,68,0.4)] scale-110' 
+          : 'text-gray-500 hover:text-white hover:scale-110'
       }`}
     >
       {icon}

@@ -7,7 +7,6 @@ import LegalAI from './components/LegalAI';
 import LegalSpecialists from './components/LegalSpecialists';
 import LandingPage from './components/LandingPage';
 import NotificationCenter from './components/NotificationCenter';
-import CaseManagement from './components/CaseManagement';
 import Settings from './components/Settings';
 import Files from './components/Files';
 import AuthPage from './components/AuthPage';
@@ -15,6 +14,7 @@ import OnboardingPage from './components/OnboardingPage';
 import PricingPage from './components/PricingPage';
 import JudicialAnalytics from './components/JudicialAnalytics';
 import Integrations from './components/Integrations';
+import PlaceholderView from './components/PlaceholderView';
 import { WorkspaceType, AppView, LegalSpecialist, Notification } from './types';
 import { ChevronRight, Bell, HelpCircle, Scale, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 
@@ -100,8 +100,6 @@ const App: React.FC = () => {
             }} 
           />
         );
-      case AppView.WORKSPACE:
-        return <CaseManagement />;
       case AppView.SETTINGS:
         return <Settings />;
       case AppView.HISTORY:
