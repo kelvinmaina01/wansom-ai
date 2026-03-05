@@ -55,7 +55,7 @@ const App: React.FC = () => {
   const [activeSpecialist, setActiveSpecialist] = useState<LegalSpecialist | null>(null);
   const [specialistSubView, setSpecialistSubView] = useState('Premade Associates');
   const [legalAISubView, setLegalAISubView] = useState('Active chats');
-  
+
   // Notification State
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>(MOCK_NOTIFICATIONS);
@@ -92,12 +92,12 @@ const App: React.FC = () => {
         return <Files />;
       case AppView.LEGAL_SPECIALISTS:
         return (
-          <LegalSpecialists 
+          <LegalSpecialists
             subView={specialistSubView}
             onSelectSpecialist={(specialist) => {
               setActiveSpecialist(specialist);
               setCurrentView(AppView.LEGAL_AI);
-            }} 
+            }}
           />
         );
       case AppView.SETTINGS:
@@ -132,8 +132,8 @@ const App: React.FC = () => {
   return (
     <div className="flex h-screen bg-white font-sans text-black overflow-hidden relative">
       {/* Panel 1: Global Rail */}
-      <GlobalRail 
-        user={user} 
+      <GlobalRail
+        user={user}
         currentView={currentView}
         onViewChange={(view) => {
           setCurrentView(view);
@@ -143,7 +143,7 @@ const App: React.FC = () => {
 
       {/* Panel 2: Contextual Sidebar (Dark version) */}
       <div className={`transition-all duration-300 ease-in-out overflow-hidden border-r border-white/5 ${isSidebarCollapsed ? 'w-0 opacity-0' : 'w-64 opacity-100'}`}>
-        <ContextualSidebar 
+        <ContextualSidebar
           currentView={currentView}
           onNewChat={() => {
             setCurrentView(AppView.LEGAL_AI);
@@ -164,7 +164,7 @@ const App: React.FC = () => {
           {/* Top Header / Breadcrumbs */}
           <header className="h-16 border-b border-gray-100 flex items-center justify-between px-8 bg-white/80 backdrop-blur-md z-40">
             <div className="flex items-center gap-4 text-sm font-semibold">
-              <button 
+              <button
                 onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
                 className="p-2 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-black transition-all"
                 title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
@@ -183,7 +183,7 @@ const App: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-6 relative">
-              <button 
+              <button
                 onClick={() => setIsNotificationOpen(!isNotificationOpen)}
                 className="flex items-center gap-2 text-xs font-bold text-gray-500 hover:text-black transition-colors relative"
               >
@@ -201,8 +201,8 @@ const App: React.FC = () => {
                 <HelpCircle className="w-4 h-4" />
                 <span>Support</span>
               </button>
-              
-              <NotificationCenter 
+
+              <NotificationCenter
                 isOpen={isNotificationOpen}
                 onClose={() => setIsNotificationOpen(false)}
                 notifications={notifications}
@@ -222,18 +222,5 @@ const App: React.FC = () => {
   );
 };
 
-const PlaceholderView = ({ title, description }: { title: string, description?: string }) => (
-  <div className="flex-1 flex items-center justify-center bg-white bg-dots">
-    <div className="text-center max-w-md">
-      <div className="w-24 h-24 bg-primary rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 shadow-xl shadow-primary/20">
-        <Scale className="w-12 h-12 text-white" />
-      </div>
-      <h1 className="text-5xl font-bold text-black mb-4 tracking-tighter">{title}</h1>
-      <p className="text-gray-400 font-bold text-[11px] leading-relaxed px-8">
-        {description || `This module is currently being optimized for Kenyan Legal Standards. Please check back soon for the full release.`}
-      </p>
-    </div>
-  </div>
-);
 
 export default App;
