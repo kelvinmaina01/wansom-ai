@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Check, 
@@ -46,6 +46,18 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({ onComplete }) => {
     teamMembers: [] as string[],
     inviteEmail: ''
   });
+
+  useEffect(() => {
+    // Re-initialize social widgets if scripts are loaded
+    if (currentStep === 1) {
+      if ((window as any).twttr && (window as any).twttr.widgets) {
+        (window as any).twttr.widgets.load();
+      }
+      if ((window as any).gapi && (window as any).gapi.ytsubscribe) {
+        (window as any).gapi.ytsubscribe.go();
+      }
+    }
+  }, [currentStep]);
 
   const handleNext = () => {
     if (currentStep < STEPS.length) {
@@ -117,6 +129,7 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({ onComplete }) => {
                   <TaskCard 
                     title="Email Verified" 
                     description="Your email has been verified" 
+                    image="/onboarding/email.png"
                     claimed={formData.emailVerified}
                     onClick={() => {}}
                     disabled
@@ -124,20 +137,38 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({ onComplete }) => {
                   <TaskCard 
                     title="Connect LinkedIn" 
                     description="Connect your professional profile" 
+                    image="/onboarding/linkedin.png"
                     claimed={formData.socials.linkedin}
                     onClick={() => setFormData({...formData, socials: {...formData.socials, linkedin: true}})}
+                    socialWidget={
+                      <div className="mt-4">
+                        <script type="IN/FollowCompany" data-id="lawlify-ai" data-counter="right"></script>
+                      </div>
+                    }
                   />
                   <TaskCard 
                     title="Follow us on X" 
                     description="Stay updated on new features and launches" 
+                    image="/onboarding/x.png"
                     claimed={formData.socials.twitter}
                     onClick={() => setFormData({...formData, socials: {...formData.socials, twitter: true}})}
+                    socialWidget={
+                      <div className="mt-4">
+                        <a href="https://twitter.com/lawlifyai" className="twitter-follow-button" data-show-count="false" data-size="large">Follow @lawlifyai</a>
+                      </div>
+                    }
                   />
                   <TaskCard 
                     title="Subscribe to our YouTube" 
                     description="Watch tutorials and product demos" 
+                    image="/onboarding/youtube.png"
                     claimed={formData.socials.youtube}
                     onClick={() => setFormData({...formData, socials: {...formData.socials, youtube: true}})}
+                    socialWidget={
+                      <div className="mt-4">
+                        <div className="g-ytsubscribe" data-channelid="UC0vBXU14wD5S-FvPvf_QxmA" data-layout="default" data-count="default"></div>
+                      </div>
+                    }
                   />
                 </div>
               )}
@@ -364,18 +395,47 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({ onComplete }) => {
   );
 };
 
-const TaskCard = ({ title, description, claimed, onClick, disabled }: { title: string, description: string, claimed: boolean, onClick: () => void, disabled?: boolean }) => (
+const TaskCard = ({ 
+  title, 
+  description, 
+  image,
+  claimed, 
+  onClick, 
+  disabled,
+  socialWidget
+}: { 
+  title: string, 
+  description: string, 
+  image?: string,
+  claimed: boolean, 
+  onClick: () => void, 
+  disabled?: boolean,
+  socialWidget?: React.ReactNode
+}) => (
   <div 
     onClick={!disabled ? onClick : undefined}
-    className={`p-10 rounded-[2.5rem] border-2 transition-all cursor-pointer group relative overflow-hidden h-full flex flex-col justify-between ${
+    className={`p-8 rounded-[2.5rem] border-2 transition-all cursor-pointer group relative overflow-hidden h-full flex flex-col justify-between ${
       claimed 
         ? 'bg-primary/10 border-primary' 
         : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10'
     }`}
   >
     <div className="relative z-10">
-      <h3 className={`font-bold mb-3 text-2xl tracking-tight ${claimed ? 'text-white' : 'text-white'}`}>{title}</h3>
+      <div className="flex items-center gap-5 mb-4">
+        {image && (
+          <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center overflow-hidden shrink-0 shadow-lg shadow-black/20">
+            <img src={image} alt="" className="w-10 h-10 object-contain" />
+          </div>
+        )}
+        <h3 className={`font-bold text-2xl tracking-tight text-white`}>{title}</h3>
+      </div>
       <p className={`text-base font-medium leading-relaxed ${claimed ? 'text-gray-300' : 'text-gray-400'}`}>{description}</p>
+      
+      {!claimed && socialWidget && (
+        <div className="relative z-20">
+          {socialWidget}
+        </div>
+      )}
     </div>
     
     <div className="relative z-10 mt-8">

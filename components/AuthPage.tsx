@@ -6,7 +6,7 @@ import TermsModal from './TermsModal';
 interface AuthPageProps {
   onLogin: () => void;
 }
-
+//moock testimonials data to be replaced with real data from the backend 
 const TESTIMONIALS = [
   {
     id: 1,
@@ -48,7 +48,9 @@ const TESTIMONIALS = [
     location: "Arusha, Tanzania",
     avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop&crop=faces"
   }
+  
 ];
+
 
 const AuthPage: React.FC<AuthPageProps> = ({ onLogin }) => {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
