@@ -12,7 +12,7 @@ import {
   Draft, 
   ChatHistory 
 } from '../types';
-import { askLegalAssistant, askLegalAssistantStream } from '../services/geminiService';
+
 import { MOCK_LEGAL_RESPONSES } from '../services/mockLegalData';
 import { 
   DocumentTextIcon, 
@@ -123,10 +123,15 @@ const LegalAI: React.FC<LegalAIProps> = ({ userEmail, activeSpecialist, subView 
           await new Promise(r => setTimeout(r, 20));
         }
       } else {
+        const mockData = MOCK_LEGAL_RESPONSES.default;
+        let currentText = "";
+        const words = (mockData.content || "").split(" ");
         setStatusFeed([]);
-        await askLegalAssistantStream(content, (fullText) => {
-          setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, content: fullText } : m));
-        }, activeSpecialist?.instructions);
+        for (let i = 0; i < words.length; i++) {
+          currentText += words[i] + " ";
+          setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, content: currentText } : m));
+          await new Promise(r => setTimeout(r, 20));
+        }
       }
       
       // Finalize message
