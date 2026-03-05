@@ -32,6 +32,7 @@ export interface LegalMessage {
   sources?: Array<{ title: string; uri: string }>;
   citations?: LegalCitation[];
   isDraft?: boolean;
+  isGenerating?: boolean;
 }
 
 export interface LegalSpecialist {

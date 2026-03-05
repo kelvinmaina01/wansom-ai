@@ -1,5 +1,7 @@
-
 import React from 'react';
+import { motion } from 'motion/react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { LegalMessage } from '../types';
 import { 
   Copy, 
@@ -21,8 +23,8 @@ const LegalResponse: React.FC<LegalResponseProps> = ({ message }) => {
 
   if (!isAssistant) {
     return (
-      <div className="flex justify-end mb-8">
-        <div className="max-w-[80%] p-6 rounded-3xl bg-black text-white font-bold shadow-xl shadow-black/10 tracking-tight">
+      <div className="flex justify-end mb-12">
+        <div className="max-w-[70%] px-8 py-4 rounded-2xl bg-gray-900 text-white font-bold shadow-lg shadow-black/5 tracking-tight text-lg">
           {message.content}
         </div>
       </div>
@@ -30,103 +32,117 @@ const LegalResponse: React.FC<LegalResponseProps> = ({ message }) => {
   }
 
   return (
-    <div className="flex justify-start mb-12 group animate-in slide-in-from-bottom-4 duration-500">
-      <div className="max-w-full w-full bg-white/70 backdrop-blur-md border border-white/20 rounded-[2.5rem] shadow-2xl shadow-black/5 overflow-hidden">
-        {/* Header/Status Bar */}
-        <div className="bg-gray-50/50 border-b border-gray-100 px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <ShieldCheck className="w-5 h-5 text-secondary-green" />
-            <span className="text-[10px] font-bold text-secondary-green uppercase tracking-widest">Verified Response • Kenyan Jurisdiction</span>
+    <div className="flex flex-col mb-24 animate-in slide-in-from-bottom-4 duration-500 max-w-6xl mx-auto w-full">
+      {/* Response Content */}
+      <div className="prose prose-slate max-w-none text-black leading-relaxed mb-12">
+        <div className="text-xl font-medium tracking-tight">
+          <ReactMarkdown 
+            remarkPlugins={[remarkGfm]}
+            components={{
+              h1: ({ children }) => <h1 className="text-4xl md:text-5xl font-extrabold text-black mt-16 mb-8 tracking-tighter leading-none">{children}</h1>,
+              h2: ({ children }) => <h2 className="text-3xl font-extrabold text-black mt-12 mb-6 tracking-tighter">{children}</h2>,
+              h3: ({ children }) => <h3 className="text-2xl font-bold text-primary mt-10 mb-5 tracking-tighter uppercase">{children}</h3>,
+              p: ({ children }) => <p className="mb-6 text-gray-900 text-lg leading-relaxed">{children}</p>,
+              blockquote: ({ children }) => (
+                <blockquote className="border-l-4 border-black bg-gray-50 p-6 my-8 rounded-r-2xl italic text-gray-700 font-serif">
+                  {children}
+                </blockquote>
+              ),
+              strong: ({ children }) => <span className="font-extrabold text-black tracking-tight">{children}</span>,
+              ul: ({ children }) => <ul className="space-y-4 mb-8 list-none">{children}</ul>,
+              li: ({ children }) => (
+                <li className="flex items-start gap-3">
+                  <div className="mt-2 w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                  <span className="text-gray-900 text-lg">{children}</span>
+                </li>
+              ),
+              code: ({ children }) => (
+                <code className="bg-gray-100 text-primary px-2 py-0.5 rounded font-mono text-sm border border-gray-200">
+                  {children}
+                </code>
+              )
+            }}
+          >
+            {message.content}
+          </ReactMarkdown>
+          {message.isGenerating && (
+            <motion.span 
+              animate={{ opacity: [0, 1, 0] }}
+              transition={{ duration: 0.8, repeat: Infinity }}
+              className="inline-block w-2 h-6 bg-primary ml-1 align-middle"
+            />
+          )}
+        </div>
+      </div>
+
+      {/* Citations in Cards */}
+      {message.citations && message.citations.length > 0 && (
+        <div className="mb-16">
+          <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-8">Statutory References & Precedents</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {message.citations.map((cite, idx) => (
+              <div key={idx} className="bg-white border border-gray-100 rounded-[2rem] p-8 shadow-sm hover:shadow-xl transition-all group/cite">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="px-3 py-1 bg-primary/10 text-primary text-[9px] font-black rounded-lg uppercase tracking-widest">
+                    {cite.statute}
+                  </div>
+                  {cite.section && <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Section {cite.section}</span>}
+                </div>
+                <p className="text-sm text-black font-semibold leading-relaxed line-clamp-3">{cite.description}</p>
+                <div className="mt-6 flex justify-end">
+                   <button className="text-[10px] font-bold text-primary group-hover/cite:translate-x-1 transition-transform flex items-center gap-1 uppercase tracking-widest">
+                     View Source <ExternalLink className="w-3 h-3" />
+                   </button>
+                </div>
+              </div>
+            ))}
           </div>
-          <div className="flex items-center gap-2">
+        </div>
+      )}
+
+      {/* Footer Meta & Actions - Only show when generation is complete and not an error */}
+      {!message.isGenerating && message.content && !message.content.toLowerCase().includes("error") && (
+        <div className="pt-8 border-t border-gray-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-8 animate-in fade-in slide-in-from-top-2 duration-700">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-green-600" />
+              <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest">Verified Intelligence Response</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs font-bold text-black/40">
+              <span>{message.timestamp.toLocaleDateString('en-KE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+              <span className="opacity-30">•</span>
+              <span>{message.timestamp.toLocaleTimeString('en-KE', { hour: '2-digit', minute: '2-digit' })}</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
             <ActionButton icon={<Copy className="w-4 h-4" />} label="Copy" title="Copy to Clipboard" />
             <ActionButton icon={<Bookmark className="w-4 h-4" />} label="Save" title="Save to Case File" />
-            <div className="w-px h-4 bg-gray-200 mx-1" />
+            <div className="w-px h-6 bg-gray-100 mx-2" />
             <ActionButton icon={<Share2 className="w-4 h-4" />} label="Share" title="Share with Team" />
-            <ActionButton icon={<Download className="w-4 h-4" />} label="Export" title="Download as PDF/Doc" />
+            <ActionButton icon={<Download className="w-4 h-4" />} label="Export" title="Export as PDF" />
             <ActionButton icon={<Printer className="w-4 h-4" />} label="Print" title="Print Document" />
             <ActionButton icon={<MoreHorizontal className="w-4 h-4" />} title="More Actions" />
           </div>
         </div>
+      )}
 
-        {/* Content Body */}
-        <div className="p-10">
-          <div className="prose prose-slate max-w-none text-black leading-relaxed">
-            <div className="text-xl whitespace-pre-wrap font-medium tracking-tight">
-               {message.content.split('\n').map((line, i) => {
-                 // Red: Primary Headings & Brand Identity (The "Heartbeat")
-                 if (line.startsWith('### ')) return <h3 key={i} className="text-3xl font-bold text-primary mt-10 mb-6 tracking-tighter">{line.replace('### ', '')}</h3>;
-                 
-                 // Black: Structural Sub-headings & Dominant Foundation
-                 if (line.startsWith('## ')) return <h2 key={i} className="text-4xl font-extrabold text-black mt-12 mb-8 tracking-tighter border-b border-gray-100 pb-4">{line.replace('## ', '')}</h2>;
-                 
-                 // Blue: Statutory Quotes & References (The "Source")
-                 if (line.startsWith('> ')) return <blockquote key={i} className="border-l-4 border-secondary-blue bg-secondary-blue/5 p-6 my-8 rounded-r-2xl italic text-secondary-blue font-serif">{line.replace('> ', '')}</blockquote>;
-                 
-                 // Green: Actionable Compliance & Recommendations
-                 if (line.toLowerCase().startsWith('recommendation:') || line.toLowerCase().startsWith('step:')) {
-                   return <p key={i} className="my-6 p-4 bg-secondary-green/5 border border-secondary-green/20 rounded-xl text-secondary-green font-bold tracking-tight">{line}</p>;
-                 }
-
-                 if (line.startsWith('**')) {
-                   return <p key={i} className="my-6"><strong className="text-black font-bold tracking-tight">{line.replace(/\*\*/g, '')}</strong></p>;
-                 }
-                 
-                 if (line.trim() === "") return <div key={i} className="h-4" />;
-                 
-                 // Black: Dominant Body Text
-                 return <p key={i} className="mb-4 text-gray-800">{line}</p>;
-               })}
-            </div>
-          </div>
-
-          {/* Structured Citations Section */}
-          {message.citations && message.citations.length > 0 && (
-            <div className="mt-10 pt-8 border-t border-gray-100">
-              <h4 className="text-[10px] font-bold text-gray-400 mb-6">Statutory Citations & References</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {message.citations.map((cite, idx) => {
-                  const colors = [
-                    'bg-secondary-blue/5 border-secondary-blue/10 text-secondary-blue',
-                    'bg-secondary-green/5 border-secondary-green/10 text-secondary-green',
-                    'bg-primary/5 border-primary/10 text-primary'
-                  ];
-                  const colorClass = colors[idx % colors.length];
-                  const [bg, border, text] = colorClass.split(' ');
-
-                  return (
-                    <div key={idx} className={`flex flex-col p-5 bg-white border border-gray-100 rounded-2xl group/cite hover:border-secondary-blue/30 transition-all shadow-sm`}>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-bold text-secondary-blue tracking-wider">{cite.statute}</span>
-                        {cite.section && <span className="text-[9px] font-bold bg-secondary-green text-white px-2 py-1 rounded-lg tracking-widest">Sec {cite.section}</span>}
-                      </div>
-                      <p className="text-sm text-black/70 font-medium">{cite.description}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* External Verification Links */}
-          {message.sources && message.sources.length > 0 && (
-            <div className="mt-8 flex flex-wrap gap-3">
-              {message.sources.map((source, i) => (
-                <a 
-                  key={i} 
-                  href={source.uri} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-[10px] font-bold text-black bg-gray-50 border border-gray-200 px-4 py-2 rounded-xl hover:bg-black hover:text-white hover:border-black transition-all"
-                >
-                  <ExternalLink className="w-3 h-3" />
-                  {source.title}
-                </a>
-              ))}
-            </div>
-          )}
+      {/* Sources (Subtle) */}
+      {message.sources && message.sources.length > 0 && (
+        <div className="mt-8 flex flex-wrap gap-2 opacity-40 hover:opacity-100 transition-opacity">
+          {message.sources.map((source, i) => (
+            <a 
+              key={i} 
+              href={source.uri} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-[9px] font-bold text-black uppercase tracking-widest hover:underline"
+            >
+              • {source.title}
+            </a>
+          ))}
         </div>
-      </div>
+      )}
     </div>
   );
 };

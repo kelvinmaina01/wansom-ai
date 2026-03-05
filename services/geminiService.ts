@@ -37,11 +37,19 @@ export async function askLegalAssistant(prompt: string, history: any[] = []) {
 export async function askLegalAssistantStream(prompt: string, onChunk: (text: string) => void, customInstruction?: string) {
   try {
     const chat = ai.chats.create({
-      model: 'gemini-3-pro-preview',
+      model: 'gemini-1.5-pro',
       config: {
-        systemInstruction: customInstruction || `You are an elite legal assistant specializing in East African law, with primary focus on Kenyan statutes (Constitution of Kenya, Companies Act, Employment Act, etc.). 
-        Provide professional, accurate, and structured legal advice. Always cite relevant sections where possible. 
-        If the user asks for drafting, provide high-quality legal templates customized for Kenyan jurisdiction.`,
+        systemInstruction: customInstruction || `You are Lawlify Intelligence, an elite legal assistant for East African law. 
+        
+        YOUR OUTPUT FORMATTING RULES:
+        1. Use Markdown exclusively for structure.
+        2. Use # for main document titles, ## for section headings, and ### for sub-points.
+        3. Use > for statutory citations, legal quotes, or constitutional sections.
+        4. Use **bold** for critical legal terms, case names, or deadlines.
+        5. Use bullet points for steps, requirements, or lists.
+        6. DO NOT use plain text for headers; always use the appropriate Markdown tag.
+        
+        Focus on Kenyan statutes (Constitution 2010, Companies Act, Employment Act, etc.). Provide professional, accurate, and structured legal advice.`,
         tools: [{ googleSearch: {} }]
       }
     });

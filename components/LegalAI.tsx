@@ -61,6 +61,7 @@ const MOCK_HISTORY: ChatHistory[] = [
 const LegalAI: React.FC<LegalAIProps> = ({ userEmail, activeSpecialist, subView = 'Active chats' }) => {
   const [messages, setMessages] = useState<LegalMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [statusFeed, setStatusFeed] = useState<string[]>([]);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   const firstName = userEmail.split(/[0-9@.]/)[0].toUpperCase();
@@ -75,49 +76,67 @@ const LegalAI: React.FC<LegalAIProps> = ({ userEmail, activeSpecialist, subView 
 
     setMessages(prev => [...prev, userMsg]);
     setIsLoading(true);
+    setStatusFeed(["Initializing Lawlify Intelligence..."]);
 
-    const lowerContent = content.toLowerCase();
-    
     const assistantId = (Date.now() + 1).toString();
     const assistantMsg: LegalMessage = {
       id: assistantId,
       role: 'assistant',
       content: "",
       timestamp: new Date(),
+      isGenerating: true
     };
 
     setMessages(prev => [...prev, assistantMsg]);
 
+    const updateStatus = async (status: string, delay: number = 800) => {
+      setStatusFeed(prev => [...prev, status]);
+      await new Promise(r => setTimeout(r, delay));
+    };
+
     try {
+      const lowerContent = content.toLowerCase();
+      
+      // Simulate "Thinking/Action" Feed
+      await updateStatus("Searching Kenya Law Reports & Gazette...");
+      await updateStatus("Analyzing relevant statutes and precedents...");
+      await updateStatus("Synthesizing legal opinion...");
+
       if (lowerContent.includes("land") || lowerContent.includes("conveyancing")) {
         const mockData = MOCK_LEGAL_RESPONSES.conveyancing;
         let currentText = "";
         const words = (mockData.content || "").split(" ");
+        setStatusFeed([]); // Clear feed when writing starts
         for (let i = 0; i < words.length; i++) {
           currentText += words[i] + " ";
           setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, content: currentText, sources: mockData.sources, citations: mockData.citations } : m));
-          await new Promise(r => setTimeout(r, 30));
+          await new Promise(r => setTimeout(r, 20));
         }
-        setIsLoading(false);
       } else if (lowerContent.includes("case") || lowerContent.includes("brief") || lowerContent.includes("muruatetu")) {
         const mockData = MOCK_LEGAL_RESPONSES.case_explanation;
         let currentText = "";
         const words = (mockData.content || "").split(" ");
+        setStatusFeed([]);
         for (let i = 0; i < words.length; i++) {
           currentText += words[i] + " ";
           setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, content: currentText, sources: mockData.sources, citations: mockData.citations } : m));
-          await new Promise(r => setTimeout(r, 30));
+          await new Promise(r => setTimeout(r, 20));
         }
-        setIsLoading(false);
       } else {
+        setStatusFeed([]);
         await askLegalAssistantStream(content, (fullText) => {
           setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, content: fullText } : m));
-          setIsLoading(false);
         }, activeSpecialist?.instructions);
       }
-    } catch (error) {
-      setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, content: "Error connecting to legal database. Please try again." } : m));
+      
+      // Finalize message
+      setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, isGenerating: false } : m));
       setIsLoading(false);
+      setStatusFeed([]);
+    } catch (error) {
+      setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, content: "Error connecting to legal database. Please try again.", isGenerating: false } : m));
+      setIsLoading(false);
+      setStatusFeed([]);
     }
   };
 
@@ -205,10 +224,35 @@ const LegalAI: React.FC<LegalAIProps> = ({ userEmail, activeSpecialist, subView 
             </div>
           </div>
         ) : (
-          <div className="max-w-[1400px] mx-auto space-y-4 pb-40">
+          <div className="max-w-[1600px] mx-auto space-y-12 pb-60 px-4 md:px-12">
             {messages.map((m) => (
               <LegalResponse key={m.id} message={m} />
             ))}
+            
+            {/* Real-time Status Feed */}
+            <AnimatePresence>
+              {statusFeed.length > 0 && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="max-w-6xl mx-auto space-y-3 pt-4"
+                >
+                  {statusFeed.map((status, idx) => (
+                    <motion.div 
+                      key={idx}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="flex items-center gap-3 text-xs font-bold text-black/50 tracking-tight"
+                    >
+                      <div className="w-4 h-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                      {status}
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <div ref={chatEndRef} />
           </div>
         )}
@@ -219,22 +263,6 @@ const LegalAI: React.FC<LegalAIProps> = ({ userEmail, activeSpecialist, subView 
            <div className="max-w-[1400px] mx-auto pointer-events-auto">
               <LegalInput onSendMessage={handleSendMessage} isLoading={isLoading} variant="compact" activeSpecialistName={activeSpecialist?.name} />
            </div>
-        </div>
-      )}
-
-      {isLoading && (
-        <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-50">
-          <div className="bg-white/90 text-black px-6 py-4 rounded-2xl shadow-2xl border border-gray-100 flex items-center gap-6 backdrop-blur-xl">
-            <div className="flex space-x-1.5">
-              <div className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce"></div>
-              <div className="w-2.5 h-2.5 bg-secondary-blue rounded-full animate-bounce [animation-delay:0.2s]"></div>
-              <div className="w-2.5 h-2.5 bg-secondary-green rounded-full animate-bounce [animation-delay:0.4s]"></div>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[10px] font-bold tracking-tight uppercase text-black">Lawlify Intelligence</span>
-              <span className="text-[8px] font-medium text-gray-500 uppercase tracking-widest">Analyzing Kenyan Statutes...</span>
-            </div>
-          </div>
         </div>
       )}
     </div>
