@@ -1,0 +1,51 @@
+{
+  "jurisdictions": {
+    "kenya": {
+      "full_name": "Republic of Kenya",
+      "constitution": "Constitution of Kenya 2010",
+      "key_acts": ["Penal Code (Cap 63)", "Companies Act 2015", "Land Act 2012"],
+      "court_system": ["Supreme Court", "Court of Appeal", "High Court", "Magistrates Courts"],
+      "primary_language": "English, Swahili"
+    },
+    "uganda": {
+      "full_name": "Republic of Uganda",
+      "constitution": "Constitution of the Republic of Uganda 1995",
+      "key_acts": ["Penal Code Act (Cap 120)", "Companies Act 2012", "Land Act (Cap 227)"],
+      "court_system": ["Supreme Court", "Court of Appeal / Constitutional Court", "High Court"],
+      "primary_language": "English"
+    },
+    "tanzania": {
+      "full_name": "United Republic of Tanzania",
+      "constitution": "Constitution of the United Republic of Tanzania 1977",
+      "key_acts": ["Penal Code (Cap 16)", "Companies Act (Cap 212)", "Land Act (Cap 113)"],
+      "court_system": ["Court of Appeal", "High Court", "Resident Magistrates Courts"],
+      "primary_language": "Swahili, English"
+    },
+    "rwanda": {
+      "full_name": "Republic of Rwanda",
+      "constitution": "Constitution of the Republic of Rwanda 2003 (revised 2015)",
+      "lex_system": "Civil Law / Customary Law crossover",
+      "primary_language": "Kinyarwanda, French, English"
+    },
+    "burundi": {
+      "full_name": "Republic of Burundi",
+      "constitution": "Constitution of the Republic of Burundi 2018",
+      "primary_language": "Kirundi, French, English"
+    },
+    "south_sudan": {
+      "full_name": "Republic of South Sudan",
+      "constitution": "Transitional Constitution of South Sudan 2011",
+      "primary_language": "English"
+    },
+    "ethiopia": {
+      "full_name": "Federal Democratic Republic of Ethiopia",
+      "constitution": "Constitution of the Federal Democratic Republic of Ethiopia 1995",
+      "primary_language": "Amharic"
+    },
+    "drc": {
+      "full_name": "Democratic Republic of the Congo",
+      "constitution": "Constitution of the Democratic Republic of the Congo 2006",
+      "primary_language": "French"
+    }
+  }
+}

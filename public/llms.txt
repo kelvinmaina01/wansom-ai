@@ -1,0 +1,25 @@
+# Lawlify AI
+
+## The AI Co-pilot for Legal Excellence in East Africa.
+
+Lawlify AI is the premier legal technology platform purpose-built for the East African legal ecosystem. We empower advocates, in-house counsels, and law firms across Kenya, Tanzania, Uganda, and Rwanda with next-generation AI tools designed to streamline workflows, enhance research accuracy, and secure sensitive data.
+
+## Core Capabilities
+
+- **Intelligent Research**: Instantly access and analyze thousands of East African statutes, case laws, and precedents with natural language search.
+- **Draft Faster**: Generate high-quality legal documents, contracts, and opinions with AI-driven precision and risk assessment.
+- **Secure Everything**: Protect sensitive client data with our ISO 27001 certified, encrypted Document Vault.
+
+## Key Information
+
+- **Industry**: Legal Tech / AI
+- **Headquarters**: Nairobi, Kenya
+- **Founded**: 2024
+- **Website**: https://www.lawlify.ai
+- **Contact**: law@lawlify.ai
+
+## Links
+
+- [Landing Page](https://www.lawlify.ai)
+- [Pricing](https://www.lawlify.ai/pricing)
+- [Login](https://www.lawlify.ai/login)

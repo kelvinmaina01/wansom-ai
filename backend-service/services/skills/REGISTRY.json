@@ -1,0 +1,134 @@
+{
+  "version": "1.1",
+  "description": "East Africa Legal AI — Skill Registry",
+  "jurisdictions": [
+    "east-africa",
+    "kenya",
+    "uganda",
+    "tanzania",
+    "rwanda",
+    "burundi",
+    "south-sudan",
+    "ethiopia"
+  ],
+  "document_types": [
+    "nda",
+    "employment", "service-agreement", "partnership", "lease", "court-filing"
+  ],
+  "skills": [
+    {
+      "id": "jurisdiction-east-africa",
+      "path": "public/jurisdictions/east-africa/SKILL.md",
+      "triggers": [
+        "east africa", "east african", "eac", "comesa", "cross-border", "cross border", "regional", "all countries", "multiple countries", "east african community", "region-wide"
+      ]
+    },
+    {
+      "id": "jurisdiction-kenya",
+      "path": "public/jurisdictions/kenya/SKILL.md",
+      "triggers": [
+        "kenya", "kenyan", "nairobi", "mombasa", "kisumu", "eldoret", "cap ", "laws of kenya", "ksh", "kes", "kenya shilling"
+      ]
+    },
+    {
+      "id": "jurisdiction-uganda",
+      "path": "public/jurisdictions/uganda/SKILL.md",
+      "triggers": [
+        "uganda", "ugandan", "kampala", "entebbe", "gulu", "ugx", "uganda shilling", "laws of uganda"
+      ]
+    },
+    {
+      "id": "jurisdiction-tanzania",
+      "path": "public/jurisdictions/tanzania/SKILL.md",
+      "triggers": [
+        "tanzania", "tanzanian", "dar es salaam", "dodoma", "arusha", "zanzibar", "tzs", "tanzania shilling"
+      ]
+    },
+    {
+      "id": "jurisdiction-rwanda",
+      "path": "public/jurisdictions/rwanda/SKILL.md",
+      "triggers": [
+        "rwanda", "rwandan", "kigali", "rwf", "rwanda franc", "kiac"
+      ]
+    },
+    {
+      "id": "jurisdiction-burundi",
+      "path": "public/jurisdictions/burundi/SKILL.md",
+      "triggers": [
+        "burundi", "burundian", "bujumbura", "gitega", "bif", "cabu"
+      ]
+    },
+    {
+      "id": "jurisdiction-south-sudan",
+      "path": "public/jurisdictions/south-sudan/SKILL.md",
+      "triggers": [
+        "south sudan", "south sudanese", "juba", "ssp", "south sudan pound"
+      ]
+    },
+    {
+      "id": "jurisdiction-ethiopia",
+      "path": "public/jurisdictions/ethiopia/SKILL.md",
+      "triggers": [
+        "ethiopia", "ethiopian", "addis ababa", "etb", "birr", "ethiopian birr"
+      ]
+    },
+    {
+      "id": "doc-nda",
+      "path": "public/documents/nda/SKILL.md",
+      "triggers": [
+        "non-disclosure", "non disclosure", "confidentiality agreement", "secrecy agreement", "protect my information", "keep secret", " nda ", "an nda", "the nda", "nda for", "nda between", "nda with", "nda agreement", "draft nda", "write nda", "create nda"
+      ]
+    },
+    {
+      "id": "doc-employment",
+      "path": "public/documents/employment/SKILL.md",
+      "triggers": [
+        "employment contract", "employment agreement", "hire someone", "staff contract", "offer letter", "employee agreement", "work contract", "labour contract"
+      ]
+    },
+    {
+      "id": "doc-service-agreement",
+      "path": "public/documents/service-agreement/SKILL.md",
+      "triggers": [
+        "service agreement", "freelance", "consultancy agreement", "consultant agreement", "contractor agreement", "scope of work", "retainer agreement"
+      ]
+    },
+    {
+      "id": "doc-partnership",
+      "path": "public/documents/partnership/SKILL.md",
+      "triggers": [
+        "partnership agreement", "partnership deed", "joint venture", "jv agreement", "business partnership", "consortium agreement", "co-founder agreement", "partnership", "partner", "partners"
+      ]
+    },
+    {
+      "id": "doc-lease",
+      "path": "public/documents/lease/SKILL.md",
+      "triggers": [
+        "lease", "tenancy agreement", "rental agreement", "rent agreement", "landlord", "tenant", "commercial lease", "residential lease", "lease agreement", "renting", "property lease", "sublease", "eviction", "lease renewal"
+      ]
+    },
+    {
+      "id": "doc-court-filing",
+      "path": "public/documents/court-filing/SKILL.md",
+      "triggers": [
+        "court filing", "plaint", "petition", "affidavit", "memorandum of appearance", "chamber summons", "notice of motion", "file a case", "court document", "originating summons", "notice of appeal", "witness statement", "defense and counterclaim", "list of authorities", "skeleton arguments"
+      ]
+    },
+    {
+      "id": "design-templates",
+      "path": "public/design/templates/SKILL.md",
+      "triggers": [
+        "template", "format", "layout", "letterhead", "professional document", "formatted"
+      ],
+      "auto_load_with_docs": true
+    },
+    {
+      "id": "logic-deadlines",
+      "path": "public/logic/deadlines/SKILL.md",
+      "triggers": [
+        "deadline", "statutory clock", "calculate dates", "court timeline", "procedure rules", "verifying affidavit", "service of summons", "case", "matter", "update case", "follow-up document"
+      ],
+      "auto_load_with_docs": true
+    }
+  ]
+}

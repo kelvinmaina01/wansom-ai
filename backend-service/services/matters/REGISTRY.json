@@ -1,0 +1,23 @@
+[
+  {
+    "id": "MATTER-TEST-001",
+    "name": "Kariuki vs. Nairobi City County",
+    "type": "litigation",
+    "jurisdiction": "kenya",
+    "parties": {
+      "plaintiff": "John Kariuki",
+      "defendant": "Nairobi City County"
+    },
+    "court": "Milimani Law Courts",
+    "status": "active",
+    "createdAt": "2026-03-21T10:00:00Z",
+    "updatedAt": "2026-03-21T10:00:00Z",
+    "history": [
+      {
+        "date": "2026-03-21T10:05:00Z",
+        "action": "Draft Plaint",
+        "status": "completed"
+      }
+    ]
+  }
+]

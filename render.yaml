@@ -1,0 +1,66 @@
+services:
+  # 1. Backend Service (Node.js)
+  - type: web
+    name: lawlify-backend
+    env: node
+    rootDir: backend-service
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: NODE_ENV
+        value: production
+      - key: PAGEINDEX_URL
+        fromService:
+          name: lawlify-pageindex
+          type: web
+          property: host
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: DEEPSEEK_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: FRONTEND_URL
+        fromService:
+          name: lawlify-frontend
+          type: static
+          property: url
+
+  # 2. PageIndex Service (Python)
+  - type: web
+    name: lawlify-pageindex
+    env: python
+    rootDir: services/PageIndex
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn api_server:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+
+  # 3. Frontend (Static Site)
+  - type: static
+    name: lawlify-frontend
+    env: static
+    rootDir: ./
+    buildCommand: npm install && npm run build
+    publishDir: dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          name: lawlify-backend
+          type: web
+          property: url
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false
