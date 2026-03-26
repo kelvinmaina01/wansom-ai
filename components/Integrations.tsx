@@ -617,84 +617,90 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                   </div>
                 </div>
                 
-                {/* Content Area */}
-                <div className="flex-1 overflow-y-auto bg-gray-50/30">
-                  <div className="max-w-5xl mx-auto py-12 px-8">
-                    <div className="bg-white rounded-[3rem] border border-gray-100 shadow-xl shadow-black/5 overflow-hidden">
-                      <div className="p-8 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
-                         <h4 className="text-sm font-black text-black uppercase tracking-widest">Active Members</h4>
-                         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{members.length} seats occupied</span>
-                      </div>
-
-                      <div className="divide-y divide-gray-50">
-                        {members.map((member) => (
-                          <div key={member.id} className="flex items-center justify-between p-8 hover:bg-gray-50/50 transition-all group">
-                            <div className="flex items-center gap-6">
-                               <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center overflow-hidden border border-primary/5">
-                                  {member.profile.profile_avatar_url ? (
-                                    <img src={member.profile.profile_avatar_url} alt="" className="w-full h-full object-cover" />
-                                  ) : (
-                                    <span className="text-primary text-xl font-black">{member.profile.profile_name.charAt(0)}</span>
-                                  )}
-                               </div>
-                               <div>
-                                  <h4 className="text-xl font-bold text-black mb-1">{member.profile.profile_name}</h4>
-                                  <p className="text-sm text-gray-400 font-medium">{member.profile.profile_email}</p>
-                               </div>
-                            </div>
-
-                            <div className="flex items-center gap-6">
-                               <div className="flex flex-col items-end gap-1">
-                                  <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">Security Role</span>
-                                  <select 
-                                    value={member.role}
-                                    onChange={(e) => updateMemberRole(member.id, e.target.value)}
-                                    className="bg-white border-2 border-gray-100 rounded-xl text-xs font-bold py-2 px-4 focus:outline-none focus:border-primary transition-colors cursor-pointer"
-                                  >
-                                    <option value="admin">Admin</option>
-                                    <option value="editor">Editor</option>
-                                    <option value="viewer">Viewer</option>
-                                  </select>
-                               </div>
-                               
-                               <button 
-                                 onClick={() => removeMember(member.id)}
-                                 className="w-12 h-12 flex items-center justify-center bg-gray-50 text-gray-300 hover:bg-red-50 hover:text-primary rounded-xl transition-all"
-                                 title="Revoke Access"
-                               >
-                                  <Trash2 className="w-5 h-5" />
-                               </button>
-                            </div>
-                          </div>
-                        ))}
-                        
-                        {members.length === 0 && (
-                           <div className="py-32 text-center flex flex-col items-center">
-                              <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
-                                 <Users className="w-10 h-10 text-gray-200" />
-                              </div>
-                              <p className="text-gray-400 font-medium italic">Your intelligence workspace is currently isolated.</p>
-                              <button 
-                                onClick={() => { setIsMembersModalOpen(false); setIsInviteModalOpen(true); }}
-                                className="mt-6 text-primary font-bold hover:underline"
-                              >
-                                Create your first invite link →
-                              </button>
-                           </div>
-                        )}
-                      </div>
+                {/* Content Area - Flattened Layout (Items sit on page, not a card) */}
+                <div className="flex-1 overflow-y-auto bg-white/50">
+                  <div className="max-w-5xl mx-auto py-16 px-8">
+                    
+                    {/* Header for Items */}
+                    <div className="flex items-center justify-between mb-8 px-4">
+                       <h4 className="text-xs font-black text-black uppercase tracking-widest flex items-center gap-3">
+                          <Users className="w-4 h-4 text-primary" />
+                          Active Team Members
+                       </h4>
+                       <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{members.length} seats occupied</span>
                     </div>
 
-                    <div className="mt-12 p-10 bg-black rounded-[3rem] border border-white/5 relative overflow-hidden group shadow-2xl">
+                    {/* Member Items List (Sitting on page) */}
+                    <div className="space-y-4">
+                      {members.map((member) => (
+                        <div key={member.id} className="flex items-center justify-between p-8 bg-white border border-gray-100 rounded-[2rem] hover:border-primary/20 hover:shadow-xl hover:shadow-black/5 transition-all group">
+                          <div className="flex items-center gap-6">
+                             <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center overflow-hidden border border-primary/5">
+                                {member.profile.profile_avatar_url ? (
+                                  <img src={member.profile.profile_avatar_url} alt="" className="w-full h-full object-cover" />
+                                ) : (
+                                  <span className="text-primary text-xl font-black">{member.profile.profile_name.charAt(0)}</span>
+                                )}
+                             </div>
+                             <div>
+                                <h4 className="text-xl font-bold text-black mb-1">{member.profile.profile_name}</h4>
+                                <p className="text-sm text-gray-400 font-medium">{member.profile.profile_email}</p>
+                             </div>
+                          </div>
+
+                          <div className="flex items-center gap-8">
+                             <div className="flex flex-col items-end gap-1">
+                                <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">Security Role</span>
+                                <select 
+                                  value={member.role}
+                                  onChange={(e) => updateMemberRole(member.id, e.target.value)}
+                                  className="bg-white border-2 border-gray-100 rounded-xl text-xs font-bold py-2 px-4 focus:outline-none focus:border-primary transition-colors cursor-pointer"
+                                >
+                                  <option value="admin">Admin</option>
+                                  <option value="editor">Editor</option>
+                                  <option value="viewer">Viewer</option>
+                                </select>
+                             </div>
+                             
+                             <button 
+                               onClick={() => removeMember(member.id)}
+                               className="w-12 h-12 flex items-center justify-center bg-gray-50 text-gray-300 hover:bg-red-50 hover:text-primary rounded-xl transition-all"
+                               title="Revoke Access"
+                             >
+                                <Trash2 className="w-5 h-5" />
+                             </button>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      {members.length === 0 && (
+                         <div className="py-32 text-center flex flex-col items-center border-2 border-dashed border-gray-100 rounded-[3rem]">
+                            <div className="w-20 h-20 bg-gray-100/50 rounded-full flex items-center justify-center mb-6">
+                               <Users className="w-10 h-10 text-gray-200" />
+                            </div>
+                            <p className="text-gray-400 font-medium italic mb-2">Your intelligence workspace is currently isolated.</p>
+                            <p className="text-xs text-gray-300 font-medium max-w-xs mb-8">Nobody else has access to this workspace. Invite your law firm partners to start collaborating.</p>
+                            <button 
+                              onClick={() => { setIsMembersModalOpen(false); setIsInviteModalOpen(true); }}
+                              className="px-8 py-4 bg-black text-white rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-primary transition-all shadow-xl shadow-black/10"
+                            >
+                              Generate Invite Link →
+                            </button>
+                         </div>
+                      )}
+                    </div>
+
+                    {/* Audit Log / Additional Sections Directly on page */}
+                    <div className="mt-16 bg-black rounded-[3rem] border border-white/5 relative overflow-hidden group shadow-2xl">
                       <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2" />
-                      <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+                      <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10 p-12">
                          <div className="max-w-xl">
-                            <h4 className="text-2xl font-bold text-white mb-3 font-display uppercase tracking-tight">Sovereignty Audit Log</h4>
-                            <p className="text-gray-400 text-sm leading-relaxed font-sans">
-                               View every permission change and invitation issued in this workspace. Detailed logging ensures compliance and zero-persistence verification.
+                            <h4 className="text-3xl font-bold text-white mb-4 font-display uppercase tracking-tight">Sovereignty Audit Log</h4>
+                            <p className="text-gray-400 text-sm leading-relaxed font-sans font-medium">
+                               Inspect every permission change and invitation issued in this workspace. Detailed logging ensures compliance and zero-persistence verification across your legal environment.
                             </p>
                          </div>
-                         <button className="px-10 py-5 bg-white text-black rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all shadow-2xl">
+                         <button className="whitespace-nowrap px-10 py-5 bg-white text-black rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all shadow-2xl">
                             Inspect Audit Trails
                          </button>
                       </div>
