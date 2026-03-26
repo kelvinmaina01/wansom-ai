@@ -10,13 +10,24 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } = process.env;
-const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || 'http://localhost:5000/api/integrations/google/callback';
-const MS_REDIRECT_URI = process.env.MS_REDIRECT_URI || 'http://localhost:5000/api/integrations/microsoft/callback';
+// Helper to get environment variables (to avoid hoisting issues)
+const getGoogleConfig = () => ({
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+    GOOGLE_REDIRECT_URI: process.env.GOOGLE_REDIRECT_URI || 'http://localhost:5000/api/integrations/google/callback'
+});
 
-// Slack OAuth Configuration
-const { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET } = process.env;
-const SLACK_REDIRECT_URI = process.env.SLACK_REDIRECT_URI || 'http://localhost:5000/api/integrations/slack/callback';
+const getMSConfig = () => ({
+    MS_CLIENT_ID: process.env.MS_CLIENT_ID,
+    MS_CLIENT_SECRET: process.env.MS_CLIENT_SECRET,
+    MS_REDIRECT_URI: process.env.MS_REDIRECT_URI || 'http://localhost:5000/api/integrations/microsoft/callback'
+});
+
+const getSlackConfig = () => ({
+    SLACK_CLIENT_ID: process.env.SLACK_CLIENT_ID,
+    SLACK_CLIENT_SECRET: process.env.SLACK_CLIENT_SECRET,
+    SLACK_REDIRECT_URI: process.env.SLACK_REDIRECT_URI || 'http://localhost:5000/api/integrations/slack/callback'
+});
 
 /**
  * @route GET /api/integrations/status
@@ -50,10 +61,14 @@ router.get('/:provider/auth', async (req, res) => {
     // Placeholder: In a real implementation, this would use the respective SDKs to generate the URL
     // e.g., google.auth.OAuth2.generateAuthUrl()
     
+    const { GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI } = getGoogleConfig();
+    const { MS_CLIENT_ID, MS_REDIRECT_URI } = getMSConfig();
+    const { SLACK_CLIENT_ID, SLACK_REDIRECT_URI } = getSlackConfig();
+
     const urls = {
-        google: `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URI}&response_type=code&scope=https://www.googleapis.com/auth/spreadsheets.readonly%20https://www.googleapis.com/auth/drive.metadata.readonly%20https://www.googleapis.com/auth/calendar.readonly&access_type=offline&prompt=consent`,
-        microsoft: `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${process.env.MS_CLIENT_ID}&response_type=code&redirect_uri=${MS_REDIRECT_URI}&response_mode=query&scope=offline_access%20Files.Read%20Calendars.Read%20User.Read`,
-        slack: `https://slack.com/oauth/v2/authorize?client_id=${process.env.SLACK_CLIENT_ID}&scope=channels:read,groups:read,chat:write,files:read&user_scope=search:read&redirect_uri=${SLACK_REDIRECT_URI}`
+        google: `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URI}&response_type=code&scope=https://www.googleapis.com/auth/spreadsheets.readonly%20https://www.googleapis.com/auth/drive.metadata.readonly%20https://www.googleapis.com/auth/calendar.readonly&access_type=offline&prompt=consent`,
+        microsoft: `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${MS_CLIENT_ID}&response_type=code&redirect_uri=${MS_REDIRECT_URI}&response_mode=query&scope=offline_access%20Files.Read%20Calendars.Read%20User.Read`,
+        slack: `https://slack.com/oauth/v2/authorize?client_id=${SLACK_CLIENT_ID}&scope=channels:read,groups:read,chat:write,files:read&user_scope=search:read&redirect_uri=${SLACK_REDIRECT_URI}`
     };
 
     if (!urls[provider]) {
@@ -128,6 +143,8 @@ router.get('/google/auth', (req, res) => {
         scopes.push('https://www.googleapis.com/auth/drive.readonly');
     }
 
+    const { GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI } = getGoogleConfig();
+
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` + 
       `client_id=${GOOGLE_CLIENT_ID}` +
       `&redirect_uri=${encodeURIComponent(GOOGLE_REDIRECT_URI)}` +
@@ -158,6 +175,8 @@ router.get('/google/callback', async (req, res) => {
   }
 
   try {
+    const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } = getGoogleConfig();
+
     const { data } = await axios.post('https://oauth2.googleapis.com/token', {
       client_id: GOOGLE_CLIENT_ID,
       client_secret: GOOGLE_CLIENT_SECRET,
@@ -196,6 +215,8 @@ router.get('/slack/callback', async (req, res) => {
   }
 
   try {
+    const { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET, SLACK_REDIRECT_URI } = getSlackConfig();
+
     const { data } = await axios.post('https://slack.com/api/oauth.v2.access', null, {
       params: {
         client_id: SLACK_CLIENT_ID,
@@ -232,9 +253,11 @@ router.get('/microsoft/callback', async (req, res) => {
   }
 
   try {
+    const { MS_CLIENT_ID, MS_CLIENT_SECRET, MS_REDIRECT_URI } = getMSConfig();
+
     const params = new URLSearchParams();
-    params.append('client_id', process.env.MS_CLIENT_ID);
-    params.append('client_secret', process.env.MS_CLIENT_SECRET);
+    params.append('client_id', MS_CLIENT_ID);
+    params.append('client_secret', MS_CLIENT_SECRET);
     params.append('code', code);
     params.append('redirect_uri', MS_REDIRECT_URI);
     params.append('grant_type', 'authorization_code');
