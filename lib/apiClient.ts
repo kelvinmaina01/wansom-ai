@@ -10,8 +10,9 @@ const getBaseUrl = () => {
  * Auto-attaches Firebase ID tokens to all requests.
  */
 export const apiClient = {
+  baseUrl: getBaseUrl(),
   async fetch(endpoint: string, options: RequestInit = {}) {
-    const baseUrl = getBaseUrl();
+    const baseUrl = this.baseUrl;
     const url = endpoint.startsWith('http') ? endpoint : `${baseUrl}${endpoint}`;
 
     // Get Supabase session token
@@ -57,5 +58,17 @@ export const apiClient = {
       method: 'POST',
       body: JSON.stringify(body),
     });
+  },
+
+  async patch(endpoint: string, body: any, options: RequestInit = {}) {
+    return this.fetch(endpoint, {
+      ...options,
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    });
+  },
+
+  async delete(endpoint: string, options: RequestInit = {}) {
+    return this.fetch(endpoint, { ...options, method: 'DELETE' });
   }
 };

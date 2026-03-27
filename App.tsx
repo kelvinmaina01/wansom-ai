@@ -28,6 +28,7 @@ import CaseManager from './components/CaseManager';
 import DocumentInsights from './components/DocumentInsights';
 import KockpitDashboard from './components/KockpitDashboard';
 import AdminLogin from './components/AdminLogin';
+import IntelligenceHub from './components/IntelligenceHub';
 import SupportSidebar from './components/SupportSidebar';
 import BookDemoForm from './components/BookDemoForm';
 import EnterpriseBooking from './components/EnterpriseBooking';
@@ -78,7 +79,8 @@ const ROUTE_TO_VIEW: Record<string, AppView> = {
   'agentic-mentorship': AppView.AGENTIC_MENTORSHIP,
   'drafts': AppView.DRAFTS,
   'case-management': AppView.CASE_MANAGEMENT,
-  'insights': AppView.DOCUMENT_INSIGHTS
+  'insights': AppView.DOCUMENT_INSIGHTS,
+  'intelligence-hub': AppView.INTELLIGENCE_HUB
 };
 
 const VIEW_TO_ROUTE: Record<string, string> = {
@@ -94,7 +96,8 @@ const VIEW_TO_ROUTE: Record<string, string> = {
   [AppView.AGENTIC_MENTORSHIP]: 'agentic-mentorship',
   [AppView.DRAFTS]: 'drafts',
   [AppView.CASE_MANAGEMENT]: 'case-management',
-  [AppView.DOCUMENT_INSIGHTS]: 'insights'
+  [AppView.DOCUMENT_INSIGHTS]: 'insights',
+  [AppView.INTELLIGENCE_HUB]: 'intelligence-hub'
 };
 
 // App shell layout for authenticated in-app views
@@ -220,6 +223,8 @@ const AppLayout: React.FC<{ supabaseUser: User | null; activeWorkspace: any }> =
         return <CaseManager activeSubView={caseManagerSubView} />;
       case AppView.DOCUMENT_INSIGHTS:
         return <DocumentInsights />;
+      case AppView.INTELLIGENCE_HUB:
+        return <IntelligenceHub />;
       case AppView.SETTINGS:
         return <Settings />;
       case AppView.HISTORY:
@@ -304,7 +309,7 @@ const AppLayout: React.FC<{ supabaseUser: User | null; activeWorkspace: any }> =
         <main className="flex-1 flex flex-col overflow-hidden relative bg-white">
           {/* Top Header / Breadcrumbs */}
           <header className={`flex items-center justify-between px-8 bg-white/80 backdrop-blur-md z-40 transition-all duration-500 overflow-hidden ${
-            (currentView === AppView.LEGAL_AI && isChatActive) 
+            (currentView === AppView.LEGAL_AI && isChatActive) || currentView === AppView.INTELLIGENCE_HUB
               ? 'h-0 opacity-0 border-transparent py-0' 
               : 'h-16 opacity-100 border-b border-gray-100'
           }`}>
@@ -468,6 +473,10 @@ const App: React.FC = () => {
       <Route
         path="/app/*"
         element={user ? (hasCompletedOnboarding ? <AppLayout supabaseUser={user} activeWorkspace={activeWorkspace} /> : <Navigate to="/onboarding" replace />) : <Navigate to="/" replace />}
+      />
+      <Route
+        path="/app/intelligence-hub/:fileId"
+        element={user ? <AppLayout supabaseUser={user} activeWorkspace={activeWorkspace} /> : <Navigate to="/" replace />}
       />
       {/* Admin Route - Requires Admin Authentication */}
       <Route

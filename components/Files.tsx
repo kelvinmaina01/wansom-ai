@@ -21,7 +21,9 @@ import {
   Star,
   Shield,
   ArrowUpDown,
-  Globe
+  Globe,
+  AudioWaveform,
+  BrainCircuit
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
@@ -203,9 +205,7 @@ const Files: React.FC = () => {
   const handleDeleteFile = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this file?')) {
       try {
-        const response = await apiClient.fetch(`/api/files/${id}`, {
-          method: 'DELETE'
-        });
+        const response = await apiClient.delete(`/api/files/${id}`);
 
         if (response.ok) {
           setFiles(prev => prev.filter(f => f.id !== id));
@@ -223,9 +223,22 @@ const Files: React.FC = () => {
   };
 
   const handleDeleteSelected = async () => {
+    if (selectedFileIds.size === 0) return;
+    
     if (window.confirm(`Are you sure you want to delete ${selectedFileIds.size} files?`)) {
-      for (const id of Array.from(selectedFileIds)) {
-        await handleDeleteFile(id);
+      try {
+        const response = await apiClient.post('/api/files/bulk-delete', {
+          ids: Array.from(selectedFileIds)
+        });
+
+        if (response.ok) {
+          const { count } = await response.json();
+          setFiles(prev => prev.filter(f => !selectedFileIds.has(f.id)));
+          setSelectedFileIds(new Set());
+          setActiveDropdownId(null);
+        }
+      } catch (error) {
+        console.error('Bulk delete error:', error);
       }
     }
   };
@@ -233,7 +246,7 @@ const Files: React.FC = () => {
   const handleMoveSelected = async (targetFolderId: string) => {
     try {
       for (const id of Array.from(selectedFileIds)) {
-        await apiClient.post(`/api/files/${id}`, { folder_id: targetFolderId }, { method: 'PATCH' });
+        await apiClient.patch(`/api/files/${id}`, { folder_id: targetFolderId });
       }
       fetchData(); // Refresh all
     } catch (error) {
@@ -268,9 +281,8 @@ const Files: React.FC = () => {
     if (!file) return;
 
     try {
-      const response = await apiClient.post(`/api/files/${id}/star`, 
-        { is_starred: !file.is_starred }, 
-        { method: 'PATCH' }
+      const response = await apiClient.patch(`/api/files/${id}/star`, 
+        { is_starred: !file.is_starred }
       );
 
       if (response.ok) {
@@ -374,17 +386,17 @@ const Files: React.FC = () => {
         {/* Header & Overview */}
         <div className="space-y-6">
           <div>
-            <h1 className="text-4xl font-bold text-black tracking-tighter mb-2">Files & Documents</h1>
-            <p className="text-gray-400 text-sm font-medium">Manage your legal repository.</p>
+            <h1 className="text-4xl font-bold text-black tracking-tighter mb-2">Files & Documents Vault</h1>
+            <p className="text-gray-500 text-sm font-medium">Your data, always your property. Manage your legal repository. Your files remain secure.</p>
           </div>
 
           {/* Overview Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Storage Card */}
-            <div className="relative overflow-hidden p-6 rounded-3xl border border-white/20 shadow-xl bg-blue-600/90 backdrop-blur-xl text-white group hover:scale-[1.02] transition-transform duration-300">
+            <div className="relative overflow-hidden p-6 rounded-[15px] border border-white/20 shadow-xl bg-blue-600/90 backdrop-blur-xl text-white group hover:scale-[1.02] transition-transform duration-300">
               <div className="absolute -right-10 -top-10 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors"></div>
               <div className="flex items-center gap-4 mb-4 relative z-10">
-                <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-md shadow-inner">
+                <div className="p-3 bg-white/20 rounded-xl backdrop-blur-md shadow-inner">
                   <HardDrive className="w-6 h-6 text-white" />
                 </div>
                 <span className="text-blue-100 text-xs font-bold uppercase tracking-wider">Storage</span>
@@ -396,10 +408,10 @@ const Files: React.FC = () => {
             </div>
 
             {/* Total Files Card */}
-            <div className="relative overflow-hidden p-6 rounded-3xl border border-white/20 shadow-xl bg-purple-600/90 backdrop-blur-xl text-white group hover:scale-[1.02] transition-transform duration-300">
+            <div className="relative overflow-hidden p-6 rounded-[15px] border border-white/20 shadow-xl bg-purple-600/90 backdrop-blur-xl text-white group hover:scale-[1.02] transition-transform duration-300">
               <div className="absolute -right-10 -top-10 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors"></div>
               <div className="flex items-center gap-4 mb-4 relative z-10">
-                <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-md shadow-inner">
+                <div className="p-3 bg-white/20 rounded-xl backdrop-blur-md shadow-inner">
                   <FileIcon className="w-6 h-6 text-white" />
                 </div>
                 <span className="text-purple-100 text-xs font-bold uppercase tracking-wider">Total Files</span>
@@ -408,10 +420,10 @@ const Files: React.FC = () => {
             </div>
 
             {/* Folders Card */}
-            <div className="relative overflow-hidden p-6 rounded-3xl border border-white/20 shadow-xl bg-orange-600/90 backdrop-blur-xl text-white group hover:scale-[1.02] transition-transform duration-300">
+            <div className="relative overflow-hidden p-6 rounded-[15px] border border-white/20 shadow-xl bg-orange-600/90 backdrop-blur-xl text-white group hover:scale-[1.02] transition-transform duration-300">
               <div className="absolute -right-10 -top-10 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors"></div>
               <div className="flex items-center gap-4 mb-4 relative z-10">
-                <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-md shadow-inner">
+                <div className="p-3 bg-white/20 rounded-xl backdrop-blur-md shadow-inner">
                   <FolderIcon className="w-6 h-6 text-white" />
                 </div>
                 <span className="text-orange-100 text-xs font-bold uppercase tracking-wider">Folders</span>
@@ -420,10 +432,10 @@ const Files: React.FC = () => {
             </div>
 
             {/* Types Card */}
-            <div className="relative overflow-hidden p-6 rounded-3xl border border-white/20 shadow-xl bg-emerald-600/90 backdrop-blur-xl text-white group hover:scale-[1.02] transition-transform duration-300">
+            <div className="relative overflow-hidden p-6 rounded-[15px] border border-white/20 shadow-xl bg-emerald-600/90 backdrop-blur-xl text-white group hover:scale-[1.02] transition-transform duration-300">
               <div className="absolute -right-10 -top-10 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors"></div>
               <div className="flex items-center gap-4 mb-4 relative z-10">
-                <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-md shadow-inner">
+                <div className="p-3 bg-white/20 rounded-xl backdrop-blur-md shadow-inner">
                   <PieChart className="w-6 h-6 text-white" />
                 </div>
                 <span className="text-emerald-100 text-xs font-bold uppercase tracking-wider">Types</span>
@@ -440,7 +452,7 @@ const Files: React.FC = () => {
         </div>
 
         {/* Upload Area */}
-        <div className="bg-white rounded-[2rem] p-8 shadow-xl shadow-black/5 border border-gray-100">
+        <div className="bg-white rounded-[15px] p-8 shadow-xl shadow-black/5 border border-gray-100">
           <div className="mb-6">
             <div className="flex items-center gap-3 mb-2">
               <Upload className="w-6 h-6 text-blue-600" />
@@ -468,13 +480,11 @@ const Files: React.FC = () => {
           </div>
 
           <div
-            className={`relative border-2 border-dashed rounded-[2rem] p-16 text-center transition-all cursor-pointer group ${isDragging
+            className={`relative border-2 border-dashed rounded-[15px] p-16 text-center transition-all cursor-pointer group ${isDragging
               ? 'border-blue-500 bg-[#ffe4c2]'
               : 'border-gray-200 bg-[#fffbf0] hover:border-blue-400'
               }`}
-            style={{ backgroundColor: isDragging ? '#ffe4c2' : '#fffbf0' }} // Using a very light cream/yellow similar to the image, user asked for #ffe4c2 which is quite strong, so I'll use it on drag or maybe as a base if they insist. Let's try to match the "cream" look but respect the hex if it's the intended background.
-            // Actually, the user said "appy this color #ffe4c2 on thedrop files to upload document space". I will apply it as the background color.
-            // #ffe4c2 is Bisque.
+            style={{ backgroundColor: isDragging ? '#ffe4c2' : '#fffbf0' }} 
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
@@ -584,28 +594,28 @@ const Files: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <button 
-                    onClick={() => navigate(`/app/insights?fileId=${Array.from(selectedFileIds)[0]}`)}
-                    className="flex items-center gap-2 px-4 py-2 bg-white border border-green-200 rounded-xl text-xs font-bold text-green-700 hover:bg-green-50 transition-colors"
+                    onClick={() => navigate(`/app/insights?fileId=${Array.from(selectedFileIds).join(',')}`)}
+                    className="flex items-center gap-2 px-4 py-2 bg-white border border-green-200 rounded-[15px] text-xs font-bold text-green-700 hover:bg-green-50 transition-colors"
                   >
                     <Sparkles className="w-4 h-4" />
                     Review in Chat
                   </button>
                   <button
                     onClick={() => openMoveModal()}
-                    className="flex items-center gap-2 px-4 py-2 bg-white border border-green-200 rounded-xl text-xs font-bold text-green-700 hover:bg-green-50 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-white border border-green-200 rounded-[15px] text-xs font-bold text-green-700 hover:bg-green-50 transition-colors"
                   >
                     <FolderInput className="w-4 h-4" />
                     Move to Folder
                   </button>
                   <button
                     onClick={() => setSelectedFileIds(new Set())}
-                    className="px-4 py-2 bg-white border border-green-200 rounded-xl text-xs font-bold text-green-700 hover:bg-green-50 transition-colors"
+                    className="px-4 py-2 bg-white border border-green-200 rounded-[15px] text-xs font-bold text-green-700 hover:bg-green-50 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleDeleteSelected}
-                    className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-xl text-xs font-bold hover:bg-red-600 transition-colors shadow-sm"
+                    className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-[15px] text-xs font-bold hover:bg-red-600 transition-colors shadow-sm"
                   >
                     <Trash2 className="w-4 h-4" />
                     Delete
@@ -616,7 +626,7 @@ const Files: React.FC = () => {
           </AnimatePresence>
 
           {/* Content Grid/List */}
-          <div className="bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm min-h-[400px]">
+          <div className="bg-white border border-gray-100 rounded-[15px] overflow-hidden shadow-sm min-h-[400px]">
             {/* Folders Grid (Only at root) */}
             {visibleFolders.length > 0 && (
               <div className="p-6 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 border-b border-gray-50">
@@ -640,7 +650,20 @@ const Files: React.FC = () => {
               <div className="w-full">
                 {/* Table Header */}
                 <div className="grid grid-cols-[auto_auto_1fr_auto_auto_auto_auto_auto] gap-4 p-4 border-b border-gray-100 text-xs font-bold text-gray-400 uppercase tracking-wider items-center">
-                  <div className="w-5"></div> {/* Checkbox column */}
+                  <div className="w-5 flex justify-center">
+                    <input
+                      type="checkbox"
+                      checked={visibleFiles.length > 0 && selectedFileIds.size === visibleFiles.length}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedFileIds(new Set(visibleFiles.map(f => f.id)));
+                        } else {
+                          setSelectedFileIds(new Set());
+                        }
+                      }}
+                      className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                    />
+                  </div> 
                   <div className="w-5"></div> {/* Star column */}
                   <div
                     className="cursor-pointer hover:text-black flex items-center gap-1"
@@ -762,17 +785,30 @@ const Files: React.FC = () => {
                             >
                               <div className="p-1">
                                 <button 
-                                  onClick={() => navigate(`/app/insights?fileId=${file.id}`)}
+                                  onClick={() => navigate(`/app/intelligence-hub/${file.id}`)}
+                                  className="w-full flex items-center gap-3 px-3 py-2 text-sm font-bold text-primary hover:bg-primary/5 rounded-lg transition-colors text-left"
+                                >
+                                  <AudioWaveform className="w-4 h-4" />
+                                  Analyze with S.A.V.R.E.
+                                </button>
+                                <button 
+                                  onClick={() => navigate(`/app/intelligence-hub/${file.id}`)}
                                   className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors text-left"
                                 >
-                                  <Sparkles className="w-4 h-4" />
-                                  Review in Chat
+                                  <BrainCircuit className="w-4 h-4" />
+                                  Intelligence Hub
                                 </button>
-                                <button className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors text-left">
+                                <button 
+                                  onClick={() => window.open(`/api/files/${file.id}/view`, '_blank')}
+                                  className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors text-left"
+                                >
                                   <Eye className="w-4 h-4" />
                                   View
                                 </button>
-                                <button className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors text-left">
+                                <button 
+                                  onClick={() => window.open(`/api/files/${file.id}/download`, '_blank')}
+                                  className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors text-left"
+                                >
                                   <Download className="w-4 h-4" />
                                   Download
                                 </button>
@@ -801,68 +837,66 @@ const Files: React.FC = () => {
                 </div>
               </div>
             ) : (
-              visibleFolders.length === 0 && (
-                <div className="flex flex-col items-center justify-center h-64 text-center">
-                  <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-                    <FolderIcon className="w-8 h-8 text-gray-300" />
-                  </div>
-                  <p className="text-gray-500 text-sm font-bold mb-1">No files here yet</p>
-                  <p className="text-gray-400 text-xs mb-4">Upload legal documents to get started with AI analysis.</p>
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    className="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-all shadow-md shadow-blue-200 flex items-center gap-2"
-                  >
-                    <Upload className="w-4 h-4" />
-                    Upload Documents
-                  </button>
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <div className="w-16 h-16 bg-gray-50 rounded-[15px] flex items-center justify-center mb-4">
+                  <FileIcon className="w-8 h-8 text-gray-300" />
                 </div>
-              )
+                <h3 className="text-lg font-bold text-black mb-1">No files found</h3>
+                <p className="text-sm text-gray-400">Upload documents or change your search/filters.</p>
+              </div>
             )}
           </div>
-          {/* Compliance & Security Section */}
-          <div className="mt-12 border-t border-gray-100 pt-8 pb-12">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-12 bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
-              <div className="max-w-md">
-                <h3 className="text-2xl font-bold text-black tracking-tight mb-2">
-                  Security and compliance
-                </h3>
-                <p className="text-gray-500 text-sm font-medium">
-                  Enterprise-grade security and compliance certifications
-                </p>
+        </div>
+
+        {/* Security and Compliance Section */}
+        <div className="pt-8 pb-16">
+          <div className="bg-white rounded-[15px] border border-gray-100 overflow-hidden group shadow-lg">
+            <div className="grid grid-cols-1 md:grid-cols-2">
+              <div className="p-12 space-y-8 border-r border-gray-50">
+                <div>
+                  <div className="flex items-center gap-3 mb-4">
+                    <Shield className="w-7 h-7 text-blue-600" />
+                    <h2 className="text-2xl font-bold text-black tracking-tight">Security and Compliance</h2>
+                  </div>
+                  <p className="text-gray-500 font-medium text-sm leading-relaxed">
+                    Enterprise-grade security and compliance certifications ensuring your sensitive legal data never leaves your control.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-8">
+                  <div className="space-y-2">
+                    <div className="text-xs font-black text-blue-600 uppercase tracking-widest">SOC 2 Type II</div>
+                    <p className="text-[11px] font-bold text-gray-400 leading-tight">Audited controls protect every case on the Lawlify platform.</p>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="text-xs font-black text-emerald-600 uppercase tracking-widest">GDPR</div>
+                    <p className="text-[11px] font-bold text-gray-400 leading-tight">Strict data protection and privacy standards by design.</p>
+                  </div>
+                </div>
               </div>
-              
-              <div className="flex flex-wrap items-center justify-center gap-4 lg:gap-12">
-                {/* SOC 2 Badge */}
-                <div className="flex flex-col items-center gap-4 group">
-                   <div className="w-24 h-24 bg-[#1a1a1a] rounded-full flex flex-col items-center justify-center border-[3px] border-gray-100 shadow-inner group-hover:scale-105 transition-transform duration-300">
-                     <span className="text-white text-sm font-bold leading-tight">SOC 2</span>
-                     <span className="text-white/60 text-[7px] font-black uppercase tracking-tighter">Type II</span>
-                   </div>
-                   <span className="text-[10px] text-gray-400 font-bold max-w-[140px] text-center uppercase tracking-widest leading-tight">Audited controls protect every case</span>
-                </div>
 
-                {/* GDPR Badge */}
-                <div className="flex flex-col items-center gap-4 group">
-                   <div className="w-24 h-24 bg-[#1a1a1a] rounded-full flex flex-col items-center justify-center border-[3px] border-gray-100 shadow-inner group-hover:scale-105 transition-transform duration-300 relative overflow-hidden">
-                     <div className="absolute inset-0 opacity-20 flex items-center justify-center">
-                        <div className="w-20 h-20 border border-dashed border-white rounded-full"></div>
-                     </div>
-                     <span className="text-white text-base font-extrabold tracking-widest relative z-10">GDPR</span>
-                     <span className="text-white/40 text-[7px] font-black uppercase tracking-widest relative z-10">Compliant</span>
-                   </div>
-                   <span className="text-[10px] text-gray-400 font-bold max-w-[140px] text-center uppercase tracking-widest leading-tight">Your data, always your property</span>
-                </div>
-
-
-                <div className="lg:ml-4">
-                  <button className="px-8 py-3 bg-white border border-gray-200 text-black rounded-xl text-xs font-bold hover:bg-gray-50 transition-all shadow-sm active:scale-95">
-                    Learn more
-                  </button>
+              <div className="bg-black p-12 flex flex-col justify-center relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2" />
+                <div className="relative z-10">
+                  <h3 className="text-2xl font-bold text-white mb-4 font-display italic">"Your data, always your property."</h3>
+                  <div className="flex items-center gap-4">
+                    <button className="px-6 py-3 bg-white text-black rounded-[15px] text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all">
+                      Learn More
+                    </button>
+                    <span className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Verification ID: LWL-AI-2026</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+          
+          <div className="mt-6 text-center">
+            <p className="text-[10px] font-bold text-gray-300 uppercase tracking-[0.2em]">
+              Encrypted at rest (AES-256) & In Transit (TLS 1.3)
+            </p>
+          </div>
         </div>
+
       </div>
 
       {/* Move to Folder Modal */}
@@ -873,7 +907,7 @@ const Files: React.FC = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden"
+              className="bg-white rounded-[15px] shadow-2xl w-full max-w-md overflow-hidden"
             >
               <div className="p-6 border-b border-gray-100 flex items-center justify-between">
                 <h3 className="text-lg font-bold text-black">Move to Folder</h3>
@@ -888,7 +922,7 @@ const Files: React.FC = () => {
                 <div className="space-y-2">
                   <button
                     onClick={() => handleMoveSelected('')} // Move to root
-                    className="w-full p-4 flex items-center gap-3 hover:bg-gray-50 rounded-xl transition-colors text-left group"
+                    className="w-full p-4 flex items-center gap-3 hover:bg-gray-50 rounded-[15px] transition-colors text-left group"
                   >
                     <div className="p-2 bg-gray-100 rounded-lg group-hover:bg-white group-hover:shadow-sm transition-all">
                       <Home className="w-5 h-5 text-gray-500" />
@@ -900,7 +934,7 @@ const Files: React.FC = () => {
                     <button
                       key={folder.id}
                       onClick={() => handleMoveSelected(folder.id)}
-                      className="w-full p-4 flex items-center gap-3 hover:bg-gray-50 rounded-xl transition-colors text-left group"
+                      className="w-full p-4 flex items-center gap-3 hover:bg-gray-50 rounded-[15px] transition-colors text-left group"
                     >
                       <div className="p-2 bg-orange-50 rounded-lg group-hover:bg-white group-hover:shadow-sm transition-all">
                         <FolderIcon className="w-5 h-5 text-orange-500" />

@@ -12,7 +12,8 @@ export enum AppView {
   AGENTIC_MENTORSHIP = 'agentic-mentorship',
   DRAFTS = 'drafts',
   CASE_MANAGEMENT = 'case-management',
-  DOCUMENT_INSIGHTS = 'document-insights'
+  DOCUMENT_INSIGHTS = 'document-insights',
+  INTELLIGENCE_HUB = 'intelligence-hub'
 }
 
 export enum WorkspaceType {

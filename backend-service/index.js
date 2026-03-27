@@ -31,6 +31,7 @@ import { sendWelcomeEmail } from './utils/welcomeEmail.js';
 import knowledgeRoutes from './routes/knowledge.js';
 import integrationRoutes from './routes/integrations.js';
 import workspaceRoutes from './routes/workspaces.js';
+import intelligenceRoutes from './routes/intelligence.js';
 import { modelDispatcher } from './services/modelDispatcher.js';
 
 // Simple password verification (supports both plain text and bcrypt)
@@ -108,6 +109,7 @@ const authenticate = async (req, res, next) => {
 
 app.use('/api/integrations', authenticate, integrationRoutes);
 app.use('/api/workspaces', authenticate, workspaceRoutes);
+app.use('/api/intelligence', authenticate, intelligenceRoutes);
 
 // Request Logging
 app.use((req, res, next) => {
@@ -801,6 +803,104 @@ app.delete('/api/files/:id', authenticate, async (req, res) => {
     } catch (error) {
         console.error("Delete file error:", error);
         res.status(500).json({ error: "Failed to delete file" });
+    }
+});
+
+app.get('/api/files/:id/view', authenticate, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { data: file, error: getError } = await supabase
+            .from('files')
+            .select('storage_path, name, type')
+            .eq('id', id)
+            .eq('user_id', req.user.id)
+            .single();
+
+        if (getError || !file) return res.status(404).json({ error: "File not found" });
+
+        const { data, error: storageError } = await supabase.storage
+            .from('legal-documents')
+            .download(file.storage_path);
+
+        if (storageError) throw storageError;
+
+        // Set content type based on file type
+        const mimeTypes = {
+            pdf: 'application/pdf',
+            docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            doc: 'application/msword',
+            xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            xls: 'application/vnd.ms-excel',
+            csv: 'text/csv',
+            json: 'application/json'
+        };
+
+        res.setHeader('Content-Type', mimeTypes[file.type] || 'application/octet-stream');
+        res.setHeader('Content-Disposition', `inline; filename="${file.name}"`);
+        
+        const buffer = Buffer.from(await data.arrayBuffer());
+        res.send(buffer);
+    } catch (error) {
+        console.error("View file error:", error);
+        res.status(500).json({ error: "Failed to view file" });
+    }
+});
+
+app.get('/api/files/:id/download', authenticate, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { data: file, error: getError } = await supabase
+            .from('files')
+            .select('storage_path, name')
+            .eq('id', id)
+            .eq('user_id', req.user.id)
+            .single();
+
+        if (getError || !file) return res.status(404).json({ error: "File not found" });
+
+        const { data, error: storageError } = await supabase.storage
+            .from('legal-documents')
+            .download(file.storage_path);
+
+        if (storageError) throw storageError;
+
+        res.setHeader('Content-Type', 'application/octet-stream');
+        res.setHeader('Content-Disposition', `attachment; filename="${file.name}"`);
+        
+        const buffer = Buffer.from(await data.arrayBuffer());
+        res.send(buffer);
+    } catch (error) {
+        console.error("Download file error:", error);
+        res.status(500).json({ error: "Failed to download file" });
+    }
+});
+
+app.post('/api/files/bulk-delete', authenticate, async (req, res) => {
+    try {
+        const { ids } = req.body;
+        if (!Array.isArray(ids)) return res.status(400).json({ error: "IDs must be an array" });
+
+        // 1. Get storage paths
+        const { data: files, error: getError } = await supabase
+            .from('files')
+            .select('id, storage_path')
+            .in('id', ids)
+            .eq('user_id', req.user.id);
+
+        if (getError) throw getError;
+
+        if (files.length > 0) {
+            const paths = files.map(f => f.storage_path);
+            // 2. Delete from Storage
+            await supabase.storage.from('legal-documents').remove(paths);
+            // 3. Delete from DB
+            await supabase.from('files').delete().in('id', ids);
+        }
+
+        res.json({ success: true, count: files.length });
+    } catch (error) {
+        console.error("Bulk delete error:", error);
+        res.status(500).json({ error: "Failed to perform bulk deletion" });
     }
 });
 
