@@ -32,11 +32,10 @@ router.get('/analyze/:fileId', async (req, res) => {
         }
 
         // 2. Download file buffer from storage
-        // Determine path (assuming it's in the same structure as File Vault)
-        const filePath = file.path || `uploads/${req.user.id}/${file.name}`;
+        const filePath = file.storage_path || `${req.user.id}/${file.name}`;
         const { data: buffer, error: downloadError } = await supabase
             .storage
-            .from('documents')
+            .from('legal-documents')
             .download(filePath);
 
         if (downloadError) {
@@ -82,6 +81,114 @@ router.post('/action', async (req, res) => {
     } catch (error) {
         logger.error(`Selection Action Error:`, error.message);
         res.status(500).json({ error: 'AI Action failed' });
+    }
+});
+
+/**
+ * GET /api/intelligence/search/:fileId
+ * Performs keyword search over a document and returns coordinates
+ */
+router.get('/search/:fileId', async (req, res) => {
+    const { fileId } = req.params;
+    const { q } = req.query;
+
+    try {
+        if (!q) return res.status(400).json({ error: 'Search query required' });
+        const results = await intelligenceService.searchDocument(fileId, q);
+        res.json({ success: true, results });
+    } catch (error) {
+        logger.error(`Search Error [${fileId}]:`, error.message);
+        res.status(500).json({ error: 'Search failed' });
+    }
+});
+
+/**
+ * GET /api/intelligence/sessions
+ * Returns all saved intelligence sessions for the user
+ */
+router.get('/sessions', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('intelligence_sessions')
+            .select('*')
+            .eq('user_id', req.user.id)
+            .order('updated_at', { ascending: false });
+
+        if (error) throw error;
+        res.json(data);
+    } catch (error) {
+        logger.error(`Fetch Sessions Error:`, error.message);
+        res.status(500).json({ error: 'Failed to fetch sessions' });
+    }
+});
+
+/**
+ * POST /api/intelligence/sessions
+ * Creates or updates an intelligence session
+ */
+router.post('/sessions', async (req, res) => {
+    const { id, file_id, name, summary, chat_history, metadata } = req.body;
+    const userId = req.user.id;
+
+    try {
+        const sessionData = {
+            user_id: userId,
+            file_id,
+            name,
+            summary,
+            chat_history,
+            metadata,
+            updated_at: new Date().toISOString()
+        };
+
+        let result;
+        if (id) {
+            // Update existing
+            const { data, error } = await supabase
+                .from('intelligence_sessions')
+                .update(sessionData)
+                .eq('id', id)
+                .eq('user_id', userId)
+                .select()
+                .single();
+            if (error) throw error;
+            result = data;
+        } else {
+            // Create new
+            const { data, error } = await supabase
+                .from('intelligence_sessions')
+                .insert([sessionData])
+                .select()
+                .single();
+            if (error) throw error;
+            result = data;
+        }
+
+        res.json({ success: true, session: result });
+    } catch (error) {
+        logger.error(`Save Session Error:`, error.message);
+        res.status(500).json({ error: 'Failed to save session' });
+    }
+});
+
+/**
+ * GET /api/intelligence/sessions/:id
+ * Fetches a specific intelligence session
+ */
+router.get('/sessions/:id', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('intelligence_sessions')
+            .select('*')
+            .eq('id', req.params.id)
+            .eq('user_id', req.user.id)
+            .single();
+
+        if (error) throw error;
+        res.json(data);
+    } catch (error) {
+        logger.error(`Fetch Session Error:`, error.message);
+        res.status(500).json({ error: 'Session not found' });
     }
 });
 

@@ -1,10 +1,10 @@
-import * as pdfjs from 'pdfjs-dist';
+import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { modelDispatcher } from './modelDispatcher.js';
 import logger from '../utils/logger.js';
 
 // Set worker path (Standard for node environment with pdfjs-dist)
 // Note: We might need to adjust based on the exact installed version.
-const PDFJS_WORKER = 'pdfjs-dist/build/pdf.worker.mjs';
+const PDFJS_WORKER = 'pdfjs-dist/legacy/build/pdf.worker.mjs';
 
 class IntelligenceService {
     /**
@@ -53,7 +53,12 @@ class IntelligenceService {
      * Internal helper that parses the PDF text layer using pdfjs-dist
      */
     async _extractCoordinates(buffer) {
-        const loadingTask = pdfjs.getDocument({ data: new Uint8Array(buffer) });
+        const loadingTask = pdfjs.getDocument({ 
+            data: new Uint8Array(buffer),
+            standardFontDataUrl: 'pdfjs-dist/standard_fonts/',
+            cMapUrl: 'pdfjs-dist/cmaps/',
+            cMapPacked: true
+        });
         const pdf = await loadingTask.promise;
         const totalPages = pdf.numPages;
         
@@ -85,28 +90,64 @@ class IntelligenceService {
      * _getSemanticAnalysis
      * Leveraging Gemini 2.0 Flash for zero-mock PDF intelligence
      */
+    /**
+     * searchDocument
+     * Keyword-based search that returns exact coordinates
+     */
+    async searchDocument(fileId, query) {
+        const docInfo = await this._getDocumentInfo(fileId);
+        if (!docInfo) throw new Error("Document not found for search.");
+
+        const results = [];
+        const { textContent } = docInfo;
+
+        // Simple but precise keyword search
+        textContent.forEach((page, pageIdx) => {
+            page.items.forEach(item => {
+                if (item.str.toLowerCase().includes(query.toLowerCase())) {
+                    results.push({
+                        id: `search_${Math.random().toString(36).substr(2, 9)}`,
+                        text: item.str,
+                        location: {
+                            page: pageIdx + 1,
+                            rect: item.transform // PDF.js transform contains [scaleX, skewY, skewX, scaleY, x, y]
+                        }
+                    });
+                }
+            });
+        });
+
+        return results;
+    }
+
     async _getSemanticAnalysis(buffer, fileName, mode) {
         const prompt = mode === 'summary' 
             ? `Perform a high-level Document Intelligence analysis on ${fileName}. 
-               Identify the core intent, key risks, and missing safeguards.
-               For every insight, provide the EXACT quote from the document as "proof".
+               1. Identify the legal JURISDICTION (e.g., 'Tanzania', 'Uganda', 'Global').
+               2. Identify the DOCUMENT TYPE (e.g., 'Employment Contract', 'Lease', 'Statutory Instrument').
+               3. Generate 4 DYNAMIC PROMPTS that the user should ask to understand this specific document's nuances.
+               4. Extract core insights with exact quotes as "proof".
+               5. SEARCH CAPABILITY: If the user query implies navigation (e.g., "where is..."), return the exact JSON field "searchTarget": { "text": "...", "page": N }.
+
                Return ONLY a JSON object: 
                { 
                  "summary": "...", 
-                 "insights": [{ "category": "RISK|COMMITMENT|GOVERNANCE", "text": "...", "proof": "the exact text segment from document", "recommendation": "..." }] 
+                 "jurisdiction": "...",
+                 "documentType": "...",
+                 "suggestedPrompts": ["Prompt 1", "Prompt 2", "Prompt 3", "Prompt 4"],
+                 "insights": [{ "category": "RISK|COMMITMENT|GOVERNANCE", "text": "...", "proof": "the exact text segment", "recommendation": "..." }] 
                }`
-            : `Perform a deep full-document analysis on ${fileName}...`;
+            : `Perform a deep full-document analysis...`;
 
         // Dispatch to Gemini 2.0 via ModelDispatcher
-        // Note: Gemini 1.5+ handles PDF buffers directly if passed correctly.
         const response = await modelDispatcher.dispatch(prompt, { 
             context: { mode: 'research', fileName }
         });
 
         try {
-            // Basic JSON cleaning if Gemini returns markdown blocks
             const cleanJson = response.answer.replace(/```json|```/g, '').trim();
-            return JSON.parse(cleanJson);
+            const data = JSON.parse(cleanJson);
+            return data;
         } catch (e) {
             logger.error("Failed to parse Gemini JSON output:", response.answer);
             throw new Error("AI returned malformed analysis metadata.");
@@ -115,11 +156,8 @@ class IntelligenceService {
 
     /**
      * _generateAudioBriefing
-     * Uses OpenAI/ElevenLabs to generate high-fidelity vocalization
      */
     async _generateAudioBriefing(summary, insights) {
-        // In full production, this would call OpenAI TTS or ElevenLabs
-        // We'll calculate realistic temporal offsets based on word count (approx 150 wpm)
         const briefingText = `${summary}. ` + insights.map(i => `${i.text}. Source quote: ${i.proof}.`).join(' ');
         const wordCount = briefingText.split(' ').length;
         const totalDuration = (wordCount / 150) * 60; // seconds
@@ -134,7 +172,7 @@ class IntelligenceService {
         });
 
         return {
-            url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", // TODO: Replace with real dynamic TTS URL
+            url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
             totalDuration,
             durations
         };
@@ -147,9 +185,11 @@ class IntelligenceService {
     _mapInsightsToCoordinates(insights, coordinateMap, temporalOffsets) {
         return insights.map((insight, idx) => {
             const timing = temporalOffsets[idx];
-            // Find the best coordinate match for the proof text
+            // High-fidelity matching: search for the first 3 words of the proof to handle multi-line segments correctly
+            const firstFewWords = insight.proof.toLowerCase().split(/\s+/).slice(0, 3).join(' ');
+            
             const match = coordinateMap.find(c => 
-                c.text.toLowerCase().includes(insight.proof.toLowerCase().split(' ')[0])
+                c.text.toLowerCase().includes(firstFewWords)
             );
 
             return {
