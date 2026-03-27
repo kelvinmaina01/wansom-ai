@@ -233,6 +233,10 @@ const AgenticMentorship: React.FC<AgenticMentorshipProps> = ({ user }) => {
   };
 
   const startCall = (mode: MentorMode) => {
+    setShowComingSoon(true);
+    setIsNotified(false);
+    
+    /* Live sessions are currently in laboratory calibration
     setSelectedMode(mode);
     setIsInCall(true);
     setCallDuration(0);
@@ -242,9 +246,9 @@ const AgenticMentorship: React.FC<AgenticMentorshipProps> = ({ user }) => {
       text: mode.greeting,
       timestamp: new Date()
     }]);
-    // Simulate Amani speaking for the greeting
     setIsAmaniSpeaking(true);
     setTimeout(() => setIsAmaniSpeaking(false), 4000);
+    */
   };
 
   const endCall = async () => {
@@ -360,6 +364,121 @@ const AgenticMentorship: React.FC<AgenticMentorshipProps> = ({ user }) => {
       setIsAmaniSpeaking(false);
     }
   };
+
+  const [showComingSoon, setShowComingSoon] = useState(false);
+  const [isNotified, setIsNotified] = useState(false);
+
+  // --- COMING SOON OVERLAY ---
+  if (showComingSoon) {
+    return (
+      <div className="h-full w-full bg-white bg-dots relative overflow-hidden flex flex-col items-center justify-center p-12 text-center">
+        {/* Close Button */}
+        <button 
+          onClick={() => setShowComingSoon(false)}
+          className="absolute top-10 right-10 p-4 bg-white border border-gray-100 rounded-3xl hover:bg-gray-50 transition-all z-50 shadow-xl shadow-black/5 flex items-center justify-center hover:scale-110 active:scale-90"
+        >
+          <X className="w-6 h-6 text-gray-400 font-black" />
+        </button>
+
+        {/* Background Accents (same as before) */}
+        <div className="absolute inset-0 bg-red-600/5 backdrop-blur-[2px] z-0" />
+       
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          className="relative z-10 max-w-2xl space-y-10"
+        >
+           <div className="flex justify-center">
+             <div className="w-28 h-28 bg-white rounded-[2.5rem] flex items-center justify-center border border-gray-100 shadow-2xl shadow-red-500/10 relative group">
+                <div className="absolute inset-0 bg-red-500/5 rounded-[2.5rem] animate-pulse" />
+                <Sparkles className="w-12 h-12 text-red-600 relative z-10" />
+                <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-[10px] font-black border-4 border-white">!</div>
+             </div>
+           </div>
+           
+           <div className="space-y-4">
+             <div className="flex items-center justify-center gap-2">
+               <span className="h-[1px] w-8 bg-gray-200" />
+               <span className="text-[10px] font-black text-red-500 uppercase tracking-[0.4em]">Feature In Lab</span>
+               <span className="h-[1px] w-8 bg-gray-200" />
+             </div>
+             <h1 className="text-7xl font-black tracking-tighter text-black">
+               Coming <span className="text-red-600">Soon</span>
+             </h1>
+             <p className="text-xl text-gray-500 font-medium leading-relaxed max-w-xl mx-auto">
+               Our <span className="text-black font-bold">AI Mentorship Hub</span> is currently under final calibration. 
+               We're training the Amani engine on specialized African case law to ensure world-class socratic guidance.
+             </p>
+           </div>
+
+           <div className="pt-4 flex flex-col items-center gap-6">
+              <div className="inline-flex items-center gap-4 px-6 py-4 bg-white/80 backdrop-blur-md rounded-2xl border border-gray-100 shadow-xl">
+                 <div className="flex -space-x-3">
+                    {[1,2,3,4].map(i => (
+                      <div key={i} className={`w-10 h-10 rounded-full border-4 border-white bg-gray-${i*100+100} flex items-center justify-center text-[8px] font-black text-white overflow-hidden shadow-sm`}>
+                         <img src={`https://i.pravatar.cc/100?u=${i+10}`} alt="User" />
+                      </div>
+                    ))}
+                    <div className="w-10 h-10 rounded-full border-4 border-white bg-red-500 flex items-center justify-center text-[8px] font-black text-white shadow-sm">
+                      +4k
+                    </div>
+                 </div>
+                 <div className="text-left">
+                   <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Join the community</p>
+                   <p className="text-xs font-bold text-gray-700">Early Access Waitlist</p>
+                 </div>
+              </div>
+              
+              <button 
+                onClick={() => setIsNotified(true)}
+                className={`px-10 py-5 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all shadow-2xl hover:scale-105 active:scale-95 flex items-center gap-3 ${
+                  isNotified 
+                    ? 'bg-emerald-500 text-white shadow-emerald-500/20' 
+                    : 'bg-black text-white shadow-black/20 hover:bg-red-600'
+                }`}
+              >
+                 {isNotified ? (
+                   <>
+                    <Check className="w-4 h-4" /> Waitlist Joined
+                   </>
+                 ) : (
+                   'Notify Me When Ready'
+                 )}
+              </button>
+              {isNotified && (
+                <motion.p 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-emerald-500 font-bold text-xs"
+                >
+                  Success! We will alert you the moment Amani goes live.
+                </motion.p>
+              )}
+           </div>
+        </motion.div>
+
+        {/* Floating Animated Orbs */}
+        <motion.div 
+          animate={{ 
+            y: [0, -40, 0],
+            x: [0, 20, 0],
+            rotate: [0, 10, 0]
+          }}
+          transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
+          className="absolute -top-48 -right-48 w-[500px] h-[500px] bg-red-500/5 rounded-full blur-[120px]" 
+        />
+        <motion.div 
+          animate={{ 
+            y: [0, 40, 0],
+            x: [0, -20, 0],
+            rotate: [0, -10, 0]
+          }}
+          transition={{ repeat: Infinity, duration: 10, ease: "easeInOut", delay: 1 }}
+          className="absolute -bottom-48 -left-48 w-[500px] h-[500px] bg-red-500/5 rounded-full blur-[120px]" 
+        />
+      </div>
+    );
+  }
 
   // --- IN-CALL VIEW ---
   if (isInCall && selectedMode) {

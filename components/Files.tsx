@@ -51,19 +51,8 @@ interface UploadedFile {
 }
 
 // --- Mock Data ---
-const MOCK_FOLDERS: Folder[] = [
-  { id: 'f1', name: 'Case Files 2024', created_at: new Date('2024-01-15').toISOString() },
-  { id: 'f2', name: 'Contracts', created_at: new Date('2024-02-01').toISOString() },
-  { id: 'f3', name: 'Legal Research', created_at: new Date('2024-02-10').toISOString() },
-];
-
-const MOCK_FILES: UploadedFile[] = [
-  { id: '1', name: 'Land_Registry_Act_2012.pdf', size: 2400000, type: 'pdf', created_at: new Date('2024-03-01').toISOString(), status: 'completed', folder_id: 'f3', uploaded_by: 'kelvin maina', tags: ['Legislation', 'Public'], is_starred: true },
-  { id: '2', name: 'Case_Precedents_2023.xlsx', size: 1500000, type: 'xlsx', created_at: new Date('2024-02-28').toISOString(), status: 'completed', folder_id: 'f1', uploaded_by: 'kelvin maina', tags: ['Internal', 'Draft'], is_starred: false },
-  { id: '3', name: 'Client_Data_Export.csv', size: 450000, type: 'csv', created_at: new Date('2024-02-25').toISOString(), status: 'analyzing', uploaded_by: 'system admin', tags: ['Confidential'], is_starred: false }, // Root
-  { id: '4', name: 'Employment_Contract_Template.docx', size: 120000, type: 'docx', created_at: new Date('2024-03-05').toISOString(), status: 'completed', folder_id: 'f2', uploaded_by: 'jane doe', tags: ['Template'], is_starred: true },
-  { id: '5', name: 'System_Config.json', size: 25000, type: 'json', created_at: new Date('2024-03-10').toISOString(), status: 'completed', uploaded_by: 'tech support', tags: ['System'], is_starred: false }, // Root
-];
+const MOCK_FOLDERS: Folder[] = [];
+const MOCK_FILES: UploadedFile[] = [];
 
 // --- Constants ---
 const FILE_ICONS: Record<string, string> = {
@@ -587,37 +576,55 @@ const Files: React.FC = () => {
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="bg-green-50 border border-green-100 rounded-2xl p-4 flex items-center justify-between shadow-sm"
+                className="bg-green-50 border border-green-100 rounded-[2rem] p-6 flex flex-col md:flex-row items-center justify-between shadow-xl"
               >
-                <div className="flex items-center gap-4">
-                  <span className="text-sm font-bold text-green-900">{selectedFileIds.size} selected</span>
+                <div className="flex items-center gap-6 mb-4 md:mb-0">
+                  <div className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-green-500/20">
+                    <Check className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <span className="text-lg font-black text-green-900 leading-none">{selectedFileIds.size} selected</span>
+                    <p className="text-[10px] font-bold text-green-700 uppercase tracking-widest mt-1">Ready for Action</p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-4">
                   <button 
-                    onClick={() => navigate(`/app/insights?fileId=${Array.from(selectedFileIds).join(',')}`)}
-                    className="flex items-center gap-2 px-4 py-2 bg-white border border-green-200 rounded-[15px] text-xs font-bold text-green-700 hover:bg-green-50 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/app/insights?fileId=${Array.from(selectedFileIds).join(',')}`);
+                    }}
+                    className="flex items-center gap-3 px-8 py-4 bg-white border border-green-200 rounded-2xl text-sm font-black text-green-700 hover:bg-green-50 transition-all shadow-sm hover:scale-105 active:scale-95"
                   >
-                    <Sparkles className="w-4 h-4" />
+                    <Sparkles className="w-5 h-5" />
                     Review in Chat
                   </button>
                   <button
-                    onClick={() => openMoveModal()}
-                    className="flex items-center gap-2 px-4 py-2 bg-white border border-green-200 rounded-[15px] text-xs font-bold text-green-700 hover:bg-green-50 transition-colors"
+                    onClick={(e) => {
+                       e.stopPropagation();
+                       openMoveModal();
+                    }}
+                    className="flex items-center gap-3 px-8 py-4 bg-white border border-green-200 rounded-2xl text-sm font-black text-green-700 hover:bg-green-50 transition-all shadow-sm hover:scale-105 active:scale-95"
                   >
-                    <FolderInput className="w-4 h-4" />
+                    <FolderInput className="w-5 h-5" />
                     Move to Folder
                   </button>
                   <button
-                    onClick={() => setSelectedFileIds(new Set())}
-                    className="px-4 py-2 bg-white border border-green-200 rounded-[15px] text-xs font-bold text-green-700 hover:bg-green-50 transition-colors"
+                    onClick={(e) => {
+                       e.stopPropagation();
+                       setSelectedFileIds(new Set());
+                    }}
+                    className="px-8 py-4 bg-white border border-gray-200 rounded-2xl text-sm font-black text-gray-400 hover:bg-gray-50 transition-all"
                   >
                     Cancel
                   </button>
                   <button
-                    onClick={handleDeleteSelected}
-                    className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-[15px] text-xs font-bold hover:bg-red-600 transition-colors shadow-sm"
+                    onClick={(e) => {
+                       e.stopPropagation();
+                       handleDeleteSelected();
+                    }}
+                    className="flex items-center gap-3 px-8 py-4 bg-red-500 text-white rounded-2xl text-sm font-black hover:bg-red-600 transition-all shadow-xl shadow-red-500/20 hover:scale-105 active:scale-95"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-5 h-5" />
                     Delete
                   </button>
                 </div>
@@ -626,7 +633,7 @@ const Files: React.FC = () => {
           </AnimatePresence>
 
           {/* Content Grid/List */}
-          <div className="bg-white border border-gray-100 rounded-[15px] overflow-hidden shadow-sm min-h-[400px]">
+          <div className="bg-white border border-gray-100 rounded-[2.5rem] overflow-hidden shadow-sm min-h-[600px] mb-20 p-2">
             {/* Folders Grid (Only at root) */}
             {visibleFolders.length > 0 && (
               <div className="p-6 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 border-b border-gray-50">
@@ -693,22 +700,29 @@ const Files: React.FC = () => {
                   {visibleFiles.map((file) => (
                     <div
                       key={file.id}
-                      className={`grid grid-cols-[auto_auto_1fr_auto_auto_auto_auto_auto] gap-4 p-4 items-center hover:bg-gray-50 transition-colors group ${selectedFileIds.has(file.id) ? 'bg-gray-50' : ''}`}
+                      onClick={() => toggleSelection(file.id)}
+                      className={`grid grid-cols-[auto_auto_1fr_auto_auto_auto_auto_auto] gap-4 p-5 items-center hover:bg-gray-50 transition-all cursor-pointer group border-b border-transparent ${selectedFileIds.has(file.id) ? 'bg-blue-50/40 border-blue-100' : ''}`}
                     >
                       {/* Checkbox */}
                       <div className="w-5 flex justify-center">
                         <input
                           type="checkbox"
                           checked={selectedFileIds.has(file.id)}
-                          onChange={() => toggleSelection(file.id)}
-                          className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                          onChange={(e) => {
+                             e.stopPropagation();
+                             toggleSelection(file.id);
+                          }}
+                          className="w-5 h-5 rounded-lg border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer transition-transform active:scale-90"
                         />
                       </div>
 
                       {/* Star */}
                       <div className="w-5 flex justify-center">
-                        <button onClick={() => toggleStar(file.id)}>
-                          <Star className={`w-4 h-4 ${file.is_starred ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300 hover:text-yellow-400'}`} />
+                        <button onClick={(e) => {
+                           e.stopPropagation();
+                           toggleStar(file.id);
+                        }}>
+                          <Star className={`w-5 h-5 transition-all ${file.is_starred ? 'fill-yellow-400 text-yellow-400 scale-110' : 'text-gray-200 hover:text-yellow-400'}`} />
                         </button>
                       </div>
 
@@ -783,37 +797,52 @@ const Files: React.FC = () => {
                               exit={{ opacity: 0, scale: 0.95, y: 10 }}
                               className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden"
                             >
-                              <div className="p-1">
+                              <div className="p-1" onClick={(e) => e.stopPropagation()}>
                                 <button 
-                                  onClick={() => navigate(`/app/intelligence-hub/${file.id}`)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigate(`/app/intelligence-hub/${file.id}`);
+                                  }}
                                   className="w-full flex items-center gap-3 px-3 py-2 text-sm font-bold text-primary hover:bg-primary/5 rounded-lg transition-colors text-left"
                                 >
                                   <AudioWaveform className="w-4 h-4" />
                                   Analyze with S.A.V.R.E.
                                 </button>
                                 <button 
-                                  onClick={() => navigate(`/app/intelligence-hub/${file.id}`)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigate(`/app/intelligence-hub/${file.id}`);
+                                  }}
                                   className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors text-left"
                                 >
                                   <BrainCircuit className="w-4 h-4" />
                                   Intelligence Hub
                                 </button>
                                 <button 
-                                  onClick={() => window.open(`/api/files/${file.id}/view`, '_blank')}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    window.open(`/api/files/${file.id}/view`, '_blank');
+                                  }}
                                   className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors text-left"
                                 >
                                   <Eye className="w-4 h-4" />
                                   View
                                 </button>
                                 <button 
-                                  onClick={() => window.open(`/api/files/${file.id}/download`, '_blank')}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    window.open(`/api/files/${file.id}/download`, '_blank');
+                                  }}
                                   className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors text-left"
                                 >
                                   <Download className="w-4 h-4" />
                                   Download
                                 </button>
                                 <button
-                                  onClick={() => openMoveModal(file.id)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openMoveModal(file.id);
+                                  }}
                                   className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors text-left"
                                 >
                                   <FolderInput className="w-4 h-4" />
@@ -821,7 +850,10 @@ const Files: React.FC = () => {
                                 </button>
                                 <div className="h-px bg-gray-100 my-1"></div>
                                 <button
-                                  onClick={() => handleDeleteFile(file.id)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteFile(file.id);
+                                  }}
                                   className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors text-left"
                                 >
                                   <Trash2 className="w-4 h-4" />
