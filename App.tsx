@@ -113,6 +113,7 @@ const AppLayout: React.FC<{ supabaseUser: User | null; activeWorkspace: any }> =
   const [caseManagerSubView, setCaseManagerSubView] = useState('Cases');
   const [connectedIds, setConnectedIds] = useState<Set<string>>(new Set());
   const [isFetchingIntegrations, setIsFetchingIntegrations] = useState(false);
+  const [documentMetadata, setDocumentMetadata] = useState<{ title: string; status: string; actions: any[] } | null>(null);
 
   useEffect(() => {
     const state = location.state as { subView?: string } | null;
@@ -172,7 +173,9 @@ const AppLayout: React.FC<{ supabaseUser: User | null; activeWorkspace: any }> =
   };
 
   // Derive currentView from the current route
-  const pathSegment = location.pathname.replace('/app/', '').replace('/app', '');
+  const pathParts = location.pathname.split('/').filter(Boolean);
+  const appIndex = pathParts.indexOf('app');
+  const pathSegment = appIndex !== -1 && pathParts[appIndex + 1] ? pathParts[appIndex + 1] : 'overview';
   const currentView = ROUTE_TO_VIEW[pathSegment] || AppView.LEGAL_AI;
 
   const handleViewChange = (view: AppView) => {
@@ -222,7 +225,7 @@ const AppLayout: React.FC<{ supabaseUser: User | null; activeWorkspace: any }> =
       case AppView.CASE_MANAGEMENT:
         return <CaseManager activeSubView={caseManagerSubView} />;
       case AppView.DOCUMENT_INSIGHTS:
-        return <DocumentInsights />;
+        return <DocumentInsights setMetadata={setDocumentMetadata} />;
       case AppView.INTELLIGENCE_HUB:
         return <IntelligenceHub />;
       case AppView.SETTINGS:
@@ -299,6 +302,7 @@ const AppLayout: React.FC<{ supabaseUser: User | null; activeWorkspace: any }> =
             user={user}
             workspaceId={activeWorkspace?.id}
             connectedIds={connectedIds}
+            documentMetadata={documentMetadata}
           />
         </div>
       )}
@@ -314,14 +318,18 @@ const AppLayout: React.FC<{ supabaseUser: User | null; activeWorkspace: any }> =
               : 'h-16 opacity-100 border-b border-gray-100'
           }`}>
             <div className="flex items-center gap-4 text-sm font-semibold">
-              <div className="flex items-center gap-2 text-gray-400 hover:text-black cursor-pointer transition-colors group">
-                <div className="w-6 h-6 bg-primary rounded-md flex items-center justify-center shadow-sm group-hover:shadow-primary/20 transition-all">
-                  <Scale className="w-3.5 h-3.5 text-white" />
-                </div>
-                <span>Lawlify</span>
-              </div>
-              <ChevronRight className="w-4 h-4 text-gray-300" />
-              <span className="text-black">{getViewLabel(currentView)}</span>
+              {currentView !== AppView.DOCUMENT_INSIGHTS && (
+                <>
+                  <div className="flex items-center gap-2 text-gray-400 hover:text-black cursor-pointer transition-colors group">
+                    <div className="w-6 h-6 bg-primary rounded-md flex items-center justify-center shadow-sm group-hover:shadow-primary/20 transition-all">
+                      <Scale className="w-3.5 h-3.5 text-white" />
+                    </div>
+                    <span>Lawlify</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-gray-300" />
+                  <span className="text-black">{getViewLabel(currentView)}</span>
+                </>
+              )}
             </div>
 
             <div className="flex items-center gap-6 relative">
@@ -471,12 +479,16 @@ const App: React.FC = () => {
         }} /> : <Navigate to="/auth" replace />}
       />
       <Route
-        path="/app/*"
-        element={user ? (hasCompletedOnboarding ? <AppLayout supabaseUser={user} activeWorkspace={activeWorkspace} /> : <Navigate to="/onboarding" replace />) : <Navigate to="/" replace />}
+        path="/app/insights/:fileId"
+        element={user ? <AppLayout supabaseUser={user} activeWorkspace={activeWorkspace} /> : <Navigate to="/" replace />}
       />
       <Route
         path="/app/intelligence-hub/:fileId"
         element={user ? <AppLayout supabaseUser={user} activeWorkspace={activeWorkspace} /> : <Navigate to="/" replace />}
+      />
+      <Route
+        path="/app/*"
+        element={user ? (hasCompletedOnboarding ? <AppLayout supabaseUser={user} activeWorkspace={activeWorkspace} /> : <Navigate to="/onboarding" replace />) : <Navigate to="/" replace />}
       />
       {/* Admin Route - Requires Admin Authentication */}
       <Route

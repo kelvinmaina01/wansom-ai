@@ -30,6 +30,71 @@ import {
   Scale
 } from 'lucide-react';
 import FollowUpCard from './FollowUpCard';
+import { 
+  AlertTriangle, 
+  Info, 
+  CheckCircle2, 
+  HelpCircle, 
+  Flag,
+  Calendar,
+  Lock,
+  ArrowRight
+} from 'lucide-react';
+
+interface SmartCardProps {
+  theme?: 'red' | 'blue' | 'purple' | 'teal' | 'amber' | 'green' | 'gray';
+  title: string;
+  icon?: string;
+  badge?: string;
+  citation?: string;
+  children: React.ReactNode;
+}
+
+const SmartCard: React.FC<SmartCardProps> = ({ theme = 'blue', title, icon, badge, citation, children }) => {
+  const themeClasses = {
+    red: 'border-red-500 bg-red-50/50 text-red-900',
+    blue: 'border-blue-500 bg-blue-50/50 text-blue-900',
+    purple: 'border-purple-500 bg-purple-50/50 text-purple-900',
+    teal: 'border-emerald-500 bg-emerald-50/50 text-emerald-900',
+    amber: 'border-amber-500 bg-amber-50/50 text-amber-900',
+    green: 'border-green-500 bg-green-50/50 text-green-900',
+    gray: 'border-gray-500 bg-gray-50/50 text-gray-900'
+  };
+
+  const badgeClasses = {
+    red: 'bg-red-100 text-red-700',
+    blue: 'bg-blue-100 text-blue-700',
+    purple: 'bg-purple-100 text-purple-700',
+    teal: 'bg-emerald-100 text-emerald-700',
+    amber: 'bg-amber-100 text-amber-700',
+    green: 'bg-green-100 text-green-700',
+    gray: 'bg-gray-100 text-gray-700'
+  };
+
+  return (
+    <div className={`my-6 border-l-4 rounded-r-2xl p-6 shadow-sm ${themeClasses[theme]} transition-all hover:shadow-md`}>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          {icon && <span className="text-xl">{icon}</span>}
+          <h4 className="font-black uppercase tracking-tight text-sm">{title}</h4>
+        </div>
+        {badge && (
+          <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tighter ${badgeClasses[theme]}`}>
+            {badge}
+          </span>
+        )}
+      </div>
+      <div className="text-[15px] leading-relaxed font-medium">
+        {children}
+      </div>
+      {citation && (
+        <div className="mt-4 pt-4 border-t border-black/5 text-[10px] font-bold opacity-40 uppercase tracking-widest flex items-center gap-1">
+          <LucideFileText className="w-3 h-3" /> Source: {citation}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const LogoCursor = () => (
   <motion.div
@@ -258,19 +323,43 @@ const LegalResponse: React.FC<LegalResponseProps> = ({
                     <span className="text-gray-900 text-[17px] leading-relaxed">{children}</span>
                   </li>
                 ),
-                code: ({ children, className }) => {
-                  const isHtml = className?.includes('language-html');
-                  if (isHtml) {
+                code: ({ children, className, ...props }: any) => {
+                  const match = /language-(\w+)/.exec(className || '');
+                  const lang = match ? match[1] : '';
+                  const content = String(children).replace(/\n$/, '');
+
+                  if (lang === 'html') {
                     return (
                       <div className="my-8 border border-gray-100 rounded-[15px] bg-gray-50/50 overflow-hidden shadow-sm">
-                        <div className="px-6 py-3 bg-white border-b border-gray-100 flex items-center justify-between">
-                        </div>
                         <pre className="p-8 text-[13px] font-mono leading-relaxed text-gray-600 overflow-x-auto selection:bg-primary selection:text-white">
                           {children}
                         </pre>
                       </div>
                     );
                   }
+
+                  if (lang === 'smartcard') {
+                    // Extract attributes from the meta string (e.g., ```smartcard title="Title" theme="blue")
+                    const meta = (props as any).node?.data?.meta || '';
+                    const title = meta.match(/title="([^"]+)"/)?.[1] || 'Intelligence Card';
+                    const theme = (meta.match(/theme="([^"]+)"/)?.[1] || 'blue') as any;
+                    const icon = meta.match(/icon="([^"]+)"/)?.[1] || '⚖️';
+                    const badge = meta.match(/badge="([^"]+)"/)?.[1];
+                    const citation = meta.match(/citation="([^"]+)"/)?.[1];
+
+                    return (
+                      <SmartCard 
+                        title={title}
+                        theme={theme}
+                        icon={icon}
+                        badge={badge}
+                        citation={citation}
+                      >
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+                      </SmartCard>
+                    );
+                  }
+
                   return (
                     <code className="bg-gray-100/80 text-primary px-2 py-0.5 rounded-lg font-mono text-[13px] border border-gray-200/50">
                       {children}

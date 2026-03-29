@@ -1,17 +1,17 @@
 import React from 'react';
 import { 
-  LayoutDashboard, 
-  Files, 
-  Briefcase, 
+  Activity, 
+  Database, 
+  Users, 
   Settings, 
   Scale,
-  Puzzle,
-  Gavel,
-  GraduationCap,
-  FileText,
+  Blocks,
+  Landmark,
+  Trophy,
+  PenTool,
   PanelLeftClose,
   PanelLeftOpen,
-  Zap
+  FolderKanban
 } from 'lucide-react';
 import { AppView } from '../../types';
 
@@ -33,7 +33,7 @@ const GlobalRail: React.FC<GlobalRailProps> = ({
   onToggleSidebar
 }) => {
   return (
-    <div className="w-20 h-screen bg-black flex flex-col items-center py-6 shrink-0 z-50 border-r border-white/5 overflow-hidden">
+    <div className="w-20 h-screen bg-zinc-900/60 backdrop-blur-2xl flex flex-col items-center py-6 shrink-0 z-50 border-r border-white/10 overflow-hidden">
       {/* Logo */}
       <div 
         className="w-12 h-12 mb-12 cursor-pointer hover:scale-110 transition-transform flex items-center justify-center shrink-0"
@@ -47,55 +47,55 @@ const GlobalRail: React.FC<GlobalRailProps> = ({
       {/* Nav Icons */}
       <nav className="flex-1 flex flex-col gap-6 no-scrollbar overflow-y-auto w-full items-center">
         <RailItem 
-          icon={<LayoutDashboard className="w-5 h-5" />} 
+          icon={<Activity className="w-7 h-7" />} 
           active={currentView === AppView.OVERVIEW}
           onClick={() => onViewChange(AppView.OVERVIEW)}
           label="Home"
         />
         <RailItem 
-          icon={<Scale className="w-5 h-5" />} 
+          icon={<Scale className="w-7 h-7" />} 
           active={currentView === AppView.LEGAL_AI}
           onClick={() => onViewChange(AppView.LEGAL_AI)}
           label="Counsel"
         />
         <RailItem 
-          icon={<Briefcase className="w-5 h-5" />} 
+          icon={<Users className="w-7 h-7" />} 
           active={currentView === AppView.LEGAL_SPECIALISTS}
           onClick={() => onViewChange(AppView.LEGAL_SPECIALISTS)}
           label="Experts"
         />
         <RailItem 
-          icon={<Zap className="w-5 h-5" />} 
+          icon={<FolderKanban className="w-7 h-7" />} 
           active={currentView === AppView.CASE_MANAGEMENT}
           onClick={() => onViewChange(AppView.CASE_MANAGEMENT)}
           label="Cases"
         />
         <RailItem 
-          icon={<Gavel className="w-5 h-5" />} 
+          icon={<Landmark className="w-7 h-7" />} 
           active={currentView === AppView.JUDICIAL_ANALYTICS}
           onClick={() => onViewChange(AppView.JUDICIAL_ANALYTICS)}
           label="Courts"
         />
         <RailItem 
-          icon={<Puzzle className="w-5 h-5" />} 
+          icon={<Blocks className="w-7 h-7" />} 
           active={currentView === AppView.INTEGRATIONS}
           onClick={() => onViewChange(AppView.INTEGRATIONS)}
-          label="Market"
+          label="Integrations"
         />
         <RailItem 
-          icon={<GraduationCap className="w-5 h-5" />} 
+          icon={<Trophy className="w-7 h-7" />} 
           active={currentView === AppView.AGENTIC_MENTORSHIP}
           onClick={() => onViewChange(AppView.AGENTIC_MENTORSHIP)}
           label="Mentorship"
         />
         <RailItem 
-          icon={<FileText className="w-5 h-5" />} 
+          icon={<PenTool className="w-7 h-7" />} 
           active={currentView === AppView.DRAFTS}
           onClick={() => onViewChange(AppView.DRAFTS)}
           label="Drafts"
         />
         <RailItem 
-          icon={<Files className="w-5 h-5" />} 
+          icon={<Database className="w-7 h-7" />} 
           active={currentView === AppView.FILES}
           onClick={() => onViewChange(AppView.FILES)}
           label="Vault"
@@ -105,7 +105,7 @@ const GlobalRail: React.FC<GlobalRailProps> = ({
       {/* Bottom Icons */}
       <div className="flex flex-col gap-6 mt-auto w-full items-center">
         <RailItem 
-          icon={<Settings className="w-5 h-5" />} 
+          icon={<Settings className="w-7 h-7" />} 
           active={currentView === AppView.SETTINGS}
           onClick={() => onViewChange(AppView.SETTINGS)}
           label="Config"

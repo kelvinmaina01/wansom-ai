@@ -104,6 +104,28 @@ class SkillEngine {
     return gaps;
   }
 
+  deepDetectJurisdiction(fullText) {
+    if (!fullText) return null;
+    const text = fullText.toLowerCase();
+    
+    // Load the signal dictionary from the jurisdiction-detection reference
+    // This is a "hard-coded" logic extension based on the document-intelligence skill
+    const signals = {
+        'kenya': ['milimani', 'nairobi', 'mombasa', 'cap 226', 'eklr', 'kenya gazette'],
+        'uganda': ['kampala', 'entebbe', 'ugsc', 'ugca', 'uganda gazette', 'laws of uganda'],
+        'tanzania': ['dar es salaam', 'dodoma', 'tzca', 'tzhc', 'tanzania gazette'],
+        'rwanda': ['kigali', 'kiac', 'rwf', 'rwandan franc'],
+        'ethiopia': ['addis ababa', 'etb', 'birr', 'negarit gazette']
+    };
+
+    for (const [juris, keywords] of Object.entries(signals)) {
+        if (keywords.some(k => text.includes(k))) {
+            return juris;
+        }
+    }
+    return null;
+  }
+
   loadSkill(skillId) {
     if (this._cache[skillId]) return this._cache[skillId];
 
@@ -113,7 +135,12 @@ class SkillEngine {
     try {
       const skillPath = path.join(this.skillsDir, skillMeta.path);
       if (fs.existsSync(skillPath)) {
-        const content = fs.readFileSync(skillPath, 'utf8');
+        let content = fs.readFileSync(skillPath, 'utf8');
+        
+        // Resolve references: look for lines like "- `references/file.md`" 
+        // and inject their content or a clear marker.
+        content = this._resolveReferences(content, path.dirname(skillPath));
+        
         this._cache[skillId] = content;
         return content;
       }
@@ -121,6 +148,23 @@ class SkillEngine {
       logger.error(`Failed to read skill file ${skillId}:`, e.message);
     }
     return `[Skill file not found for ${skillId}]`;
+  }
+
+  _resolveReferences(content, baseDir) {
+    const lines = content.split('\n');
+    const resolvedLines = lines.map(line => {
+      // Pattern: - `references/filename.md` ...
+      const refMatch = line.match(/-\s+`?(references\/[\w-]+\.md)`?/);
+      if (refMatch) {
+        const refPath = path.join(baseDir, refMatch[1]);
+        if (fs.existsSync(refPath)) {
+          const refContent = fs.readFileSync(refPath, 'utf8');
+          return `\n### REFERENCE: ${refMatch[1]}\n\n${refContent}\n\n---\n`;
+        }
+      }
+      return line;
+    });
+    return resolvedLines.join('\n');
   }
 
   loadSkills(skillIds) {

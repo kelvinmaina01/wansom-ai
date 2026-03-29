@@ -129,6 +129,14 @@
         "deadline", "statutory clock", "calculate dates", "court timeline", "procedure rules", "verifying affidavit", "service of summons", "case", "matter", "update case", "follow-up document"
       ],
       "auto_load_with_docs": true
+    },
+    {
+      "id": "doc-intelligence",
+      "path": "public/intelligence/document-intelligence/SKILL.md",
+      "triggers": [
+        "document upload", "analyse this document", "review this contract", "summarise this judgment", "what does this say", "find clause", "rewrite this section", "add a paragraph", "check for risks", "what jurisdiction", "read", "edit", "summarise", "extract intelligence", "contract", "judgment", "filing", "document"
+      ],
+      "auto_load_with_docs": true
     }
   ]
 }

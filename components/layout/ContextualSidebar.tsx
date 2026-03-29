@@ -7,21 +7,22 @@ import {
   Shield,
   Clock,
   LayoutGrid,
-  MessageSquare,
+  MessageCircle,
   FileText,
-  Workflow,
-  History,
+  BarChart3,
+  SearchCheck,
   Settings as SettingsIcon,
   CreditCard,
-  User,
+  Bot,
   Radio,
   PanelLeftClose,
   PanelLeftOpen,
-  Briefcase,
+  FolderClosed,
   Users,
   Calendar,
-  DollarSign,
-  BarChart3,
+  Receipt,
+  Radar,
+  History,
   PlayCircle} from 'lucide-react';
 import { motion } from 'motion/react';
 import { supabase } from '../../lib/supabase';
@@ -36,6 +37,7 @@ interface ContextualSidebarProps {
   workspaceId?: string;
   connectedIds?: Set<string>;
   isSidebarCollapsed?: boolean;
+  documentMetadata?: { title: string; status: string; actions: any[] } | null;
 }
 
 interface SidebarSection {
@@ -55,6 +57,7 @@ const ContextualSidebar: React.FC<ContextualSidebarProps> = ({
   workspaceId,
   connectedIds = new Set(),
   isSidebarCollapsed = false,
+  documentMetadata,
 }) => {
   const [teamMembers, setTeamMembers] = React.useState<any[]>([]);
   const [invitations, setInvitations] = React.useState<any[]>([]);
@@ -115,7 +118,7 @@ const ContextualSidebar: React.FC<ContextualSidebarProps> = ({
     switch (currentView) {
       case AppView.OVERVIEW:
         return {
-          title: 'Intelligence Hub',
+          title: 'Document Intelligence',
           sections: [
             { label: 'Project overview', active: true, icon: <LayoutGrid className="w-5 h-5" /> },
             { label: 'Recent activity', icon: <Clock className="w-5 h-5" /> },
@@ -131,19 +134,19 @@ const ContextualSidebar: React.FC<ContextualSidebarProps> = ({
               label: 'Active sessions', 
               active: activeSubView === 'Active chats' || !activeSubView,
               onClick: () => onSubViewChange?.('Active chats'),
-              icon: <MessageSquare className="w-5 h-5" />
+              icon: <MessageCircle className="w-5 h-5" />
             },
             { 
               label: 'Persona library',
               active: activeSubView === 'Persona library',
               onClick: () => onSubViewChange?.('Persona library'),
-              icon: <User className="w-5 h-5" />
+              icon: <Bot className="w-5 h-5" />
             },
             { 
               label: 'Audit history',
               active: activeSubView === 'History',
               onClick: () => onSubViewChange?.('History'),
-              icon: <History className="w-5 h-5" />
+              icon: <SearchCheck className="w-5 h-5" />
             },
           ]
         };
@@ -229,19 +232,19 @@ const ContextualSidebar: React.FC<ContextualSidebarProps> = ({
               label: 'Judge directory', 
               active: activeSubView === 'Judge directory' || !activeSubView, 
               onClick: () => onSubViewChange?.('Judge directory'),
-              icon: <User className="w-5 h-5" /> 
+              icon: <Bot className="w-5 h-5" /> 
             },
             { 
               label: 'Court insights', 
               active: activeSubView === 'Court insights', 
               onClick: () => onSubViewChange?.('Court insights'),
-              icon: <Workflow className="w-5 h-5" /> 
+              icon: <BarChart3 className="w-5 h-5" /> 
             },
             { 
               label: 'Case tracker', 
               active: activeSubView === 'Case tracker', 
               onClick: () => onSubViewChange?.('Case tracker'),
-              icon: <FileText className="w-5 h-5" /> 
+              icon: <Radar className="w-5 h-5" /> 
             },
           ]
         };
@@ -259,13 +262,13 @@ const ContextualSidebar: React.FC<ContextualSidebarProps> = ({
               label: 'Cases', 
               active: activeSubView === 'Cases' || !activeSubView, 
               onClick: () => onSubViewChange?.('Cases'),
-              icon: <Briefcase className="w-5 h-5" /> 
+              icon: <FolderClosed className="w-5 h-5" /> 
             },
             { 
               label: 'AI Workflows', 
               active: activeSubView === 'AI Workflows', 
               onClick: () => onSubViewChange?.('AI Workflows'),
-              icon: <PlayCircle className="w-5 h-5" /> 
+              icon: <Zap className="w-5 h-5" /> 
             },
             { 
               label: 'Clients', 
@@ -295,7 +298,7 @@ const ContextualSidebar: React.FC<ContextualSidebarProps> = ({
               label: 'Financials', 
               active: activeSubView === 'Financials', 
               onClick: () => onSubViewChange?.('Financials'),
-              icon: <DollarSign className="w-5 h-5" /> 
+              icon: <Receipt className="w-5 h-5" /> 
             },
             { 
               label: 'Settings', 
@@ -303,6 +306,15 @@ const ContextualSidebar: React.FC<ContextualSidebarProps> = ({
               onClick: () => onSubViewChange?.('Settings'),
               icon: <SettingsIcon className="w-5 h-5" /> 
             },
+          ]
+        };
+      case AppView.DOCUMENT_INSIGHTS:
+        return {
+          title: 'Document Intelligence',
+          sections: documentMetadata ? [
+            { label: 'Intelligence Overview', active: true, icon: <FileText className="w-5 h-5 text-red-500" /> },
+          ] : [
+            { label: 'Analyzing Document...', active: true, icon: <Zap className="w-5 h-5 animate-pulse text-red-500" /> }
           ]
         };
       default:
@@ -317,9 +329,37 @@ const ContextualSidebar: React.FC<ContextualSidebarProps> = ({
       {/* Tactical Header */}
       <div className="p-8 pb-4">
         <div className="flex items-center gap-2 mb-8 px-1 text-[#C09440]">
-            <div className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse shadow-[0_0_10px_rgba(225,29,72,0.4)]" />
-            <h2 className="text-[11px] font-black text-black/80 uppercase tracking-[0.3em] overflow-hidden whitespace-nowrap font-display">{content.title}</h2>
+            <div className={`w-2.5 h-2.5 rounded-full ${currentView === AppView.DOCUMENT_INSIGHTS ? 'bg-red-500' : 'bg-primary'} animate-pulse shadow-[0_0_10px_rgba(225,29,72,0.4)]`} />
+            <h2 className="text-[11px] font-black text-black/80 uppercase tracking-[0.3em] overflow-hidden whitespace-nowrap font-display">
+              {currentView === AppView.DOCUMENT_INSIGHTS ? 'Insight Dashboard' : content.title}
+            </h2>
         </div>
+        
+        {currentView === AppView.DOCUMENT_INSIGHTS && documentMetadata && (
+          <div className="mb-8 space-y-4">
+            <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
+              <div className="flex items-center gap-2 mb-2 text-primary font-bold text-[10px] uppercase tracking-wider">
+                <Radio className="w-3 h-3 animate-pulse" />
+                {documentMetadata.status}
+              </div>
+              <h3 className="text-[13px] font-black text-black mb-1 line-clamp-1">{documentMetadata.title}</h3>
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Kenya Judiciary</p>
+            </div>
+            
+            <div className="flex gap-2">
+              {documentMetadata.actions.map((action, idx) => (
+                <button
+                  key={idx}
+                  onClick={action.onClick}
+                  className="flex-1 py-2 px-1 bg-[#F5F5EE] hover:bg-white border border-gray-200 rounded-xl text-[10px] font-black text-gray-700 hover:text-black transition-all flex flex-col items-center gap-1 shadow-sm"
+                >
+                  <div className="text-gray-400 group-hover:text-black">{action.icon}</div>
+                  {action.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         
         {content.action && (
           <motion.button 

@@ -23,12 +23,14 @@ import {
   ArrowUpDown,
   Globe,
   AudioWaveform,
-  BrainCircuit
+  BrainCircuit,
+  Zap,
+  Brain
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
-// import { auth } from '../lib/firebase';
 import { apiClient } from '../lib/apiClient';
+import { ActionSidePanel } from './ActionSidePanel';
 
 // --- Types ---
 interface Folder {
@@ -56,13 +58,14 @@ const MOCK_FILES: UploadedFile[] = [];
 
 // --- Constants ---
 const FILE_ICONS: Record<string, string> = {
-  csv: 'https://cdn-icons-png.flaticon.com/512/8242/8242984.png',
-  xlsx: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/512px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png',
-  xls: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/512px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png',
-  json: 'https://cdn-icons-png.flaticon.com/512/136/136525.png',
-  pdf: 'https://upload.wikimedia.org/wikipedia/commons/8/87/PDF_file_icon.svg',
-  doc: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Microsoft_Office_Word_%282019%E2%80%93present%29.svg/512px-Microsoft_Office_Word_%282019%E2%80%93present%29.svg.png',
-  docx: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Microsoft_Office_Word_%282019%E2%80%93present%29.svg/512px-Microsoft_Office_Word_%282019%E2%80%93present%29.svg.png',
+  csv: 'https://iili.io/qmQhWhB.png',
+  xlsx: 'https://iili.io/qmQhcru.jpg',
+  xls: 'https://iili.io/qmQhcru.jpg',
+  json: 'https://iili.io/qmQhNrg.jpg',
+  pdf: 'https://iili.io/qmQhVIV.jpg',
+  doc: 'https://iili.io/qmQh17j.png',
+  docx: 'https://iili.io/qmQh17j.png',
+  default: 'https://iili.io/qmQhe2a.jpg'
 };
 
 const Files: React.FC = () => {
@@ -75,6 +78,8 @@ const Files: React.FC = () => {
   const [selectedFileIds, setSelectedFileIds] = useState<Set<string>>(new Set());
   const [activeDropdownId, setActiveDropdownId] = useState<string | null>(null);
   const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
+  const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
+  const [newFolderName, setNewFolderName] = useState('');
   const [showStarredOnly, setShowStarredOnly] = useState(false);
   const [sortConfig, setSortConfig] = useState<{ key: keyof UploadedFile; direction: 'asc' | 'desc' } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -292,33 +297,33 @@ const Files: React.FC = () => {
     });
   };
 
-  const handleCreateFolder = async () => {
-    const name = prompt("Enter folder name:");
-    if (name) {
-      if (folders.some(f => f.name.toLowerCase() === name.toLowerCase())) {
-        alert('A folder with this name already exists.');
-        return;
-      }
+  const handleCreateFolder = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    const name = newFolderName.trim();
+    if (!name) return;
+    
+    if (folders.some(f => f.name.toLowerCase() === name.toLowerCase())) {
+      alert('A folder with this name already exists.');
+      return;
+    }
 
-      try {
-        const response = await apiClient.post('/api/folders', { name });
+    try {
+      const response = await apiClient.post('/api/folders', { name });
 
-        if (response.ok) {
-          const newFolder = await response.json();
-          setFolders(prev => [...prev, newFolder]);
-        }
-      } catch (error) {
-        console.error('Create folder error:', error);
+      if (response.ok) {
+        const newFolder = await response.json();
+        setFolders(prev => [...prev, newFolder]);
+        setIsFolderModalOpen(false);
+        setNewFolderName('');
       }
+    } catch (error) {
+      console.error('Create folder error:', error);
     }
   };
 
-  const getFileIcon = (type: string) => {
-    const iconUrl = FILE_ICONS[type.toLowerCase()];
-    if (iconUrl) {
-      return <img src={iconUrl} alt={type} className="w-6 h-6 object-contain" referrerPolicy="no-referrer" />;
-    }
-    return <FileIcon className="w-6 h-6 text-gray-400" />;
+  const getFileIcon = (type: string, size = 'w-12 h-12') => {
+    const iconUrl = FILE_ICONS[type.toLowerCase()] || FILE_ICONS.default;
+    return <img src={iconUrl} alt={type} className={`${size} object-contain transition-transform duration-300 group-hover:scale-110`} referrerPolicy="no-referrer" />;
   };
 
   const formatSize = (bytes: number) => {
@@ -385,7 +390,7 @@ const Files: React.FC = () => {
             <div className="relative overflow-hidden p-6 rounded-[15px] border border-white/20 shadow-xl bg-blue-600/90 backdrop-blur-xl text-white group hover:scale-[1.02] transition-transform duration-300">
               <div className="absolute -right-10 -top-10 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors"></div>
               <div className="flex items-center gap-4 mb-4 relative z-10">
-                <div className="p-3 bg-white/20 rounded-xl backdrop-blur-md shadow-inner">
+                <div className="p-3 bg-white/20 rounded-[15px] backdrop-blur-md shadow-inner">
                   <HardDrive className="w-6 h-6 text-white" />
                 </div>
                 <span className="text-blue-100 text-xs font-bold uppercase tracking-wider">Storage</span>
@@ -400,7 +405,7 @@ const Files: React.FC = () => {
             <div className="relative overflow-hidden p-6 rounded-[15px] border border-white/20 shadow-xl bg-purple-600/90 backdrop-blur-xl text-white group hover:scale-[1.02] transition-transform duration-300">
               <div className="absolute -right-10 -top-10 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors"></div>
               <div className="flex items-center gap-4 mb-4 relative z-10">
-                <div className="p-3 bg-white/20 rounded-xl backdrop-blur-md shadow-inner">
+                <div className="p-3 bg-white/20 rounded-[15px] backdrop-blur-md shadow-inner">
                   <FileIcon className="w-6 h-6 text-white" />
                 </div>
                 <span className="text-purple-100 text-xs font-bold uppercase tracking-wider">Total Files</span>
@@ -412,7 +417,7 @@ const Files: React.FC = () => {
             <div className="relative overflow-hidden p-6 rounded-[15px] border border-white/20 shadow-xl bg-orange-600/90 backdrop-blur-xl text-white group hover:scale-[1.02] transition-transform duration-300">
               <div className="absolute -right-10 -top-10 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors"></div>
               <div className="flex items-center gap-4 mb-4 relative z-10">
-                <div className="p-3 bg-white/20 rounded-xl backdrop-blur-md shadow-inner">
+                <div className="p-3 bg-white/20 rounded-[15px] backdrop-blur-md shadow-inner">
                   <FolderIcon className="w-6 h-6 text-white" />
                 </div>
                 <span className="text-orange-100 text-xs font-bold uppercase tracking-wider">Folders</span>
@@ -424,7 +429,7 @@ const Files: React.FC = () => {
             <div className="relative overflow-hidden p-6 rounded-[15px] border border-white/20 shadow-xl bg-emerald-600/90 backdrop-blur-xl text-white group hover:scale-[1.02] transition-transform duration-300">
               <div className="absolute -right-10 -top-10 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors"></div>
               <div className="flex items-center gap-4 mb-4 relative z-10">
-                <div className="p-3 bg-white/20 rounded-xl backdrop-blur-md shadow-inner">
+                <div className="p-3 bg-white/20 rounded-[15px] backdrop-blur-md shadow-inner">
                   <PieChart className="w-6 h-6 text-white" />
                 </div>
                 <span className="text-emerald-100 text-xs font-bold uppercase tracking-wider">Types</span>
@@ -460,7 +465,7 @@ const Files: React.FC = () => {
                 { type: 'pdf', label: 'PDF' },
                 { type: 'docx', label: 'Word' }
               ].map((badge) => (
-                <div key={badge.type} className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl border border-gray-100">
+                <div key={badge.type} className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-[15px] border border-gray-100">
                   <img src={FILE_ICONS[badge.type]} alt={badge.label} className="w-5 h-5 object-contain" referrerPolicy="no-referrer" />
                   <span className="text-xs font-bold text-gray-600">{badge.label}</span>
                 </div>
@@ -488,7 +493,7 @@ const Files: React.FC = () => {
             />
 
             <div className="flex flex-col items-center justify-center gap-6">
-              <div className="p-4 bg-white rounded-2xl shadow-sm border border-gray-100 group-hover:scale-110 transition-transform duration-300">
+              <div className="p-4 bg-white rounded-[15px] shadow-sm border border-gray-100 group-hover:scale-110 transition-transform duration-300">
                 <Upload className="w-6 h-6 text-gray-400" />
               </div>
 
@@ -521,7 +526,7 @@ const Files: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setCurrentFolderId(null)}
-                    className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+                    className="p-2 hover:bg-gray-100 rounded-[15px] transition-colors"
                   >
                     <ArrowLeft className="w-5 h-5 text-black" />
                   </button>
@@ -538,7 +543,7 @@ const Files: React.FC = () => {
             <div className="flex gap-3">
               <button
                 onClick={() => setShowStarredOnly(!showStarredOnly)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${showStarredOnly
+                className={`flex items-center gap-2 px-4 py-2 rounded-[15px] text-xs font-bold transition-all ${showStarredOnly
                   ? 'bg-yellow-50 text-yellow-600 border border-yellow-200'
                   : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
                   }`}
@@ -549,8 +554,8 @@ const Files: React.FC = () => {
 
               {!currentFolderId && (
                 <button
-                  onClick={handleCreateFolder}
-                  className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-xl text-xs font-bold hover:bg-gray-800 transition-all"
+                  onClick={() => setIsFolderModalOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-[15px] text-xs font-bold hover:bg-gray-800 transition-all"
                 >
                   <FolderPlus className="w-4 h-4" />
                   New Folder
@@ -563,77 +568,16 @@ const Files: React.FC = () => {
                   placeholder="Search..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-black/5"
+                  className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-[15px] text-sm font-medium focus:outline-none focus:ring-2 focus:ring-black/5"
                 />
               </div>
             </div>
           </div>
 
-          {/* Selection Banner */}
-          <AnimatePresence>
-            {selectedFileIds.size > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="bg-green-50 border border-green-100 rounded-[2rem] p-6 flex flex-col md:flex-row items-center justify-between shadow-xl"
-              >
-                <div className="flex items-center gap-6 mb-4 md:mb-0">
-                  <div className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-green-500/20">
-                    <Check className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <span className="text-lg font-black text-green-900 leading-none">{selectedFileIds.size} selected</span>
-                    <p className="text-[10px] font-bold text-green-700 uppercase tracking-widest mt-1">Ready for Action</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/app/insights?fileId=${Array.from(selectedFileIds).join(',')}`);
-                    }}
-                    className="flex items-center gap-3 px-8 py-4 bg-white border border-green-200 rounded-2xl text-sm font-black text-green-700 hover:bg-green-50 transition-all shadow-sm hover:scale-105 active:scale-95"
-                  >
-                    <Sparkles className="w-5 h-5" />
-                    Review in Chat
-                  </button>
-                  <button
-                    onClick={(e) => {
-                       e.stopPropagation();
-                       openMoveModal();
-                    }}
-                    className="flex items-center gap-3 px-8 py-4 bg-white border border-green-200 rounded-2xl text-sm font-black text-green-700 hover:bg-green-50 transition-all shadow-sm hover:scale-105 active:scale-95"
-                  >
-                    <FolderInput className="w-5 h-5" />
-                    Move to Folder
-                  </button>
-                  <button
-                    onClick={(e) => {
-                       e.stopPropagation();
-                       setSelectedFileIds(new Set());
-                    }}
-                    className="px-8 py-4 bg-white border border-gray-200 rounded-2xl text-sm font-black text-gray-400 hover:bg-gray-50 transition-all"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={(e) => {
-                       e.stopPropagation();
-                       handleDeleteSelected();
-                    }}
-                    className="flex items-center gap-3 px-8 py-4 bg-red-500 text-white rounded-2xl text-sm font-black hover:bg-red-600 transition-all shadow-xl shadow-red-500/20 hover:scale-105 active:scale-95"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                    Delete
-                  </button>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Top Banner Removed - Replaced with ActionSidePanel at the end */}
 
           {/* Content Grid/List */}
-          <div className="bg-white border border-gray-100 rounded-[2.5rem] overflow-hidden shadow-sm min-h-[600px] mb-20 p-2">
+          <div className="bg-white border border-gray-100 rounded-[15px] overflow-hidden shadow-sm min-h-[600px] mb-20 p-2">
             {/* Folders Grid (Only at root) */}
             {visibleFolders.length > 0 && (
               <div className="p-6 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 border-b border-gray-50">
@@ -641,9 +585,9 @@ const Files: React.FC = () => {
                   <button
                     key={folder.id}
                     onClick={() => setCurrentFolderId(folder.id)}
-                    className="p-4 bg-gray-50 hover:bg-blue-50 border border-transparent hover:border-blue-100 rounded-2xl flex flex-col items-center gap-3 transition-all group text-center"
+                    className="p-4 bg-gray-50 hover:bg-blue-50 border border-transparent hover:border-blue-100 rounded-[15px] flex flex-col items-center gap-3 transition-all group text-center"
                   >
-                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 bg-white rounded-[15px] flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
                       <FolderIcon className="w-6 h-6 text-yellow-500 fill-yellow-500" />
                     </div>
                     <span className="text-xs font-bold text-gray-700 group-hover:text-blue-700 truncate w-full">{folder.name}</span>
@@ -727,17 +671,17 @@ const Files: React.FC = () => {
                       </div>
 
                       {/* Name & Tags */}
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="relative w-8 h-8 flex-shrink-0 bg-white rounded-lg flex items-center justify-center border border-gray-100 shadow-sm">
-                          {getFileIcon(file.type)}
+                      <div className="flex items-center gap-4 min-w-0">
+                        <div className="relative flex-shrink-0">
+                          {getFileIcon(file.type, 'w-12 h-12')}
                           {file.status === 'analyzing' && (
-                            <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-amber-400 rounded-full border-2 border-white animate-pulse" />
+                            <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-amber-400 rounded-full border-2 border-white animate-pulse" />
                           )}
                           {file.status === 'error' && (
-                            <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white" />
+                            <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 rounded-full border-2 border-white" />
                           )}
                           {file.status === 'completed' && (
-                            <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white" />
+                            <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white" />
                           )}
                         </div>
                         <div className="flex flex-col min-w-0">
@@ -795,28 +739,28 @@ const Files: React.FC = () => {
                               initial={{ opacity: 0, scale: 0.95, y: 10 }}
                               animate={{ opacity: 1, scale: 1, y: 0 }}
                               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                              className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden"
+                              className="absolute right-0 top-full mt-2 w-48 bg-white rounded-[15px] shadow-xl border border-gray-100 z-50 overflow-hidden"
                             >
                               <div className="p-1" onClick={(e) => e.stopPropagation()}>
                                 <button 
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    navigate(`/app/intelligence-hub/${file.id}`);
+                                    navigate(`/app/insights/${file.id}?mode=savre`);
                                   }}
-                                  className="w-full flex items-center gap-3 px-3 py-2 text-sm font-bold text-primary hover:bg-primary/5 rounded-lg transition-colors text-left"
+                                  className="w-full flex items-center gap-3 px-3 py-2 text-sm font-bold text-red-600 hover:bg-red-50 rounded-lg transition-colors text-left"
                                 >
-                                  <AudioWaveform className="w-4 h-4" />
-                                  Analyze with S.A.V.R.E.
+                                  <Zap className="w-4 h-4" />
+                                  Document Intelligence
                                 </button>
                                 <button 
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    navigate(`/app/intelligence-hub/${file.id}`);
+                                    navigate(`/app/insights/${file.id}`);
                                   }}
                                   className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors text-left"
                                 >
                                   <BrainCircuit className="w-4 h-4" />
-                                  Intelligence Hub
+                                  Analyse with AI
                                 </button>
                                 <button 
                                   onClick={(e) => {
@@ -980,6 +924,73 @@ const Files: React.FC = () => {
           </div>
         )}
       </AnimatePresence>
+      {/* Folder Creation Modal */}
+      <AnimatePresence>
+        {isFolderModalOpen && (
+          <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-[15px] shadow-2xl w-full max-w-md overflow-hidden"
+            >
+              <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-black rounded-[15px] flex items-center justify-center text-white shadow-sm">
+                    <FolderPlus className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-xl font-black text-black">New Folder</h3>
+                </div>
+                <button
+                  onClick={() => setIsFolderModalOpen(false)}
+                  className="p-2 hover:bg-gray-100 rounded-[15px] transition-colors"
+                >
+                  <X className="w-5 h-5 text-gray-400" />
+                </button>
+              </div>
+              <form onSubmit={handleCreateFolder} className="p-6">
+                <div className="mb-6">
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Folder Name</label>
+                  <input
+                    type="text"
+                    autoFocus
+                    value={newFolderName}
+                    onChange={(e) => setNewFolderName(e.target.value)}
+                    placeholder="e.g. Case Briefs 2026"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-[15px] focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-gray-300 font-medium placeholder-gray-400"
+                  />
+                </div>
+                <div className="flex items-center justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsFolderModalOpen(false)}
+                    className="px-6 py-3 text-sm font-bold text-gray-500 hover:text-black hover:bg-gray-50 rounded-[15px] transition-all"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={!newFolderName.trim()}
+                    className="px-6 py-3 bg-black text-white text-sm font-bold rounded-[15px] hover:bg-gray-800 transition-all disabled:opacity-50"
+                  >
+                    Create Folder
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <ActionSidePanel
+         isOpen={selectedFileIds.size > 0}
+         selectedCount={selectedFileIds.size}
+         files={files.filter(f => selectedFileIds.has(f.id))}
+         onClose={() => setSelectedFileIds(new Set())}
+         onMove={() => openMoveModal()}
+         onDelete={handleDeleteSelected}
+      />
+
     </div>
   );
 };
