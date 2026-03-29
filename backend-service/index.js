@@ -847,6 +847,31 @@ app.get('/api/files/:id/view', authenticate, async (req, res) => {
     }
 });
 
+app.get('/api/files/:id/signed-url', authenticate, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { data: file, error: getError } = await supabase
+            .from('files')
+            .select('storage_path')
+            .eq('id', id)
+            .eq('user_id', req.user.id)
+            .single();
+
+        if (getError || !file) return res.status(404).json({ error: "File not found" });
+
+        const { data, error: storageError } = await supabase.storage
+            .from('legal-documents')
+            .createSignedUrl(file.storage_path, 3600);
+
+        if (storageError) throw storageError;
+
+        res.json({ url: data.signedUrl });
+    } catch (error) {
+        console.error("Signed URL error:", error);
+        res.status(500).json({ error: "Failed to create signed URL" });
+    }
+});
+
 app.get('/api/files/:id/download', authenticate, async (req, res) => {
     try {
         const { id } = req.params;

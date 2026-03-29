@@ -16,7 +16,7 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
 // Fixed worker for stability
-pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 interface ActionCard {
   id: string;
@@ -64,7 +64,13 @@ const DocumentInsights: React.FC<DocumentInsightsProps> = ({ setMetadata }) => {
     const init = async () => {
       setIsProcessing(true);
       try {
-        setPdfUrl(`${apiClient.baseUrl}/api/files/${fileId}/view`);
+        const urlRes = await apiClient.get(`/api/files/${fileId}/signed-url`);
+        if (urlRes.ok) {
+           const urlData = await urlRes.json();
+           setPdfUrl(urlData.url);
+        } else {
+           setPdfUrl(`${apiClient.baseUrl}/api/files/${fileId}/view`);
+        }
         
         // Push metadata to sidebar
         if (setMetadata) {

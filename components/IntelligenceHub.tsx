@@ -142,7 +142,13 @@ const IntelligenceHub: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setPdfUrl(`${apiClient.baseUrl}/api/files/${fileId}/view`);
+        const urlRes = await apiClient.get(`/api/files/${fileId}/signed-url`);
+        if (urlRes.ok) {
+           const urlData = await urlRes.json();
+           setPdfUrl(urlData.url);
+        } else {
+           setPdfUrl(`${apiClient.baseUrl}/api/files/${fileId}/view`);
+        }
         
         // 1. Check for existing session first
         const sessionsRes = await apiClient.get('/api/intelligence/sessions');
