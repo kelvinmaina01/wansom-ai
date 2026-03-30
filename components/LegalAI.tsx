@@ -153,6 +153,16 @@ const LegalAI: React.FC<LegalAIProps> = ({
   const promptAttempted = useRef(false);
 
   useEffect(() => {
+    if (activeSpecialist) {
+      if (!isCanvasOpen) setIsCanvasOpen(true);
+      if (!activeArtifact && !draftContent) {
+        setArtifactTitle('Legal Canvas');
+        setDraftContent('// ' + activeSpecialist.name + ' Workspace initialized.\n// Describe the document you need in the chat, and the results will load here.');
+      }
+    }
+  }, [activeSpecialist]);
+
+  useEffect(() => {
     const state = location.state as { initialPrompt?: string } | null;
     if (state?.initialPrompt && !promptAttempted.current) {
       promptAttempted.current = true;

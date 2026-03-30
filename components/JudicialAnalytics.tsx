@@ -85,7 +85,7 @@ const CITATION_COLORS = ['#fbbf24', '#3b82f6', '#10b981', '#6366f1', '#8b5cf6', 
 // --- Sub-Components ---
 
 const StatCard = ({ label, value, subtext, icon: Icon, colorClass }: any) => (
-  <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-all duration-300">
+  <div className="bg-white border border-gray-100 rounded-2xl p-8 shadow-md hover:-translate-y-1 flex flex-col justify-between hover:shadow-md transition-all duration-300">
     <div className="flex justify-between items-start mb-4">
       <div className={`p-2.5 rounded-xl bg-gray-50`}>
         <Icon className={`w-5 h-5 ${colorClass}`} />
@@ -94,7 +94,7 @@ const StatCard = ({ label, value, subtext, icon: Icon, colorClass }: any) => (
     </div>
     <div>
       <h3 className="text-4xl font-bold tracking-tight text-gray-900 leading-none">{value}</h3>
-      <p className="text-xs text-gray-500 mt-2 font-medium">{subtext}</p>
+      <p className="text-xs text-blue-800 mt-2 font-bold">{subtext}</p>
     </div>
   </div>
 );
@@ -238,6 +238,24 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
   const [judgesData, setJudgesData] = useState<JudgeProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // AI Chat State
+  const [chatInput, setChatInput] = useState('');
+  const [chatMessages, setChatMessages] = useState<{role: 'user' | 'assistant', content: string}[]>([
+    {role: 'assistant', content: 'Hello! I am analyzing this judge. Ask me questions about their tendencies, specific rulings, or precedents.'}
+  ]);
+
+  const handleChatSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!chatInput.trim()) return;
+    const userMsg = chatInput;
+    setChatMessages(prev => [...prev, { role: 'user', content: userMsg }]);
+    setChatInput('');
+    // Contextual Mock Response
+    setTimeout(() => {
+      setChatMessages(prev => [...prev, { role: 'assistant', content: 'Based on my analysis, the judge heavily scrutinizes ' + userMsg.split(' ').pop() + ' and enforces strict procedural timelines on these matters.' }]);
+    }, 1000);
+  };
+
   useEffect(() => {
     const fetchJudges = async () => {
       try {
@@ -322,7 +340,7 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
             </div>
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">Know Your Judge</h1>
           </div>
-          <p className="text-lg text-gray-500 font-medium max-w-2xl leading-relaxed">
+          <p className="text-lg text-blue-900 font-bold max-w-2xl leading-relaxed">
             Behavioral analytics and outcome forecasting for the East African Bench.
           </p>
         </div>
@@ -446,7 +464,7 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
           { label: 'Avg. Lead Time', value: '14m', detail: '-15% Efficiency gain', color: 'text-emerald-600', icon: Clock },
           { label: 'Clearance Rate', value: '94%', detail: 'Gold Standard', color: 'text-primary', icon: CheckCircle2 },
         ].map((stat, i) => (
-          <div key={i} className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
+          <div key={i} className="bg-white border border-gray-100 rounded-2xl p-8 shadow-md hover:-translate-y-1 hover:shadow-md transition-all">
             <div className="flex justify-between items-start mb-4">
               <div className="p-2 bg-gray-50 rounded-lg"><stat.icon className="w-4 h-4 text-gray-400" /></div>
               <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest">{stat.label}</span>
@@ -510,7 +528,7 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
             <div className="absolute inset-x-0 bottom-0 h-px bg-gray-100"></div>
           </div>
           <div className="mt-8 pt-6 border-t border-gray-50 flex justify-between items-center">
-            <p className="text-[10px] text-gray-500 font-medium">Data based on last 5,000 filings</p>
+            <p className="text-[10px] text-blue-900 font-bold">Data based on last 5,000 filings</p>
             <button className="text-[9px] font-bold text-primary uppercase tracking-widest border-b border-primary/20 hover:border-primary transition-all pb-0.5">Full Audit Log</button>
           </div>
         </div>
@@ -664,10 +682,10 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
         </div>
 
         <div className="max-w-7xl mx-auto p-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
              
              {/* Left Panel */}
-             <div className="lg:col-span-1 space-y-8">
+             <div className="xl:col-span-3 space-y-8">
                 <div className="bg-white rounded-2xl p-10 border border-gray-100 shadow-sm text-center">
                    <div className="relative w-32 h-32 mx-auto mb-6">
                       <img src={selectedJudge.image} alt="" className="w-full h-full object-cover rounded-2xl border-4 border-gray-50 shadow-md" />
@@ -736,8 +754,8 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
                 </div>
              </div>
 
-             {/* Right Panel */}
-             <div className="lg:col-span-2 space-y-8">
+             {/* Middle Panel */}
+             <div className="xl:col-span-5 space-y-8">
                 
                 {/* Metrics */}
                 <div className="grid grid-cols-2 gap-6">
@@ -879,7 +897,7 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
                    <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">High-Impact Decisions</h3>
                    <div className="space-y-4">
                       {selectedJudge.recentRulings.map((ruling) => (
-                        <div key={ruling.id} className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all group">
+                        <div key={ruling.id} className="bg-white border border-gray-100 rounded-2xl p-8 shadow-md hover:-translate-y-1 hover:shadow-md transition-all group">
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                             <div className="flex items-center gap-3.5">
                               <div className={`p-2.5 rounded-xl ${ruling.outcome === 'Allowed' ? 'bg-emerald-50 text-emerald-600' : 'bg-primary/5 text-primary'}`}>
@@ -910,6 +928,47 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
                    </div>
                 </div>
              </div>
+
+             {/* Right Panel - AI Follow Up Chat */}
+             <div className="xl:col-span-4 space-y-6 flex flex-col h-[800px] bg-white rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden">
+                <div className="p-6 bg-gradient-to-br from-gray-900 to-black border-b border-gray-800">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md">
+                      <Sparkles className="w-5 h-5 text-amber-300" />
+                    </div>
+                    <div>
+                      <h4 className="text-base font-bold text-white leading-none mb-1.5">Ask Insight AI</h4>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Context: {selectedJudge.name}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar">
+                  {chatMessages.map((msg, i) => (
+                    <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`max-w-[85%] rounded-[20px] px-5 py-4 ${msg.role === 'user' ? 'bg-primary text-white text-sm font-medium shadow-md shadow-primary/20 rounded-tr-sm' : 'bg-gray-50 border border-gray-100 text-sm font-medium text-gray-800 shadow-sm rounded-tl-sm'}`}>
+                         {msg.content}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="p-5 bg-white border-t border-gray-100">
+                  <form onSubmit={handleChatSubmit} className="relative group">
+                    <input 
+                      type="text"
+                      value={chatInput}
+                      onChange={e => setChatInput(e.target.value)}
+                      placeholder="Ask about biases, tactics..."
+                      className="w-full bg-gray-50 border border-gray-200 rounded-2xl py-4 pl-5 pr-14 text-sm font-bold text-gray-900 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all shadow-sm"
+                    />
+                    <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-primary rounded-xl text-white flex items-center justify-center shadow-lg shadow-primary/20 hover:bg-primary-hover active:scale-95 transition-all">
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </form>
+                </div>
+             </div>
+
           </div>
         </div>
       </motion.div>

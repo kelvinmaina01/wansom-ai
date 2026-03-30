@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'; 
+import { useLocation } from 'react-router-dom';
 import {
   Newspaper,
   FileText,
@@ -546,12 +547,25 @@ interface LegalSpecialistsProps {
 }
 
 const LegalSpecialists: React.FC<LegalSpecialistsProps> = ({ onSelectSpecialist, subView = 'Premade Associates' }) => {
+  const location = useLocation();
   const [view, setView] = useState<'LIST' | 'CONFIGURE'>('LIST');
   const [selectedSpecialist, setSelectedSpecialist] = useState<LegalSpecialist | null>(null);
   const [myAssociates, setMyAssociates] = useState<LegalSpecialist[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [bannerSlide, setBannerSlide] = useState(0);
   const [isGeneratingPersona, setIsGeneratingPersona] = useState(false);
+
+  useEffect(() => {
+    const state = location.state as any;
+    if (state?.editSpecialistId) {
+      const spec = PREMADE_SPECIALISTS.find(s => s.id === state.editSpecialistId) || myAssociates.find(s => s.id === state.editSpecialistId);
+      if (spec) {
+        setSelectedSpecialist(spec);
+        setView('CONFIGURE');
+        window.history.replaceState({}, document.title);
+      }
+    }
+  }, [location.state, myAssociates]);
 
   const handleAISuggest = async () => {
     const promptText = prompt("Describe the legal specialist you need (e.g. 'Maritime law expert in Kenya' or 'Tax dispute resolution'):");

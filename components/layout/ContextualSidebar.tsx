@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AppView } from '../../types';
 import { 
   Plus, 
@@ -19,6 +19,7 @@ import {
   PanelLeftOpen,
   FolderClosed,
   Users,
+  User,
   Calendar,
   Receipt,
   Radar,
@@ -61,6 +62,7 @@ const ContextualSidebar: React.FC<ContextualSidebarProps> = ({
 }) => {
   const [teamMembers, setTeamMembers] = React.useState<any[]>([]);
   const [invitations, setInvitations] = React.useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   React.useEffect(() => {
     if (!workspaceId) return;
@@ -379,6 +381,8 @@ const ContextualSidebar: React.FC<ContextualSidebarProps> = ({
           <input 
             type="text" 
             placeholder="Tactical search..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-white border border-gray-200/80 rounded-2xl py-3.5 pl-12 pr-4 text-[13px] font-bold text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary/30 transition-all tracking-tight font-sans shadow-sm"
           />
         </div>
@@ -386,7 +390,7 @@ const ContextualSidebar: React.FC<ContextualSidebarProps> = ({
 
       {/* Modern Navigation List */}
       <nav className="flex-1 px-4 py-2 space-y-1.5 font-display">
-        {content.sections.map((section, idx) => (
+        {content.sections.filter(s => !searchQuery || s.label.toLowerCase().includes(searchQuery.toLowerCase())).map((section, idx) => (
           <motion.div 
             key={idx}
             whileHover={{ x: 4 }}

@@ -13,6 +13,7 @@ import {
   PanelLeftOpen,
   FolderKanban
 } from 'lucide-react';
+import { FaHome } from 'react-icons/fa';
 import { AppView } from '../../types';
 
 interface GlobalRailProps {
@@ -47,7 +48,7 @@ const GlobalRail: React.FC<GlobalRailProps> = ({
       {/* Nav Icons */}
       <nav className="flex-1 flex flex-col gap-6 no-scrollbar overflow-y-auto w-full items-center">
         <RailItem 
-          icon={<Activity className="w-7 h-7" />} 
+          icon={<FaHome className="w-7 h-7" />} 
           active={currentView === AppView.OVERVIEW}
           onClick={() => onViewChange(AppView.OVERVIEW)}
           label="Home"

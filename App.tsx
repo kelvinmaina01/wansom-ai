@@ -313,7 +313,7 @@ const AppLayout: React.FC<{ supabaseUser: User | null; activeWorkspace: any }> =
         <main className="flex-1 flex flex-col overflow-hidden relative bg-white">
           {/* Top Header / Breadcrumbs */}
           <header className={`flex items-center justify-between px-8 bg-white/80 backdrop-blur-md z-40 transition-all duration-500 overflow-hidden ${
-            (currentView === AppView.LEGAL_AI && isChatActive) || currentView === AppView.INTELLIGENCE_HUB
+            (currentView === AppView.LEGAL_AI && isChatActive) || currentView === AppView.INTELLIGENCE_HUB || currentView === AppView.DOCUMENT_INSIGHTS
               ? 'h-0 opacity-0 border-transparent py-0' 
               : 'h-16 opacity-100 border-b border-gray-100'
           }`}>

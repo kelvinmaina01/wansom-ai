@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   FileText, Sparkles, MessageSquare, List, Bookmark, 
@@ -6,8 +6,10 @@ import {
   Maximize2, Download, Share2, MoreHorizontal, 
   Brain, Zap, Shield, Wand2, ArrowLeft, Loader2,
   Lock, CheckCircle2, AlertCircle, Edit3, Eraser, Globe,
-  Volume2, AudioWaveform, RotateCcw, Crown, History, Home,
-  Scale, Clock, FileCheck, Layers, Eye, ZoomIn, ZoomOut, Radio, Copy
+  Volume2, AudioWaveform, RotateCcw, Crown, Home,
+  Scale, Clock, FileCheck, Layers, Eye, ZoomIn, ZoomOut, Radio, Copy,
+  MousePointer, Hand, MessageSquarePlus, Replace, PenLine,
+  Type, Highlighter, Strikethrough, Paperclip, Signature
 } from 'lucide-react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { apiClient } from '../lib/apiClient';
@@ -16,7 +18,7 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
 // Fixed worker for stability
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 interface ActionCard {
   id: string;
@@ -42,11 +44,59 @@ const DocumentInsights: React.FC<DocumentInsightsProps> = ({ setMetadata }) => {
   const [messages, setMessages] = useState<any[]>([]);
   const [inputValue, setInputValue] = useState('');
   
+  // Resize State
+  const [sidebarWidth, setSidebarWidth] = useState(480);
+  const [isResizing, setIsResizing] = useState(false);
+
   // PDF State
   const [numPages, setNumPages] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1.2);
+
+  // Document Editing Toolbar State
+  const [activeTool, setActiveTool] = useState<string>('select');
+  const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
+  const [highlightColor, setHighlightColor] = useState('#38bdf8');
+
+  const TOOLBAR_TOOLS = [
+    { 
+      id: 'select', icon: MousePointer, label: 'Select', 
+      submenu: [
+        { id: 'select', label: 'Select', icon: MousePointer },
+        { id: 'pan', label: 'Pan', icon: Hand },
+      ]
+    },
+    { 
+      id: 'comment', icon: MessageSquarePlus, label: 'Comment',
+      submenu: [
+        { id: 'comment', label: 'Add a comment', icon: MessageSquarePlus, aiPrompt: 'Help me draft a professional legal comment for the selected section of this document.' },
+        { id: 'replace-text', label: 'Replace selected text', icon: Replace, aiPrompt: 'Suggest a legally precise replacement for the selected text in this document.' },
+        { id: 'insert-text', label: 'Insert text', icon: Type, aiPrompt: 'Draft text to insert at this position in the document. Consider the surrounding context and legal formatting.' },
+        { id: 'text-comment', label: 'Add text comment', icon: Edit3, aiPrompt: 'Generate a contextual annotation or margin note for this section.' },
+        { id: 'attach-file', label: 'Attach file', icon: Paperclip },
+      ]
+    },
+    { 
+      id: 'highlight', icon: Highlighter, label: 'Markup',
+      submenu: [
+        { id: 'highlight', label: 'Highlight', icon: Highlighter, aiPrompt: 'Identify and list the most important clauses that should be highlighted in this document.' },
+        { id: 'underline', label: 'Underline', icon: Type, aiPrompt: 'Identify key defined terms and obligations that should be underlined for emphasis.' },
+        { id: 'strikethrough', label: 'Strikethrough', icon: Strikethrough, aiPrompt: 'Identify problematic or redundant clauses that could be struck through for removal.' },
+      ]
+    },
+    { id: 'redact', icon: Eraser, label: 'Redact', aiPrompt: 'Identify all personally identifiable information (PII) and sensitive data in this document that should be redacted.' },
+    { id: 'signature', icon: PenLine, label: 'Sign', aiPrompt: 'Identify all signature blocks and execution clauses in this document. List where signatures are required.' },
+  ];
+
+  const handleToolSelect = (toolId: string, aiPrompt?: string) => {
+    setActiveTool(toolId);
+    setOpenSubmenu(null);
+    if (aiPrompt) {
+      setInputValue(aiPrompt);
+      setActiveTab('chat');
+    }
+  };
   
   const [suggestedActions, setSuggestedActions] = useState<ActionCard[]>([
     { 
@@ -59,6 +109,28 @@ const DocumentInsights: React.FC<DocumentInsightsProps> = ({ setMetadata }) => {
     { id: 'themes', title: 'Analyze the main themes and patterns', icon: <Layers className="w-5 h-5 text-purple-500" />, prompt: 'Extract the central themes and reasoning logic' },
     { id: 'report', title: 'Create brief report of document takeaways', icon: <FileCheck className="w-5 h-5 text-emerald-500" />, prompt: 'Generate a structured takeaway report' }
   ]);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isResizing) return;
+      const newWidth = window.innerWidth - e.clientX;
+      const maxAllowed = window.innerWidth * 0.75; // 75% max width
+      if (newWidth > 350 && newWidth < maxAllowed) {
+        setSidebarWidth(newWidth);
+      }
+    };
+
+    const handleMouseUp = () => setIsResizing(false);
+
+    if (isResizing) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing]);
 
   useEffect(() => {
     const init = async () => {
@@ -100,12 +172,116 @@ const DocumentInsights: React.FC<DocumentInsightsProps> = ({ setMetadata }) => {
     setInputValue(action.prompt);
   };
 
+  const handleSendMessage = async () => {
+    if (!inputValue.trim()) return;
+    
+    const userMsg = { role: 'user', content: inputValue };
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
+    setInputValue('');
+    
+    // Auto Scroll? Ideally we'd have a ref
+    
+    try {
+      const res = await apiClient.post('/api/intelligence/action', {
+         fileId,
+         selection: inputValue,
+         actionType: 'CHAT_QUERY'
+      });
+
+      if (res.ok) {
+         const data = await res.json();
+         const aiMsg = { role: 'ai', content: data.result || "I've analyzed that request." };
+         setMessages([...newMessages, aiMsg]);
+      } else {
+         const aiMsg = { role: 'ai', content: "Lawlify AI is processing your request..." };
+         setMessages([...newMessages, aiMsg]);
+      }
+    } catch (e) {
+      const aiMsg = { role: 'ai', content: "I encountered an issue connecting to the AI composer." };
+      setMessages([...newMessages, aiMsg]);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-[#F1F3F5] text-slate-900 overflow-hidden font-sans">
       {/* Primary Workspace */}
       <div className="flex-1 flex overflow-hidden">
+        {/* 📐 Document Editing Toolbar - Left Rail */}
+        <div className="w-14 bg-white border-r border-slate-200 flex flex-col items-center py-4 gap-1 shrink-0 z-30 shadow-sm">
+          {TOOLBAR_TOOLS.map((tool) => (
+            <div key={tool.id} className="relative">
+              <button
+                onClick={() => {
+                  if (tool.submenu) {
+                    setOpenSubmenu(openSubmenu === tool.id ? null : tool.id);
+                  } else {
+                    handleToolSelect(tool.id, tool.aiPrompt);
+                  }
+                }}
+                className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all relative group ${
+                  activeTool === tool.id || (tool.submenu && tool.submenu.some(s => s.id === activeTool))
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
+                    : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800'
+                }`}
+                title={tool.label}
+              >
+                <tool.icon className="w-5 h-5" />
+              </button>
+
+              {/* Submenu Flyout */}
+              <AnimatePresence>
+                {openSubmenu === tool.id && tool.submenu && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -8, scale: 0.95 }}
+                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                    exit={{ opacity: 0, x: -8, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute left-[52px] top-0 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 px-1 min-w-[220px] z-50"
+                  >
+                    {tool.submenu.map((sub) => (
+                      <button
+                        key={sub.id}
+                        onClick={() => handleToolSelect(sub.id, sub.aiPrompt)}
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${
+                          activeTool === sub.id
+                            ? 'bg-blue-50 text-blue-700'
+                            : 'text-slate-700 hover:bg-slate-50'
+                        }`}
+                      >
+                        <sub.icon className={`w-4 h-4 ${
+                          activeTool === sub.id ? 'text-blue-600' : 'text-slate-400'
+                        }`} />
+                        <span className="text-sm font-bold">{sub.label}</span>
+                        {activeTool === sub.id && (
+                          <CheckCircle2 className="w-4 h-4 text-blue-500 ml-auto" />
+                        )}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+
+          {/* Divider */}
+          <div className="w-6 h-px bg-slate-200 my-2" />
+
+          {/* Color Picker for Highlights */}
+          <div className="relative">
+            <button
+              className="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-slate-100 transition-all"
+              title="Highlight Color"
+            >
+              <div className="w-6 h-6 rounded-full border-2 border-slate-200 shadow-inner" style={{ backgroundColor: highlightColor }} />
+            </button>
+          </div>
+        </div>
+
         {/* PDF Viewer - Left Side (Full Seamless) */}
         <main className="flex-1 flex flex-col relative overflow-hidden">
+           {/* Close submenu on clicking PDF area */}
+           <div onClick={() => setOpenSubmenu(null)} className="absolute inset-0 z-10" style={{ pointerEvents: openSubmenu ? 'auto' : 'none' }} />
            {/* Document controls floating - Minimal */}
            <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex items-center bg-white/90 backdrop-blur-sm border border-slate-200 rounded-2xl px-4 py-2 shadow-sm gap-6">
               <div className="flex items-center gap-2 border-r border-slate-100 pr-4">
@@ -149,8 +325,22 @@ const DocumentInsights: React.FC<DocumentInsightsProps> = ({ setMetadata }) => {
            </div>
         </main>
 
+        {/* 🚀 Resize Handle */}
+        <div 
+          className="w-1 cursor-col-resize transition-all z-30 relative bg-slate-200/50 hover:bg-red-500 hover:w-1.5 group flex items-center shrink-0"
+          onMouseDown={(e) => { e.preventDefault(); setIsResizing(true); }}
+        >
+          <div className={`absolute left-1/2 -translate-x-1/2 w-2 h-16 bg-white border border-slate-300 rounded-full shadow-md transition-transform pointer-events-none z-40 flex items-center justify-center flex-col gap-1 ${isResizing ? 'scale-110 border-red-400 bg-red-50' : 'group-hover:scale-105'}`}>
+             <div className="w-[1px] h-2 bg-slate-400/50 rounded-full" />
+             <div className="w-[1px] h-2 bg-slate-400/50 rounded-full" />
+          </div>
+        </div>
+
         {/* Intelligence Sidebar - Right Side */}
-        <aside className="w-[480px] bg-white border-l border-slate-200 flex flex-col shrink-0">
+        <aside 
+          className="bg-white flex flex-col shrink-0 shadow-[-10px_0_30px_-15px_rgba(0,0,0,0.05)] relative"
+          style={{ width: sidebarWidth }}
+        >
            {/* Tab Header - REDESIGNED AS VERTICALLY THIN TOGGLE BUTTONS */}
            <div className="pt-8 pb-4">
               <div className="bg-slate-100/80 rounded-xl p-1 mx-8 flex items-center h-9 relative z-20">
@@ -202,7 +392,6 @@ const DocumentInsights: React.FC<DocumentInsightsProps> = ({ setMetadata }) => {
                         </button>
                      </div>
 
-                     {/* Action Grid - 2x2 Clean Cards */}
                      <div className="grid grid-cols-2 gap-4 mt-8">
                         {suggestedActions.map((action) => (
                           <button
@@ -219,6 +408,23 @@ const DocumentInsights: React.FC<DocumentInsightsProps> = ({ setMetadata }) => {
                           </button>
                         ))}
                      </div>
+                     
+                     {/* Chat Messages */}
+                     {messages.length > 0 && (
+                       <div className="mt-8 space-y-4 pt-6 border-t border-slate-100">
+                         {messages.map((msg, i) => (
+                           <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                             <div className={`max-w-[85%] p-4 rounded-[20px] text-sm font-medium leading-relaxed shadow-sm ${
+                               msg.role === 'user' 
+                               ? 'bg-slate-900 text-white rounded-tr-sm' 
+                               : 'bg-white border border-slate-200 text-slate-800 rounded-tl-sm'
+                             }`}>
+                               {msg.content}
+                             </div>
+                           </div>
+                         ))}
+                       </div>
+                     )}
                    </motion.div>
                  )}
 
@@ -256,14 +462,21 @@ const DocumentInsights: React.FC<DocumentInsightsProps> = ({ setMetadata }) => {
 
            {/* Input Section - Fixed at bottom */}
            <div className="p-6 bg-white border-t border-slate-100 shrink-0">
-              <div className="relative group">
+               <div className="relative group">
                 <textarea
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSendMessage();
+                    }
+                  }}
                   placeholder="Query document intelligence..."
                   className="w-full bg-slate-50 border border-slate-200 rounded-[24px] p-5 pr-14 text-sm font-bold text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-0 focus:border-slate-400 transition-all min-h-[100px] resize-none shadow-inner"
                 />
                 <button 
+                  onClick={handleSendMessage}
                   className="absolute right-3 bottom-3 w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center hover:bg-black transition-all shadow-lg shadow-black/10 active:scale-95 disabled:opacity-30 group"
                   disabled={!inputValue.trim()}
                 >
@@ -271,19 +484,6 @@ const DocumentInsights: React.FC<DocumentInsightsProps> = ({ setMetadata }) => {
                 </button>
               </div>
            </div>
-        </aside>
-
-        {/* Slim Utility Bar - Far Right */}
-        <aside className="w-14 bg-white border-l border-slate-200 flex flex-col items-center py-6 gap-6 shrink-0">
-           <button title="Session History" className="p-3 text-slate-300 hover:text-slate-900 transition-colors rounded-xl hover:bg-slate-50"><History className="w-5 h-5" /></button>
-           <button title="Bookmarks" className="p-3 text-slate-300 hover:text-slate-900 transition-colors rounded-xl hover:bg-slate-50"><Bookmark className="w-5 h-5" /></button>
-           <button title="Copy Text" className="p-3 text-slate-300 hover:text-slate-900 transition-colors rounded-xl hover:bg-slate-50"><Copy className="w-5 h-5" /></button>
-           <div className="flex-1" />
-           <div className="flex items-center justify-center h-14 w-full">
-              <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-[11px] font-black text-slate-500">2</div>
-           </div>
-           <button className="p-3 text-slate-300 hover:text-slate-900 transition-colors"><RotateCcw className="w-5 h-5" /></button>
-           <button className="p-3 text-slate-300 hover:text-slate-900 transition-colors"><Search className="w-5 h-5" /></button>
         </aside>
       </div>
 

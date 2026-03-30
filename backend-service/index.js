@@ -1,4 +1,5 @@
 import express from 'express';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
@@ -1178,6 +1179,91 @@ app.patch('/api/tally/submissions/:id/read', authenticate, async (req, res) => {
     } catch (error) {
         console.error('[TALLY] Mark read error:', error);
         res.status(500).json({ error: 'Failed to mark submission as read' });
+    }
+});
+
+// --- AI Drafts Endpoint ---
+app.get('/api/drafts', authenticate, async (req, res) => {
+    try {
+        if (!supabase) return res.json([]);
+        const { data, error } = await supabase
+            .from('ai_drafts')
+            .select('*')
+            .eq('user_id', req.user.id)
+            .order('updated_at', { ascending: false });
+        if (error) throw error;
+        res.json(data || []);
+    } catch (e) {
+        console.error('Drafts Error:', e);
+        res.status(500).json({ error: 'Failed to fetch drafts' });
+    }
+});
+
+app.post('/api/drafts/generate', authenticate, async (req, res) => {
+    try {
+        const { prompt, title } = req.body;
+        
+        // Use Google Generative AI to generate the draft
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro", generationConfig: { temperature: 0.2 } });
+        
+        const systemPrompt = `You are an expert AI Legal Drafter. The user has requested: "${prompt}". 
+Write a highly professional, well-structured legal draft. Output only the content of the document.`;
+        
+        const result = await model.generateContent(systemPrompt);
+        const generatedContent = result.response.text();
+        
+        if (!supabase) return res.status(500).json({ error: 'Supabase not connected' });
+
+        const draftData = {
+            user_id: req.user.id,
+            title: title || 'Untitled AI Draft',
+            content: generatedContent,
+            type: 'document'
+        };
+
+        const { data, error } = await supabase
+            .from('ai_drafts')
+            .insert(draftData)
+            .select()
+            .single();
+
+        if (error) throw error;
+        res.json(data);
+    } catch (e) {
+        console.error('Draft Gen Error:', e);
+        res.status(500).json({ error: 'Failed to generate draft' });
+    }
+});
+
+app.put('/api/drafts/:id', authenticate, async (req, res) => {
+    try {
+        const { title, content, status } = req.body;
+        const { data, error } = await supabase
+            .from('ai_drafts')
+            .update({ title, content, status, updated_at: new Date().toISOString() })
+            .eq('id', req.params.id)
+            .eq('user_id', req.user.id)
+            .select()
+            .single();
+        if (error) throw error;
+        res.json(data);
+    } catch (e) {
+        res.status(500).json({ error: 'Failed' });
+    }
+});
+
+app.delete('/api/drafts/:id', authenticate, async (req, res) => {
+    try {
+        const { error } = await supabase
+            .from('ai_drafts')
+            .delete()
+            .eq('id', req.params.id)
+            .eq('user_id', req.user.id);
+        if (error) throw error;
+        res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ error: 'Failed' });
     }
 });
 
