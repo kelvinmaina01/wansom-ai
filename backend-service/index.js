@@ -481,14 +481,17 @@ app.post('/api/chat', authenticate, async (req, res) => {
         if (documentId) {
             response = await modelDispatcher.queryDocument(documentId, message);
         } else {
-            const taskType = specialistId?.includes('drafter') ? 'reasoning' : 'research';
+            // Determine task type based on intent or options
+            const taskType = req.body.options?.taskType || 'research';
             response = await modelDispatcher.dispatch(message, {
                 context: {
                     taskType,
-                    specialistId,
+                    specialistId: specialistId || 'counsel',
                     mode,
                     webSearch
-                }
+                },
+                history: req.body.options?.history || [],
+                documentId: req.body.options?.documentId || null
             });
         }
 
@@ -1092,7 +1095,7 @@ app.post('/api/webhooks/tally', async (req, res) => {
         }
 
         // Tally sends data in different formats, let's handle both
-        const formData = payload || req.body;
+        const formData = req.body;
 
         // Extract form fields from Tally's payload structure
         // Tally payload format: { form: { ... }, answers: [{ field: { ... }, value: ... }] }

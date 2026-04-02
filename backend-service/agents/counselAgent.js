@@ -18,6 +18,7 @@ export class CounselAgent {
         
         try {
             // Determine task type based on intent or options
+            const taskType = options.taskType || 'research';
             const result = await modelDispatcher.dispatch(userQuery, {
                 context: { taskType, specialistId: 'counsel' },
                 history: options.history || [],

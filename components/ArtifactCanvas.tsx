@@ -56,11 +56,13 @@ const ArtifactCanvas: React.FC<ArtifactCanvasProps> = ({
   versions = [],
   onVersionChange
 }) => {
-  const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview');
+  const [viewMode, setViewMode] = useState<'preview' | 'code' | 'editor'>('preview');
   const [isProfessionalMode, setIsProfessionalMode] = useState(true);
   const [currentVersionIdx, setCurrentVersionIdx] = useState(versions.length > 0 ? versions.length - 1 : 0);
   const [copied, setCopied] = useState(false);
   const [isActionsOpen, setIsActionsOpen] = useState(false);
+  const [aiEditInput, setAiEditInput] = useState('');
+  const [isAiEditing, setIsAiEditing] = useState(false);
   const printRef = useRef<HTMLDivElement>(null);
   const actionsRef = useRef<HTMLDivElement>(null);
 
@@ -191,6 +193,15 @@ const ArtifactCanvas: React.FC<ArtifactCanvasProps> = ({
               <CodeBracketIcon className="w-4 h-4" />
               Code
             </button>
+            <button
+              onClick={() => setViewMode('editor')}
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                viewMode === 'editor' ? 'bg-white text-primary shadow-sm' : 'text-gray-500 hover:text-gray-900'
+              }`}
+            >
+              <PencilSquareIcon className="w-4 h-4" />
+              Editor
+            </button>
           </div>
 
           <button
@@ -221,7 +232,8 @@ const ArtifactCanvas: React.FC<ArtifactCanvasProps> = ({
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 overflow-y-auto no-scrollbar relative flex justify-center bg-white">
+      <div className="flex-1 overflow-y-auto no-scrollbar relative flex flex-col bg-white">
+        <div className="flex-1 flex justify-center">
         <AnimatePresence mode="wait">
           {viewMode === 'preview' ? (
             <motion.div
@@ -256,7 +268,7 @@ const ArtifactCanvas: React.FC<ArtifactCanvasProps> = ({
                 )}
               </div>
             </motion.div>
-          ) : (
+          ) : viewMode === 'code' ? (
             <motion.div
               key="code"
               initial={{ opacity: 0 }}
@@ -275,8 +287,52 @@ const ArtifactCanvas: React.FC<ArtifactCanvasProps> = ({
                 spellCheck={false}
               />
             </motion.div>
+          ) : (
+            <motion.div
+              key="editor"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="w-full bg-white min-h-full relative flex flex-col"
+            >
+              {/* Editable content area */}
+              <div
+                contentEditable
+                suppressContentEditableWarning
+                dangerouslySetInnerHTML={{ __html: content }}
+                onInput={(e) => onContentChange((e.target as HTMLDivElement).innerHTML)}
+                className="flex-1 prose prose-slate max-w-4xl mx-auto w-full p-16 md:p-24 outline-none prose-headings:tracking-tight prose-h1:text-2xl prose-h2:text-xl prose-p:text-[17px] prose-p:leading-[1.8] focus:ring-0"
+                style={{ minHeight: '70vh' }}
+              />
+            </motion.div>
           )}
         </AnimatePresence>
+        </div>
+
+        {/* AI Edit Bar — only in Editor mode */}
+        {viewMode === 'editor' && (
+          <div className="sticky bottom-0 px-8 py-4 bg-white/95 backdrop-blur-md border-t border-gray-100">
+            <div className="ai-edit-wrap max-w-3xl mx-auto">
+              <span style={{ fontSize: 14 }}>✦</span>
+              <input
+                type="text"
+                placeholder="Tell AI how to edit this document…"
+                value={aiEditInput}
+                onChange={(e) => setAiEditInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && aiEditInput.trim()) {
+                    setIsAiEditing(true);
+                    // TODO: send to backend for AI editing
+                    setTimeout(() => setIsAiEditing(false), 2000);
+                  }
+                }}
+                className="flex-1 bg-transparent outline-none text-sm text-gray-700 placeholder:text-gray-400"
+                style={{ fontFamily: 'Inter, sans-serif', border: 'none' }}
+              />
+              {isAiEditing && <span className="chat-spinner" style={{ color: '#ef4444' }} />}
+            </div>
+          </div>
+        )}
       </div>
 
     </motion.div>

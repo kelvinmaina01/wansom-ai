@@ -30,7 +30,7 @@ import ConnectorRequestForm from './ConnectorRequestForm';
 import IntegrationFlow from './IntegrationFlow';
 import { apiClient } from '../lib/apiClient';
 
-interface IntegrationItem {
+export interface IntegrationItem {
   id: string;
   name: string;
   icon: string;
@@ -39,7 +39,7 @@ interface IntegrationItem {
   metricType: 'sync' | 'security' | 'active' | 'search';
 }
 
-interface IntegrationCategory {
+export interface IntegrationCategory {
   title: string;
   items: IntegrationItem[];
 }
@@ -50,7 +50,7 @@ interface IntegrationsProps {
   workspaceId?: string;
 }
 
-const INTEGRATION_CATEGORIES: IntegrationCategory[] = [
+export const INTEGRATION_CATEGORIES: IntegrationCategory[] = [
   {
     title: 'Document Management',
     items: [
@@ -252,7 +252,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
   };
 
   const getMetricStyles = (type: string) => {
-    return 'text-white bg-red-600 border-red-600 shadow-sm shadow-red-600/20';
+    return 'text-white bg-red-600 border-red-600';
   };
 
   const getMetricIcon = (type: string) => {
@@ -316,11 +316,11 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: (catIdx * 0.1) + (itemIdx * 0.05) }}
-                          className="bg-white border-2 border-gray-50 rounded-[2rem] p-6 hover:border-primary/20 hover:shadow-2xl hover:shadow-primary/5 transition-all group relative overflow-hidden flex flex-col justify-between"
+                          className="bg-white border border-black rounded-[17px] p-6 hover:border-red-600 transition-all group relative overflow-hidden flex flex-col justify-between"
                         >
                           <div className="relative z-10">
                             <div className="flex items-start justify-between mb-6">
-                              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center p-3 shadow-xl shadow-black/5 border border-gray-50 group-hover:scale-105 transition-transform duration-500">
+                              <div className="w-16 h-16 bg-white rounded-[17px] flex items-center justify-center p-3 border border-gray-100 group-hover:scale-105 transition-transform duration-300">
                                 {!logoErrors.has(item.id) ? (
                                   <img
                                     src={item.icon}
@@ -340,7 +340,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                                 )}
                               </div>
 
-                              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[10px] font-black uppercase tracking-wider font-sans ${getMetricStyles(item.metricType)}`}>
+                              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[17px] border text-[10px] font-bold tracking-wider font-sans ${getMetricStyles(item.metricType)}`}>
                                 {getMetricIcon(item.metricType)}
                                 {item.metric}
                               </div>
@@ -356,9 +356,9 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                             <button
                               onClick={() => toggleConnection(item)}
                               disabled={disconnectingId === item.id}
-                              className={`w-full py-4 rounded-2xl text-sm font-black uppercase tracking-widest transition-all font-display ${connectedIds.has(item.id)
-                                  ? 'bg-gray-50 text-black border-2 border-gray-100 hover:bg-white hover:border-primary/20'
-                                  : 'bg-black text-white hover:bg-primary shadow-xl shadow-black/10 active:scale-95'
+                              className={`w-full py-4 rounded-[17px] text-sm font-bold tracking-wide transition-all font-display ${connectedIds.has(item.id)
+                                  ? 'bg-white text-black border border-black hover:bg-black hover:text-white'
+                                  : 'bg-black text-white hover:bg-red-600 active:scale-95'
                                 }`}
                             >
                               {disconnectingId === item.id ? (
@@ -372,13 +372,13 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                                   Manage MCP Bridge
                                 </span>
                               ) : (
-                                'Initiate Handshake'
+                                'Establish connection'
                               )}
                             </button>
                           </div>
 
-                          {/* Decorative Background Element */}
-                          <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                          {/* Subtle hover accent */}
+                          <div className="absolute bottom-0 right-0 w-1 h-0 bg-red-600 group-hover:h-full transition-all duration-300 rounded-r-[17px]" />
                         </motion.div>
                       ))}
                     </div>
@@ -394,13 +394,13 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                       <RefreshCw className="w-4 h-4 text-gray-500" />
                       Intelligence Sovereignty
                     </h3>
-                    <p className="text-xs text-gray-400 font-medium">Manage your zero-persistence data handshakes and team access.</p>
+                    <p className="text-xs text-gray-400 font-medium">Manage your zero-persistence data connections and team access.</p>
                   </div>
                   
                   <div className="flex flex-wrap items-center gap-3">
                     <button 
                       onClick={() => alert('Audit logs are generated in real-time. Contact your system admin for the full export.')}
-                      className="px-5 py-2.5 bg-[#fcfbf9] border border-gray-200 rounded-xl text-xs font-bold hover:bg-white transition-all shadow-sm flex items-center gap-2 text-gray-700"
+                      className="px-5 py-2.5 bg-white border border-black rounded-[17px] text-xs font-bold transition-all flex items-center gap-2 text-black hover:bg-black hover:text-white"
                     >
                       <Download className="w-3.5 h-3.5" />
                       Audit Log
@@ -408,14 +408,14 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                     <button 
                       onClick={generateInviteLink}
                       disabled={loadingSovereignty}
-                      className="px-5 py-2.5 bg-[#fcfbf9] border border-gray-200 rounded-xl text-xs font-bold hover:bg-white transition-all shadow-sm flex items-center gap-2 text-gray-700 disabled:opacity-50"
+                      className="px-5 py-2.5 bg-white border border-black rounded-[17px] text-xs font-bold transition-all flex items-center gap-2 text-black hover:bg-black hover:text-white disabled:opacity-50"
                     >
                       <Link className="w-3.5 h-3.5" />
                       {loadingSovereignty ? 'Generating...' : 'Invite link'}
                     </button>
                     <button 
                       onClick={() => { setIsMembersModalOpen(true); fetchMembers(); }}
-                      className="px-6 py-2.5 bg-[#1a1a1a] text-white rounded-xl text-xs font-bold hover:bg-black transition-all shadow-md flex items-center gap-2 active:scale-95"
+                      className="px-6 py-2.5 bg-black text-white rounded-[17px] text-xs font-bold transition-all flex items-center gap-2 hover:bg-red-600"
                     >
                       <UserPlus className="w-3.5 h-3.5" />
                       Manage Members
@@ -425,10 +425,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
               </div>
 
               <div className="mt-20">
-                <div className="max-w-7xl mx-auto bg-[#0a0a0a] rounded-[15px] p-8 lg:p-12 relative overflow-hidden shadow-2xl border border-white/5">
-                  {/* Background embellishments */}
-                  <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/20 rounded-full blur-[150px] opacity-20 -translate-y-1/2 translate-x-1/2" />
-                  <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2" />
+                <div className="max-w-7xl mx-auto bg-black rounded-[17px] p-8 lg:p-12 relative overflow-hidden border border-black">
 
                   <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     
@@ -445,7 +442,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                           whileHover={{ scale: 1.05, backgroundColor: '#f9fafb' }}
                           whileTap={{ scale: 0.95 }}
                           onClick={() => setIsRequestFormOpen(true)}
-                          className="bg-white text-black px-12 py-5 rounded-[15px] font-bold transition-all shadow-xl shadow-white/5 whitespace-nowrap uppercase tracking-[0.2em] text-[11px] border border-gray-100 w-full md:w-auto"
+                          className="bg-white text-black px-12 py-5 rounded-[17px] font-bold transition-all whitespace-nowrap text-[11px] border border-white w-full md:w-auto hover:bg-red-600 hover:text-white hover:border-red-600"
                         >
                           Request New Connector
                         </motion.button>
@@ -455,23 +452,11 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                     {/* Right Column: Compliance Badges */}
                     <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-end gap-12 lg:border-l border-white/10 lg:pl-16">
                       <div className="flex items-center gap-6 group">
-                        <div className="w-24 h-24 shrink-0 bg-gradient-to-br from-white/10 to-transparent rounded-full flex flex-col items-center justify-center border-2 border-yellow-500/30 group-hover:border-yellow-500 group-hover:shadow-[0_0_40px_rgba(234,179,8,0.2)] group-hover:scale-[1.02] transition-all duration-500 relative">
-                          <div className="absolute inset-1 border border-dashed border-yellow-500/30 rounded-full animate-[spin_40s_linear_infinite]" />
-                          <div className="absolute inset-0 flex flex-col items-center justify-between py-2">
-                            <div className="flex gap-1.5 opacity-80">
-                              <Star className="w-2.5 h-2.5 text-yellow-500 fill-yellow-500 -rotate-12" />
-                              <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-                              <Star className="w-2.5 h-2.5 text-yellow-500 fill-yellow-500 rotate-12" />
-                            </div>
-                            <div className="flex gap-1 opacity-60">
-                              <Star className="w-2 h-2 text-yellow-500 fill-yellow-500" />
-                              <Star className="w-2 h-2 text-yellow-500 fill-yellow-500" />
-                            </div>
-                          </div>
-                          <span className="text-white text-lg font-black leading-tight relative z-10">SOC 2</span>
-                          <span className="text-yellow-500 text-[9px] font-black uppercase tracking-[0.2em] relative z-10 mt-0.5">Type II</span>
-                        </div>
-                        <div className="flex flex-col max-w-[120px] text-left">
+                        <div className="w-24 h-24 shrink-0 bg-white/5 rounded-full flex flex-col items-center justify-center border-2 border-white/20 group-hover:border-red-600 transition-all duration-300">
+                           <span className="text-white text-lg font-black leading-tight">SOC 2</span>
+                           <span className="text-red-600 text-[9px] font-black tracking-[0.2em] mt-0.5">Type II</span>
+                         </div>
+                         <div className="flex flex-col max-w-[120px] text-left">
                           <span className="text-white font-bold text-lg mb-1">SOC 2 Type II</span>
                           <span className="text-xs text-gray-400 font-medium uppercase tracking-widest leading-relaxed">Audited controls protect every case</span>
                         </div>
@@ -480,23 +465,11 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                       <div className="w-px h-16 bg-white/10 hidden sm:block" />
 
                       <div className="flex items-center gap-6 group">
-                        <div className="w-24 h-24 shrink-0 bg-gradient-to-br from-white/10 to-transparent rounded-full flex flex-col items-center justify-center border-2 border-blue-500/30 group-hover:border-blue-500 group-hover:shadow-[0_0_40px_rgba(59,130,246,0.2)] group-hover:scale-[1.02] transition-all duration-500 relative">
-                          <div className="absolute inset-1 border border-dashed border-blue-500/30 rounded-full animate-[spin_40s_linear_infinite_reverse]" />
-                          <div className="absolute inset-0 flex flex-col items-center justify-between py-2">
-                            <div className="flex gap-1.5 opacity-80">
-                              <Star className="w-2.5 h-2.5 text-blue-400 fill-blue-400 -rotate-12" />
-                              <Star className="w-3 h-3 text-blue-400 fill-blue-400" />
-                              <Star className="w-2.5 h-2.5 text-blue-400 fill-blue-400 rotate-12" />
-                            </div>
-                            <div className="flex gap-1 opacity-60">
-                              <Star className="w-2 h-2 text-blue-400 fill-blue-400" />
-                              <Star className="w-2 h-2 text-blue-400 fill-blue-400" />
-                            </div>
-                          </div>
-                          <span className="text-white text-lg font-black leading-tight relative z-10">GDPR</span>
-                          <span className="text-blue-400 text-[8px] font-black uppercase tracking-[0.2em] relative z-10 mt-0.5">Compliant</span>
-                        </div>
-                        <div className="flex flex-col max-w-[120px] text-left">
+                        <div className="w-24 h-24 shrink-0 bg-white/5 rounded-full flex flex-col items-center justify-center border-2 border-white/20 group-hover:border-white transition-all duration-300">
+                           <span className="text-white text-lg font-black leading-tight">GDPR</span>
+                           <span className="text-gray-400 text-[8px] font-black tracking-[0.2em] mt-0.5">Compliant</span>
+                         </div>
+                         <div className="flex flex-col max-w-[120px] text-left">
                           <span className="text-white font-bold text-lg mb-1">GDPR</span>
                           <span className="text-xs text-gray-400 font-medium uppercase tracking-widest leading-relaxed">Your data, always your property</span>
                         </div>
@@ -534,11 +507,11 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
 
           {/* Invite Modal */}
           {isInviteModalOpen && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/5">
               <motion.div 
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="bg-white w-full max-w-md rounded-[2rem] p-8 shadow-2xl relative"
+                className="bg-white w-full max-w-md rounded-[17px] p-8 border border-black relative"
               >
                 <button 
                   onClick={() => setIsInviteModalOpen(false)}
@@ -547,8 +520,8 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                   <X className="w-5 h-5" />
                 </button>
                 <div className="flex flex-col items-center text-center">
-                   <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6">
-                      <Link className="w-8 h-8 text-primary" />
+                   <div className="w-16 h-16 bg-black rounded-[17px] flex items-center justify-center mb-6">
+                      <Link className="w-8 h-8 text-white" />
                    </div>
                    <h3 className="text-2xl font-bold text-black mb-2">Workspace Invite Link</h3>
                    <p className="text-gray-500 mb-8">Share this link with your team. Only workspace owners can approve entry requests.</p>
@@ -568,7 +541,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
 
                    <button 
                      onClick={() => setIsInviteModalOpen(false)}
-                     className="w-full py-4 bg-black text-white rounded-2xl font-bold uppercase tracking-widest text-sm hover:bg-primary transition-all"
+                     className="w-full py-4 bg-black text-white rounded-[17px] font-bold text-sm hover:bg-red-600 transition-all"
                    >
                      Done
                    </button>
@@ -587,19 +560,19 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                 className="flex-1 flex flex-col h-full"
               >
                 {/* Full Page Header */}
-                <div className="border-b border-gray-100 bg-white/80 backdrop-blur-md sticky top-0 z-10 px-8 py-6">
+                <div className="border-b border-black bg-white sticky top-0 z-10 px-8 py-6">
                   <div className="max-w-5xl mx-auto flex items-center justify-between">
                     <div className="flex items-center gap-6">
                       <button 
                         onClick={() => setIsMembersModalOpen(false)}
-                        className="p-3 bg-gray-50 hover:bg-black hover:text-white rounded-2xl transition-all group border border-gray-100"
+                        className="p-3 bg-white border border-black hover:bg-black hover:text-white rounded-[17px] transition-all"
                       >
                         <ChevronLeft className="w-6 h-6" />
                       </button>
                       <div>
                         <div className="flex items-center gap-3 mb-1">
-                          <h3 className="text-3xl font-black text-black tracking-tighter uppercase font-display">Workspace Intelligence</h3>
-                          <span className="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-full">Owner Control</span>
+                          <h3 className="text-3xl font-black text-black tracking-tighter font-display">Workspace Intelligence</h3>
+                          <span className="px-3 py-1 bg-black text-white text-[10px] font-bold rounded-[17px]">Owner Control</span>
                         </div>
                         <p className="text-gray-400 font-medium text-sm">Manage team seats, resource mapping, and security roles.</p>
                       </div>
@@ -608,7 +581,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                     <div className="flex items-center gap-4">
                        <button 
                          onClick={() => { setIsMembersModalOpen(false); setIsInviteModalOpen(true); }}
-                         className="px-6 py-3 bg-black text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-primary transition-all flex items-center gap-2"
+                         className="px-6 py-3 bg-black text-white rounded-[17px] text-[10px] font-bold transition-all flex items-center gap-2 hover:bg-red-600"
                        >
                          <UserPlus className="w-4 h-4" />
                          Invite Team
@@ -618,7 +591,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                 </div>
                 
                 {/* Content Area - Flattened Layout (Items sit on page, not a card) */}
-                <div className="flex-1 overflow-y-auto bg-white/50">
+                <div className="flex-1 overflow-y-auto bg-white">
                   <div className="max-w-5xl mx-auto py-16 px-8">
                     
                     {/* Header for Items */}
@@ -633,13 +606,13 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                     {/* Member Items List (Sitting on page) */}
                     <div className="space-y-4">
                       {members.map((member) => (
-                        <div key={member.id} className="flex items-center justify-between p-8 bg-white border border-gray-100 rounded-[2rem] hover:border-primary/20 hover:shadow-xl hover:shadow-black/5 transition-all group">
+                        <div key={member.id} className="flex items-center justify-between p-8 bg-white border border-black rounded-[17px] hover:border-red-600 transition-all group">
                           <div className="flex items-center gap-6">
-                             <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center overflow-hidden border border-primary/5">
+                             <div className="w-16 h-16 rounded-[17px] bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200">
                                 {member.profile.profile_avatar_url ? (
                                   <img src={member.profile.profile_avatar_url} alt="" className="w-full h-full object-cover" />
                                 ) : (
-                                  <span className="text-primary text-xl font-black">{member.profile.profile_name.charAt(0)}</span>
+                                  <span className="text-black text-xl font-black">{member.profile.profile_name.charAt(0)}</span>
                                 )}
                              </div>
                              <div>
@@ -654,7 +627,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                                 <select 
                                   value={member.role}
                                   onChange={(e) => updateMemberRole(member.id, e.target.value)}
-                                  className="bg-white border-2 border-gray-100 rounded-xl text-xs font-bold py-2 px-4 focus:outline-none focus:border-primary transition-colors cursor-pointer"
+                                  className="bg-white border border-black rounded-[17px] text-xs font-bold py-2 px-4 focus:outline-none focus:border-red-600 transition-colors cursor-pointer"
                                 >
                                   <option value="admin">Admin</option>
                                   <option value="editor">Editor</option>
@@ -664,7 +637,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                              
                              <button 
                                onClick={() => removeMember(member.id)}
-                               className="w-12 h-12 flex items-center justify-center bg-gray-50 text-gray-300 hover:bg-red-50 hover:text-primary rounded-xl transition-all"
+                               className="w-12 h-12 flex items-center justify-center bg-white border border-black text-black hover:bg-red-600 hover:text-white hover:border-red-600 rounded-[17px] transition-all"
                                title="Revoke Access"
                              >
                                 <Trash2 className="w-5 h-5" />
@@ -682,7 +655,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                             <p className="text-xs text-gray-300 font-medium max-w-xs mb-8">Nobody else has access to this workspace. Invite your law firm partners to start collaborating.</p>
                             <button 
                               onClick={() => { setIsMembersModalOpen(false); setIsInviteModalOpen(true); }}
-                              className="px-8 py-4 bg-black text-white rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-primary transition-all shadow-xl shadow-black/10"
+                              className="px-8 py-4 bg-black text-white rounded-[17px] text-[10px] font-bold transition-all hover:bg-red-600"
                             >
                               Generate Invite Link →
                             </button>
@@ -691,8 +664,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                     </div>
 
                     {/* Audit Log / Additional Sections Directly on page */}
-                    <div className="mt-16 bg-black rounded-[3rem] border border-white/5 relative overflow-hidden group shadow-2xl">
-                      <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2" />
+                    <div className="mt-16 bg-black rounded-[17px] border border-white/10 relative overflow-hidden">
                       <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10 p-12">
                          <div className="max-w-xl">
                             <h4 className="text-3xl font-bold text-white mb-4 font-display uppercase tracking-tight">Sovereignty Audit Log</h4>
@@ -700,7 +672,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                                Inspect every permission change and invitation issued in this workspace. Detailed logging ensures compliance and zero-persistence verification across your legal environment.
                             </p>
                          </div>
-                         <button className="whitespace-nowrap px-10 py-5 bg-white text-black rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all shadow-2xl">
+                         <button className="whitespace-nowrap px-10 py-5 bg-white text-black rounded-[17px] text-[10px] font-bold transition-all hover:bg-red-600 hover:text-white">
                             Inspect Audit Trails
                          </button>
                       </div>

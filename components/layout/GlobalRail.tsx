@@ -8,7 +8,7 @@ import {
   Blocks,
   Landmark,
   Trophy,
-  PenTool,
+  Library,
   PanelLeftClose,
   PanelLeftOpen,
   FolderKanban
@@ -90,10 +90,10 @@ const GlobalRail: React.FC<GlobalRailProps> = ({
           label="Mentorship"
         />
         <RailItem 
-          icon={<PenTool className="w-7 h-7" />} 
-          active={currentView === AppView.DRAFTS}
-          onClick={() => onViewChange(AppView.DRAFTS)}
-          label="Drafts"
+          icon={<Library className="w-7 h-7" />} 
+          active={currentView === AppView.LIBRARY}
+          onClick={() => onViewChange(AppView.LIBRARY)}
+          label="Library"
         />
         <RailItem 
           icon={<Database className="w-7 h-7" />} 

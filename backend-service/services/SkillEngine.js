@@ -220,6 +220,23 @@ END OF SKILL INSTRUCTIONS — Follow all of the above exactly.
     return prompt;
   }
 
+  buildSkillContext(userMessage) {
+    const skillIds = this.detectSkills(userMessage);
+    if (skillIds.length === 0) return null;
+
+    const loaded = this.loadSkills(skillIds);
+    
+    const skillBlocks = [];
+    for (const sid of skillIds) {
+      if (loaded[sid]) {
+        const label = sid.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        skillBlocks.push(`### DETERMINISTIC LEGAL KNOWLEDGE: ${label}\n${loaded[sid]}`);
+      }
+    }
+
+    return skillBlocks.join("\n\n---\n\n");
+  }
+
   describeLoadedSkills(userMessage) {
     const skillIds = this.detectSkills(userMessage);
     if (skillIds.length === 0) return "Using general legal knowledge (no specific skill matched)";

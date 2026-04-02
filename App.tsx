@@ -23,7 +23,7 @@ import Integrations from './components/Integrations';
 import PlaceholderView from './components/PlaceholderView';
 import ProfilePage from './components/ProfilePanel';
 import AgenticMentorship from './components/AgenticMentorship';
-import DraftsPage from './components/DraftsPage';
+import LibraryPage from './components/LibraryPage';
 import CaseManager from './components/CaseManager';
 import DocumentInsights from './components/DocumentInsights';
 import KockpitDashboard from './components/KockpitDashboard';
@@ -77,7 +77,7 @@ const ROUTE_TO_VIEW: Record<string, AppView> = {
   'history': AppView.HISTORY,
   'profile': AppView.PROFILE,
   'agentic-mentorship': AppView.AGENTIC_MENTORSHIP,
-  'drafts': AppView.DRAFTS,
+  'library': AppView.LIBRARY,
   'case-management': AppView.CASE_MANAGEMENT,
   'insights': AppView.DOCUMENT_INSIGHTS,
   'intelligence-hub': AppView.INTELLIGENCE_HUB
@@ -94,7 +94,7 @@ const VIEW_TO_ROUTE: Record<string, string> = {
   [AppView.HISTORY]: 'history',
   [AppView.PROFILE]: 'profile',
   [AppView.AGENTIC_MENTORSHIP]: 'agentic-mentorship',
-  [AppView.DRAFTS]: 'drafts',
+  [AppView.LIBRARY]: 'library',
   [AppView.CASE_MANAGEMENT]: 'case-management',
   [AppView.DOCUMENT_INSIGHTS]: 'insights',
   [AppView.INTELLIGENCE_HUB]: 'intelligence-hub'
@@ -234,8 +234,8 @@ const AppLayout: React.FC<{ supabaseUser: User | null; activeWorkspace: any }> =
         return <PlaceholderView title="History" />;
       case AppView.AGENTIC_MENTORSHIP:
         return <AgenticMentorship user={user} />;
-      case AppView.DRAFTS:
-        return <DraftsPage />;
+      case AppView.LIBRARY:
+        return <LibraryPage />;
       case AppView.PROFILE:
         return (
           <ProfilePage

@@ -1,10 +1,13 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import LegalInput from './LegalInput';
 import LegalResponse from './LegalResponse';
+import type { StructuredMessage } from './LegalResponse';
 import ArtifactCanvas from './ArtifactCanvas';
+import ThoughtsPanel from './chat/ThoughtsPanel';
+import SaveModal from './chat/SaveModal';
 import {
   LegalMessage,
   WorkspaceType,
@@ -12,10 +15,14 @@ import {
   SavedPrompt,
   Persona,
   Draft,
-  ChatHistory
+  ChatHistory,
+  AIComponent,
+  PillState
 } from '../types';
 
-import { MOCK_LEGAL_RESPONSES } from '../services/mockLegalData';
+import { useThoughts } from '../hooks/useThoughts';
+import { useCanvas } from '../hooks/useCanvas';
+import { useStreamParser } from '../hooks/useStreamParser';
 import { supabase } from '../lib/supabase';
 import { apiClient } from '../lib/apiClient';
 import {
@@ -58,7 +65,8 @@ import {
   Zap as LucideZap,
   Workflow,
   History as LucideHistory,
-  FolderOpen
+  FolderOpen,
+  BrainCircuit
 } from 'lucide-react';
 import VaultModal from './VaultModal';
 
@@ -68,6 +76,8 @@ interface LegalAIProps {
   subView?: string;
   onChatActive?: (isActive: boolean) => void;
   isCoworkPage?: boolean;
+  connectedIds: Set<string>;
+  onToggleIntegration: (id: string) => void;
 }
 
 const MOCK_PROMPTS: SavedPrompt[] = [
@@ -97,14 +107,16 @@ const LegalAI: React.FC<LegalAIProps> = ({
   activeSpecialist, 
   subView = 'Active chats', 
   onChatActive,
-  isCoworkPage = false
+  isCoworkPage = false,
+  connectedIds = new Set(),
+  onToggleIntegration
 }) => {
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<LegalMessage[]>([]);
+  const [messages, setMessages] = useState<StructuredMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [statusFeed, setStatusFeed] = useState<string[]>([]);
-  const [isCoworkMode, setIsCoworkMode] = useState(false); // Controls the AI behavior
-  const [isCanvasOpen, setIsCanvasOpen] = useState(false); // Controls the side panel visibility
+  const [isCoworkMode, setIsCoworkMode] = useState(false);
+  const [isCanvasOpen, setIsCanvasOpen] = useState(false);
   const [activeArtifact, setActiveArtifact] = useState<{ id: string; title: string; versions: any[] } | null>(null);
   const [draftContent, setDraftContent] = useState("");
   const [providedContext, setProvidedContext] = useState<Record<string, any>>({});
@@ -120,15 +132,50 @@ const LegalAI: React.FC<LegalAIProps> = ({
   const [webSearchEnabled, setWebSearchEnabled] = useState(false);
   const [newPersona, setNewPersona] = useState({ name: '', role: '', description: '', instructions: '' });
   const [isVaultOpen, setIsVaultOpen] = useState(false);
+  const [isConnectorModalOpen, setIsConnectorModalOpen] = useState(false);
+  const [activeProvisioningIntegration, setActiveProvisioningIntegration] = useState<any>(null);
+  const [selectedTunnelIds, setSelectedTunnelIds] = useState<Set<string>>(new Set());
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+
+  // New response system hooks
+  const { thoughts, isOpen: isThoughtsOpen, addThought, updateThoughtStatus, clearThoughts, toggle: toggleThoughts } = useThoughts();
+  const { canvas, openCanvas, closeCanvas, switchTab, updateDocument } = useCanvas();
+  const { processSSEChunk, reset } = useStreamParser();
+
+  // Synchronize selectedTunnelIds with connectedIds initially
+  useEffect(() => {
+    if (connectedIds.size > 0 && selectedTunnelIds.size === 0) {
+      setSelectedTunnelIds(new Set(connectedIds));
+    }
+  }, [connectedIds]);
+
+  const handleToggleTunnel = (id: string) => {
+    setSelectedTunnelIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   const chatEndRef = useRef<HTMLDivElement>(null);
   const resizeRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const isUserScrollingUpRef = useRef(false);
 
   const scrollToBottom = React.useCallback((behavior: ScrollBehavior = 'smooth') => {
-    if (chatEndRef.current) {
+    if (chatEndRef.current && !isUserScrollingUpRef.current) {
       chatEndRef.current.scrollIntoView({ behavior, block: 'end' });
     }
+  }, []);
+
+  const handleScroll = useCallback(() => {
+    if (!scrollContainerRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+    
+    // If we are more than 100px from the bottom, assume user is reading something above
+    const isAtBottom = scrollHeight - scrollTop - clientHeight < 100;
+    isUserScrollingUpRef.current = !isAtBottom;
   }, []);
 
   const startResizing = React.useCallback((e: React.MouseEvent) => {
@@ -351,7 +398,7 @@ const LegalAI: React.FC<LegalAIProps> = ({
   const firstName = userEmail.split(/[0-9@.]/)[0].toUpperCase();
 
   const handleSendMessage = async (content: string) => {
-    const userMsg: LegalMessage = {
+    const userMsg: StructuredMessage = {
       id: Date.now().toString(),
       role: 'user',
       content,
@@ -360,18 +407,22 @@ const LegalAI: React.FC<LegalAIProps> = ({
 
     setMessages(prev => [...prev, userMsg]);
     setIsLoading(true);
-    setStatusFeed([]); 
+    setStatusFeed([]);
+    clearThoughts();
+    reset();
 
-      const assistantId = `assistant-${Date.now()}`;
-      setMessages(prev => [...prev, {
-        id: assistantId,
-        role: 'assistant',
-        content: '',
-        thinking: '',
-        timestamp: new Date(),
-        isGenerating: true,
-        statusFeed: []
-      }]);
+    const assistantId = `assistant-${Date.now()}`;
+    setMessages(prev => [...prev, {
+      id: assistantId,
+      role: 'assistant',
+      content: '',
+      thinking: '',
+      timestamp: new Date(),
+      isGenerating: true,
+      pillState: 'thinking' as PillState,
+      pillLabel: 'Analyzing your query…',
+      components: [],
+    }]);
 
     try {
       const response = await apiClient.fetch('/api/chat', {
@@ -385,7 +436,8 @@ const LegalAI: React.FC<LegalAIProps> = ({
           isCoworkMode,
           webSearch: webSearchEnabled || mode === 'research',
           chatId: currentChatId,
-          providedContext
+          providedContext,
+          activeTunnels: Array.from(selectedTunnelIds)
         })
       });
 
@@ -395,10 +447,10 @@ const LegalAI: React.FC<LegalAIProps> = ({
 
       const decoder = new TextDecoder();
       let done = false;
-      let accumulatedContent = "";
-      let accumulatedThinking = "";
-
-      setStatusFeed([]); // Clear feed when stream starts
+      let accumulatedContent = '';
+      let accumulatedThinking = '';
+      const accumulatedComponents: AIComponent[] = [];
+      let streamingBuffer = ''; // BUFFER TO REASSEMBLE SPLIT CHUNKS
 
       while (!done) {
         const { value, done: doneReading } = await reader.read();
@@ -406,86 +458,107 @@ const LegalAI: React.FC<LegalAIProps> = ({
         if (done) break;
 
         const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split('\n');
+        streamingBuffer += chunk;
+
+        // Split by newline to extract complete SSE 'data:' lines
+        const lines = streamingBuffer.split('\n');
+        // The last element might be an incomplete line — save it for the next read
+        streamingBuffer = lines.pop() || '';
 
         for (const line of lines) {
-          if (!line.startsWith('data: ')) continue;
-          try {
-            const data = JSON.parse(line.slice(6));
-            
-            if (data.type === "session") {
-              setCurrentChatId(data.chatId);
-            } else if (data.type === "thinking") {
-              accumulatedThinking += data.delta;
-              setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, thinking: accumulatedThinking } : m));
-            } else if (data.type === "status") {
-              setMessages(prev => prev.map(m => m.id === assistantId ? { 
-                ...m, 
-                statusFeed: [...(m.statusFeed || []), data.message] 
+          const trimmedLine = line.trim();
+          if (!trimmedLine || !trimmedLine.startsWith('data: ')) continue;
+          
+          const rawData = trimmedLine.slice(6);
+          processSSEChunk(rawData, {
+            onSession: (chatId) => {
+              setCurrentChatId(chatId);
+            },
+            onStateChange: (state, label) => {
+              setMessages(prev => prev.map(m => m.id === assistantId ? {
+                ...m, pillState: state, pillLabel: label
               } : m));
-              // Also update status feed for the overall app if needed, but we'll prioritize the message feed
-              setStatusFeed(prev => [...prev, data.message]);
-            } else if (data.type === "content") {
-              accumulatedContent += data.delta;
-              setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, content: accumulatedContent } : m));
-              scrollToBottom('auto');
-              // Auto-sync to Cowork Canvas if in cowork mode
-              if (isCoworkMode) {
-                setDraftContent(accumulatedContent);
+            },
+            onThought: (thought) => {
+              addThought(thought);
+            },
+            onContent: (delta, model) => {
+              setMessages(prev => prev.map(m => m.id === assistantId ? {
+                ...m, content: m.content + delta, pillState: 'streaming' as PillState
+              } : m));
+              // REMOVED manual scrollToBottom - now handled by reactive effect
+              if (isCoworkMode) setDraftContent(prev => prev + delta);
+            },
+            onThinking: (delta) => {
+              accumulatedThinking += delta;
+              setMessages(prev => prev.map(m => m.id === assistantId ? {
+                ...m, thinking: accumulatedThinking
+              } : m));
+            },
+            onComponent: (component) => {
+              accumulatedComponents.push(component);
+              setMessages(prev => prev.map(m => m.id === assistantId ? {
+                ...m, components: [...accumulatedComponents]
+              } : m));
+
+              // Auto-open canvas for doc previews
+              if (component.type === 'doc_preview') {
+                const docData = component.data as any;
+                setArtifactTitle(docData.title || 'Lawlify Draft');
+                setDraftContent(docData.fullHtml || docData.previewHtml || '');
+                updateDocument(docData.fullHtml || '');
               }
-            } else if (data.type === "artifact_trigger") {
-              const title = data.metadata?.title || 'Lawlify Draft';
-              const id = data.metadata?.id || `art-${Date.now()}`;
-              setArtifactTitle(title);
-              
-              const newArtifact = { 
-                id, 
-                title, 
-                versions: [{ content: accumulatedContent, timestamp: new Date() }] 
-              };
-              
-              setActiveArtifact(newArtifact);
-              setMessages(prev => prev.map(m => m.id === assistantId ? { 
-                ...m, 
-                artifact: newArtifact 
-              } : m));
-            } else if (data.type === "followup") {
-              setMessages(prev => prev.map(m => m.id === assistantId ? { 
-                ...m, 
-                followup: {
-                  ...data.followup,
-                  answers: {}
-                }
-              } : m));
-              // Cowork mode is automatically enhanced with followups
-            } else if (data.type === "metadata") {
-              setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, citations: data.citations } : m));
-            } else if (data.type === "error") {
-              throw new Error(data.message);
-            }
-          } catch (e) {
-            console.error("Error parsing SSE chunk:", e);
-          }
+
+              // Legacy artifact trigger mapping
+              if (component.type === 'doc_preview') {
+                const docData = component.data as any;
+                const newArtifact = {
+                  id: `art-${Date.now()}`,
+                  title: docData.title || 'Lawlify Draft',
+                  versions: [{ content: docData.fullHtml || accumulatedContent, timestamp: new Date() }]
+                };
+                setActiveArtifact(newArtifact);
+                setMessages(prev => prev.map(m => m.id === assistantId ? {
+                  ...m, artifact: newArtifact
+                } : m));
+              }
+            },
+            onError: (message) => {
+              throw new Error(message);
+            },
+            onDone: () => {
+              // Handled after loop
+            },
+          });
         }
       }
 
-      // Finalize
-      // Finalize
-      setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, isGenerating: false } : m));
+      // Finalize — mark done
+      setMessages(prev => prev.map(m => m.id === assistantId ? {
+        ...m,
+        isGenerating: false,
+        pillState: 'done' as PillState,
+        pillLabel: 'Analysis complete'
+      } : m));
+
+      // Mark all thoughts as done
+      thoughts.forEach(t => updateThoughtStatus(t.id, 'done'));
 
       setIsLoading(false);
-      setStatusFeed([]); // Clear global feed on success
+      setStatusFeed([]);
     } catch (error: any) {
       console.error(error);
       const isNetworkError = !error.message || error.message === 'Streaming failed' || error.message === 'Failed to fetch';
       const friendlyMsg = isNetworkError
         ? "I'm having trouble connecting right now. Please check your connection and try again."
         : `Something went wrong: ${error.message}`;
-      setMessages(prev => prev.map(m => m.id === assistantId ? { 
-        ...m, 
-        content: friendlyMsg, 
+      setMessages(prev => prev.map(m => m.id === assistantId ? {
+        ...m,
+        content: friendlyMsg,
         isGenerating: false,
-        isError: true
+        isError: true,
+        pillState: 'drafting' as PillState,
+        pillLabel: 'Connection Error'
       } : m));
       setIsLoading(false);
       setStatusFeed([]);
@@ -522,24 +595,62 @@ const LegalAI: React.FC<LegalAIProps> = ({
   };
 
   const handleFollowUpSubmit = (answers: Record<string, string | string[]>) => {
-    // 1. Accumulate context for future requests
     const newContext = { ...providedContext, ...answers };
     setProvidedContext(newContext);
-
-    // 2. Format a friendly message for the UI
     const summarizedAnswers = Object.entries(answers)
       .map(([id, val]) => {
         const fieldName = id.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
         return `${fieldName}: ${Array.isArray(val) ? val.join(', ') : val}`;
       })
       .join('\n');
-    
     handleSendMessage(`Proceeding with the following information:\n${summarizedAnswers}`);
   };
 
+  const handlePauseSubmit = (details: Record<string, string>) => {
+    const newContext = { ...providedContext, ...details };
+    setProvidedContext(newContext);
+    const detailLines = Object.entries(details)
+      .map(([id, val]) => `${id.replace(/_/g, ' ')}: ${val}`)
+      .join('\n');
+    handleSendMessage(`Please draft with these details:\n${detailLines}`);
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    handleSendMessage(suggestion);
+  };
+
+  const handleOpenCanvas = (tab: 'preview' | 'code' | 'editor', html?: string, title?: string) => {
+    if (html) setDraftContent(html);
+    if (title) setArtifactTitle(title);
+    setIsCanvasOpen(true);
+  };
+
+  const handleSaveDocument = () => {
+    setIsSaveModalOpen(true);
+  };
+
+  const handleSaveToDestination = (dest: 'library' | 'drive' | 'onedrive' | 'download') => {
+    setIsSaveModalOpen(false);
+    // TODO: Implement actual save logic per destination
+    console.log('Saving to:', dest, artifactTitle);
+  };
+
+  const handleAction = (action: string) => {
+    if (action === 'save') handleSaveDocument();
+    else if (action === 'canvas') { setIsCanvasOpen(true); }
+    else if (action === 'export') { /* TODO */ }
+  };
+
+  // ── RECURSIVE AUTO-SCROLL (PREMIUM) ──
   useEffect(() => {
-    scrollToBottom('smooth');
-  }, [messages.length, scrollToBottom]);
+    const lastMsgContent = messages[messages.length - 1]?.content || '';
+    const thoughtsCount = thoughts.length;
+    
+    // We scroll smooth for new messages, but 'auto' (instant) for streaming content 
+    // to keep it pin-sharp without jerky animations.
+    const behavior = lastMsgContent.length < 50 ? 'smooth' : 'auto';
+    scrollToBottom(behavior);
+  }, [messages.length, messages[messages.length - 1]?.content, thoughts.length, scrollToBottom]);
 
   const renderActiveChats = () => (
     <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative bg-[#fafafa]/80 backdrop-blur-xl bg-dots no-scrollbar">
@@ -550,9 +661,9 @@ const LegalAI: React.FC<LegalAIProps> = ({
           style={{ width: isCanvasOpen ? `calc(100% - ${canvasWidth}px)` : '100%' }}
         >
 
-        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 md:px-8 py-6 no-scrollbar">
+        <div ref={scrollContainerRef} onScroll={handleScroll} className="flex-1 overflow-y-auto px-4 md:px-12 py-6 no-scrollbar">
           {messages.length === 0 ? (
-            <div className="min-h-full flex flex-col items-center justify-center space-y-12 max-w-6xl mx-auto">
+            <div className="min-h-full flex flex-col items-center justify-center space-y-12 w-full">
               <div className="text-center">
                 <div className="flex justify-center mb-12">
                   <div className="relative">
@@ -605,38 +716,17 @@ const LegalAI: React.FC<LegalAIProps> = ({
                   webSearchEnabled={webSearchEnabled}
                   setWebSearchEnabled={setWebSearchEnabled}
                   onVaultClick={() => setIsVaultOpen(true)}
+                  connectedIds={connectedIds}
+                  onOpenConnectors={() => setIsConnectorModalOpen(true)}
+                  onToggleIntegration={onToggleIntegration}
                 />
               </div>
 
-              <div className="w-full max-w-6xl px-4">
-                <div className="flex items-center gap-2 mb-4 px-2">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: "auto" }}
-                    transition={{ duration: 1.5, ease: "easeOut" }}
-                    className="overflow-hidden whitespace-nowrap"
-                  >
-                    <span className="text-[10px] font-black text-red-500 uppercase tracking-[0.2em]">
-                      {"Not sure where to begin? Try...".split("").map((char, i) => (
-                        <motion.span
-                          key={i}
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ delay: i * 0.04 }}
-                        >
-                          {char}
-                        </motion.span>
-                      ))}
-                    </span>
-                  </motion.div>
-                  <motion.div
-                    animate={{ x: [0, 5, 0] }}
-                    transition={{ repeat: Infinity, duration: 1 }}
-                  >
-                    <ArrowPathIcon className="w-3 h-3 text-red-500 rotate-90" />
-                  </motion.div>
+              <div className="w-full max-w-6xl px-4 flex flex-col items-center">
+                <div className="flex flex-col items-center mb-16 w-full">
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 w-full">
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-5xl">
                   {activeSpecialist?.suggestions ? (
                     activeSpecialist.suggestions.map((suggestion, idx) => (
                       <QuickActionButton
@@ -684,7 +774,7 @@ const LegalAI: React.FC<LegalAIProps> = ({
               </div>
             </div>
           ) : (
-            <div className={`max-w-[1600px] mx-auto space-y-12 pb-60 px-4 md:px-12 ${isCoworkPage ? 'min-h-[60vh] flex flex-col items-center justify-center pt-20' : ''}`}>
+            <div className={`w-full space-y-12 pb-60 px-4 md:px-6 ${isCoworkPage ? 'min-h-[60vh] flex flex-col items-center justify-center pt-20' : ''}`}>
               {isCoworkPage && messages.length === 0 && (
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
@@ -713,46 +803,17 @@ const LegalAI: React.FC<LegalAIProps> = ({
                   onReloadMessage={handleReloadMessage}
                   onEditMessage={handleEditMessage}
                   onFollowUpSubmit={handleFollowUpSubmit}
+                  onFollowUpSkip={() => {}}
+                  onPauseSubmit={handlePauseSubmit}
+                  onSuggestionClick={handleSuggestionClick}
+                  onOpenCanvas={handleOpenCanvas}
+                  onSaveDocument={handleSaveDocument}
+                  onAction={handleAction}
                 />
               ))}
 
               {/* Real-time Status Feed */}
-              <AnimatePresence>
-                {statusFeed.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="max-w-6xl mx-auto space-y-3 pt-4 flex flex-col items-start justify-start"
-                  >
-                    {statusFeed.slice(-1).map((status, idx) => {
-                      const isSearching = status.toLowerCase().includes('search');
-                      const isConnecting = status.toLowerCase().includes('connect');
-                      const isSuccess = status.toLowerCase().includes('intent') || status.toLowerCase().includes('context');
-                      
-                      return (
-                        <motion.div
-                          key={idx}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          className="flex items-center gap-3 text-xs font-bold text-black/50 tracking-tight justify-start"
-                        >
-                          {isSearching ? (
-                            <LucideGlobe className="w-4 h-4 text-primary animate-pulse" />
-                          ) : isConnecting ? (
-                            <LucideSparkles className="w-4 h-4 text-orange-500 animate-pulse" />
-                          ) : isSuccess ? (
-                            <CheckCircleIcon className="w-4 h-4 text-green-500" />
-                          ) : (
-                            <div className="w-4 h-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-                          )}
-                          {status}
-                        </motion.div>
-                      );
-                    })}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {/* Status is now handled by StatePill inside LegalResponse */}
 
               <div ref={chatEndRef} />
             </div>
@@ -774,6 +835,9 @@ const LegalAI: React.FC<LegalAIProps> = ({
                 webSearchEnabled={webSearchEnabled}
                 setWebSearchEnabled={setWebSearchEnabled}
                 onVaultClick={() => setIsVaultOpen(true)}
+                connectedIds={connectedIds}
+                onOpenConnectors={() => setIsConnectorModalOpen(true)}
+                onToggleIntegration={onToggleIntegration}
               />
             </div>
           </div>
@@ -798,7 +862,16 @@ const LegalAI: React.FC<LegalAIProps> = ({
         </div>
       )}
 
-      {/* Claude-Style Artifact Canvas */}
+      {/* Thoughts Panel */}
+      {thoughts.length > 0 && (
+        <ThoughtsPanel
+          thoughts={thoughts}
+          isOpen={isThoughtsOpen}
+          onToggle={toggleThoughts}
+        />
+      )}
+
+      {/* Artifact Canvas */}
       <AnimatePresence>
         {isCanvasOpen && (
           <motion.div
@@ -824,6 +897,14 @@ const LegalAI: React.FC<LegalAIProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Save Modal */}
+      <SaveModal
+        isOpen={isSaveModalOpen}
+        documentTitle={artifactTitle}
+        onClose={() => setIsSaveModalOpen(false)}
+        onSave={handleSaveToDestination}
+      />
     </div>
   );
 
@@ -1032,28 +1113,32 @@ const QuickActionButton = ({ icon, label, description, onClick, color = 'red' }:
     black: 'bg-gray-100 text-black group-hover:bg-black group-hover:text-white',
     blue: 'bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white',
     green: 'bg-green-50 text-green-600 group-hover:bg-green-600 group-hover:text-white',
-    grey: 'bg-gray-100 text-gray-600 group-hover:bg-gray-600 group-hover:text-white',
+    grey: 'bg-amber-50 text-amber-600 group-hover:bg-amber-600 group-hover:text-white',
   };
 
   const cardBgMap = {
-    red: 'bg-red-50 border-red-100 hover:border-red-200',
-    black: 'bg-gray-100 border-gray-200 hover:border-gray-300',
-    blue: 'bg-blue-50 border-blue-100 hover:border-blue-200',
-    green: 'bg-green-50 border-green-100 hover:border-green-200',
-    grey: 'bg-amber-50 border-amber-100 hover:border-amber-200',
+    red: 'bg-red-50 border-red-100 hover:border-red-600 shadow-red-500/5',
+    black: 'bg-gray-50 border-gray-100 hover:border-black shadow-black/5',
+    blue: 'bg-blue-50 border-blue-100 hover:border-blue-600 shadow-blue-500/5',
+    green: 'bg-green-50 border-green-100 hover:border-green-600 shadow-green-500/5',
+    grey: 'bg-amber-50 border-amber-100 hover:border-amber-600 shadow-amber-500/5',
   };
 
   return (
-    <button
+    <motion.button
+      whileHover={{ y: -8, scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className={`flex flex-col items-start gap-1 px-8 py-6 ${cardBgMap[color]} rounded-3xl text-left hover:shadow-2xl transition-all group relative overflow-hidden`}
+      className={`flex flex-col items-center text-center gap-5 p-10 ${cardBgMap[color]} border-2 rounded-[17px] hover:shadow-2xl transition-all group relative overflow-hidden min-h-[240px] justify-center w-full`}
     >
-      <div className={`p-3 rounded-2xl ${colorMap[color]} transition-all mb-4 shadow-sm`}>
-        {icon}
+      <div className={`p-5 rounded-[12px] ${colorMap[color]} transition-all shadow-sm border border-black/5 mb-2`}>
+        {React.cloneElement(icon as React.ReactElement, { className: 'w-8 h-8' })}
       </div>
-      <span className="text-lg font-bold text-black tracking-tighter">{label}</span>
-      <span className="text-[10px] font-medium text-gray-400">{description}</span>
-    </button>
+      <div>
+        <h4 className="text-xl font-black text-black tracking-tighter mb-2 leading-none whitespace-nowrap">{label}</h4>
+        <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest line-clamp-1">{description}</p>
+      </div>
+    </motion.button>
   );
 };
 

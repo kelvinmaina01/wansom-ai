@@ -100,7 +100,7 @@ const IntegrationFlow: React.FC<IntegrationFlowProps> = ({ provider, onClose, on
           fetchFiles();
         }
       } else {
-        console.error('Handshake failed.');
+        console.error('Establish connection failed.');
         setStep('intro');
       }
     } catch (e) {
@@ -311,7 +311,7 @@ const IntegrationFlow: React.FC<IntegrationFlowProps> = ({ provider, onClose, on
                     <img src={provider.icon} alt="Connect" className="w-20 h-20 animate-pulse" />
                  </div>
               </div>
-              <h2 className="text-5xl font-black text-black mb-6 tracking-tighter font-display">Performing MCP Handshake...</h2>
+              <h2 className="text-5xl font-black text-black mb-6 tracking-tighter font-display">Establishing connection...</h2>
               <p className="text-gray-400 font-medium text-xl max-w-lg mx-auto leading-relaxed">
                   Negotiating capabilities and establishing a zero-persistence tunnel between <span className="text-black font-bold">Lawlify Core</span> and <span className="text-black font-bold">{provider.name}</span>.
               </p>
@@ -390,7 +390,7 @@ const IntegrationFlow: React.FC<IntegrationFlowProps> = ({ provider, onClose, on
                      <div className="p-8 bg-red-50/20 rounded-[2.5rem] border border-red-100">
                         <h4 className="font-bold text-red-600 mb-2">Security Note</h4>
                         <p className="text-[10px] text-gray-500 leading-relaxed">
-                           Lawlify utilizes per-session ephemeral keys for MCP handshakes. This connection can be severed instantly from your {provider.name} security console.
+                           Lawlify utilizes per-session ephemeral keys for secure connections. This tunnel can be severed instantly from your {provider.name} security console.
                         </p>
                      </div>
                   </div>
@@ -427,7 +427,7 @@ const IntegrationFlow: React.FC<IntegrationFlowProps> = ({ provider, onClose, on
                   files={files} 
                   isLoading={isLoading} 
                   onFileClick={(f) => {
-                    console.log('Resource handshake:', f);
+                    console.log('Resource connection:', f);
                     onConnected(provider.id);
                   }}
                 />

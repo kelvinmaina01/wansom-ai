@@ -10,7 +10,7 @@ export enum AppView {
   HISTORY = 'history',
   PROFILE = 'profile',
   AGENTIC_MENTORSHIP = 'agentic-mentorship',
-  DRAFTS = 'drafts',
+  LIBRARY = 'library',
   CASE_MANAGEMENT = 'case-management',
   DOCUMENT_INSIGHTS = 'document-insights',
   INTELLIGENCE_HUB = 'intelligence-hub'
@@ -143,6 +143,8 @@ export interface Draft {
   title: string;
   content: string;
   type: 'document' | 'email' | 'advice';
+  projectName?: string;
+  category?: string;
   lastModified: Date;
 }
 
@@ -181,4 +183,117 @@ export interface Project {
   progress: number;
   dueDate: Date;
   type: string;
+}
+
+// ═══════════════════════════════════════════════
+// NEW: Structured AI Response System Types
+// ═══════════════════════════════════════════════
+
+/** The 8 animation states for the StatePill */
+export type PillState = 'thinking' | 'searching' | 'reading' | 'drafting' | 'asking' | 'paused' | 'done' | 'streaming';
+
+/** A single entry in the Thoughts panel */
+export interface ThoughtEntry {
+  id: string;
+  type: 'search' | 'read' | 'calc' | 'doc' | 'check';
+  title: string;
+  subtitle: string;
+  sources?: string[];
+  status: 'live' | 'done';
+}
+
+/** AI-generated follow-up question card */
+export interface FollowUpCardData {
+  intro: string;
+  questions: Array<{
+    id: string;
+    question: string;
+    options?: string[];
+    allowFreeText?: boolean;
+    placeholder?: string;
+  }>;
+}
+
+/** AI-generated pause card for document detail collection */
+export interface PauseCardData {
+  title?: string;
+  description: string;
+  buttonText?: string;
+  fields: Array<{
+    id: string;
+    label: string;
+    placeholder: string;
+    type: 'text' | 'select' | 'textarea';
+    options?: string[];
+    defaultValue?: string;
+  }>;
+}
+
+/** AI-generated structured answer card */
+export interface AnswerCardData {
+  title: string;
+  rows: Array<{
+    label: string;
+    value: string;
+    status: 'good' | 'warn' | 'bad' | 'neutral';
+  }>;
+}
+
+/** Citation card data — expandable in a grid */
+export interface CitationData {
+  type: 'statute' | 'case' | 'web';
+  title: string;
+  subtitle: string;
+  fullText: string;
+  url: string;
+}
+
+/** Sources block — compact list of cited sources */
+export interface SourcesBlockData {
+  sources: string[];
+}
+
+/** Action button in the response */
+export interface ActionButtonData {
+  label: string;
+  style: 'primary' | 'secondary' | 'drive';
+  action: string; // identifier for the action
+}
+
+/** Follow-up suggestion chips */
+export interface SuggestionsData {
+  suggestions: string[];
+}
+
+/** Document preview data for in-chat preview */
+export interface DocPreviewData {
+  title: string;
+  previewHtml: string;
+  fullHtml: string;
+}
+
+/** A structured component emitted by the AI */
+export interface AIComponent {
+  type: 'followup_card' | 'pause_card' | 'answer_card' | 'citations' | 'doc_preview' | 'suggestions' | 'sources' | 'actions';
+  data: FollowUpCardData | PauseCardData | AnswerCardData | CitationData[] | DocPreviewData | SuggestionsData | SourcesBlockData | ActionButtonData[];
+}
+
+/** A single chunk from the SSE stream */
+export type AIResponseChunk =
+  | { type: 'session'; chatId: string }
+  | { type: 'state_change'; state: PillState; stateLabel: string }
+  | { type: 'thought'; thought: Omit<ThoughtEntry, 'id'> }
+  | { type: 'content'; delta: string; model?: string }
+  | { type: 'thinking'; delta: string; model?: string }
+  | { type: 'component'; component: AIComponent }
+  | { type: 'metadata'; citations: LegalCitation[] }
+  | { type: 'error'; message: string }
+  | { type: 'done' };
+
+/** Canvas panel state */
+export interface CanvasState {
+  isOpen: boolean;
+  activeTab: 'preview' | 'code' | 'editor';
+  documentHtml: string;
+  documentTitle: string;
 }
