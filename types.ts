@@ -13,7 +13,9 @@ export enum AppView {
   LIBRARY = 'library',
   CASE_MANAGEMENT = 'case-management',
   DOCUMENT_INSIGHTS = 'document-insights',
-  INTELLIGENCE_HUB = 'intelligence-hub'
+  INTELLIGENCE_HUB = 'intelligence-hub',
+  PROJECT_NEW = 'project-new',
+  PROJECT_VIEW = 'project-view'
 }
 
 export enum WorkspaceType {
@@ -96,11 +98,12 @@ export interface UserSettings {
     firmName: string;
     avatarUrl?: string;
   };
+  appearance: 'light' | 'dark' | 'system';
+  fontSize: 'small' | 'medium' | 'large';
   notifications: {
     email: boolean;
     push: boolean;
-    caseUpdates: boolean;
-    newsDigest: boolean;
+    slack: boolean;
   };
   security: {
     twoFactorEnabled: boolean;
@@ -296,4 +299,20 @@ export interface CanvasState {
   activeTab: 'preview' | 'code' | 'editor';
   documentHtml: string;
   documentTitle: string;
+}
+
+export interface RealtimePresenseState {
+  user_id: string;
+  online_at: string;
+  email?: string;
+}
+
+export interface CaseActivity {
+  id: string;
+  case_id: string;
+  user_id: string;
+  action: string;
+  details: any;
+  created_at: string;
+  profiles?: { full_name: string };
 }

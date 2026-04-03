@@ -83,6 +83,11 @@ if (supabaseUrl && supabaseKey) {
 }
 
 const authenticate = async (req, res, next) => {
+    // Bypass authentication for OAuth callbacks as they are direct browser redirects
+    if (req.path.includes('/callback')) {
+        return next();
+    }
+
     const authHeader = req.headers.authorization;
     if (!supabaseUrl || !supabaseKey) {
         const devToken = process.env.DEV_TOKEN || 'dev-only-token';

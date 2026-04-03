@@ -1,4 +1,166 @@
+# Lawlify Legal AI — Volume 2: The Streaming Engine
+*Research Copy — 100% Exact Content*
 
+---
+
+## 1. useStreamParser.ts
+**Path:** `hooks/useStreamParser.ts`
+
+```typescript
+import { useCallback, useRef } from 'react';
+import type {
+  PillState, ThoughtEntry, AIComponent,
+} from '../types';
+
+/**
+ * Parses the SSE stream from /api/chat and dispatches typed events.
+ * 
+ * FIX: Non-destructive parsing. This version handles tag extraction without 
+ * breaking the main content stream by tracking processing offsets 
+ * instead of destructive string replacement.
+ */
+
+interface StreamCallbacks {
+  onStateChange: (state: PillState, label: string) => void;
+  onThought: (thought: Omit<ThoughtEntry, 'id'>) => void;
+  onContent: (delta: string, model?: string) => void;
+  onThinking: (delta: string) => void;
+  onComponent: (component: AIComponent) => void;
+  onSession: (chatId: string) => void;
+  onError: (message: string) => void;
+  onDone: () => void;
+}
+
+export function useStreamParser() {
+  const bufferRef = useRef('');
+  const processedIndexRef = useRef(0);
+  const emittedThoughtsRef = useRef<Set<string>>(new Set());
+  const emittedComponentsRef = useRef<Set<string>>(new Set());
+
+  const processSSEChunk = useCallback((rawData: string, callbacks: StreamCallbacks) => {
+    try {
+      const chunk = JSON.parse(rawData);
+
+      switch (chunk.type) {
+        case 'session':
+          callbacks.onSession(chunk.chatId);
+          break;
+        case 'state_change':
+          callbacks.onStateChange(chunk.state, chunk.stateLabel);
+          break;
+        case 'thought':
+          callbacks.onThought(chunk.thought);
+          break;
+        case 'content': {
+          const delta = chunk.delta || '';
+          bufferRef.current += delta;
+          
+          // ── TAG EXTRACTION & CONTENT EMISSION (NON-DESTRUCTIVE) ──
+          const currentBuffer = bufferRef.current;
+          
+          // 1. Extract States (thinking, searching, etc.)
+          const stateRegex = /<state>(.*?)<\/state>/g;
+          let stateMatch;
+          while ((stateMatch = stateRegex.exec(currentBuffer)) !== null) {
+            // We can emit states multiple times, UI handles it
+            callbacks.onStateChange(stateMatch[1] as PillState, stateMatch[1]);
+          }
+
+          // 2. Extract Thoughts
+          const thoughtRegex = /<thought>([\s\S]*?)<\/thought>/g;
+          let thoughtMatch;
+          while ((thoughtMatch = thoughtRegex.exec(currentBuffer)) !== null) {
+            const thoughtContent = thoughtMatch[1];
+            // Use content as key to avoid double-emitting same thought in one stream
+            if (!emittedThoughtsRef.current.has(thoughtContent)) {
+              callbacks.onThought({
+                type: 'read',
+                title: 'Reasoning',
+                subtitle: 'Brain',
+                status: 'done',
+                sources: []
+              });
+              emittedThoughtsRef.current.add(thoughtContent);
+            }
+          }
+
+          // 3. Extract Components
+          const compRegex = /<component\s+type="([^"]+)">([\s\S]*?)<\/component>/g;
+          let compMatch;
+          while ((compMatch = compRegex.exec(currentBuffer)) !== null) {
+            const compRaw = compMatch[0];
+            if (!emittedComponentsRef.current.has(compRaw)) {
+              try {
+                const data = JSON.parse(compMatch[2]);
+                callbacks.onComponent({ type: compMatch[1] as AIComponent['type'], data });
+                emittedComponentsRef.current.add(compRaw);
+              } catch (e) {
+                // Partial JSON, skip for now
+              }
+            }
+          }
+
+          // 4. EMIT PLAIN CONTENT (CLEANED)
+          // We find all text that is NOT inside a tag <...>
+          // But we only emit the NEW part by tracking our absolute buffer index.
+          
+          let cleanedContent = currentBuffer;
+          // Temporarily remove ALL tags to see what the "clean" text looks like
+          cleanedContent = cleanedContent.replace(/<thought>[\s\S]*?<\/thought>/g, '');
+          cleanedContent = cleanedContent.replace(/<state>.*?<\/state>/g, '');
+          cleanedContent = cleanedContent.replace(/<component\s+type="[^"]+">[\s\S]*?<\/component>/g, '');
+          cleanedContent = cleanedContent.replace(/<status>.*?<\/status>/g, '');
+          
+          // Also protect against partial tags at the very end of the buffer
+          // If the buffer ends with an unclosed <, we don't know if it's text or a tag yet.
+          const lastOpen = cleanedContent.lastIndexOf('<');
+          const lastClose = cleanedContent.lastIndexOf('>');
+          if (lastOpen > lastClose && (cleanedContent.length - lastOpen) < 100) {
+            cleanedContent = cleanedContent.slice(0, lastOpen);
+          }
+
+          if (cleanedContent.length > processedIndexRef.current) {
+            const newDelta = cleanedContent.slice(processedIndexRef.current);
+            callbacks.onContent(newDelta, chunk.model);
+            processedIndexRef.current = cleanedContent.length;
+          }
+          
+          break;
+        }
+        case 'thinking':
+          callbacks.onThinking(chunk.delta || '');
+          break;
+        case 'component':
+          callbacks.onComponent(chunk.component);
+          break;
+        case 'error':
+          callbacks.onError(chunk.message);
+          break;
+        default:
+          break;
+      }
+    } catch (e) {
+      console.warn('SSE parse error:', e);
+    }
+  }, []);
+
+  const reset = useCallback(() => {
+    bufferRef.current = '';
+    processedIndexRef.current = 0;
+    emittedThoughtsRef.current.clear();
+    emittedComponentsRef.current.clear();
+  }, []);
+
+  return { processSSEChunk, reset };
+}
+```
+
+---
+
+## 2. LegalAI.tsx
+**Path:** `components/LegalAI.tsx`
+
+```typescript
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
@@ -66,13 +228,9 @@ import {
   Workflow,
   History as LucideHistory,
   FolderOpen,
-  BrainCircuit,
-  Shield
+  BrainCircuit
 } from 'lucide-react';
 import VaultModal from './VaultModal';
-import MatterInspector from './MatterInspector';
-import ProjectInstructionsModal from './ProjectInstructionsModal';
-import ProjectSkillsModal from './ProjectSkillsModal';
 
 interface LegalAIProps {
   userEmail: string;
@@ -80,7 +238,6 @@ interface LegalAIProps {
   subView?: string;
   onChatActive?: (isActive: boolean) => void;
   isCoworkPage?: boolean;
-  isProjectView?: boolean;
   connectedIds: Set<string>;
   onToggleIntegration: (id: string) => void;
 }
@@ -113,18 +270,11 @@ const LegalAI: React.FC<LegalAIProps> = ({
   subView = 'Active chats', 
   onChatActive,
   isCoworkPage = false,
-  isProjectView = false,
   connectedIds = new Set(),
   onToggleIntegration
 }) => {
   const navigate = useNavigate();
   const [messages, setMessages] = useState<StructuredMessage[]>([]);
-  const [isProjectMode, setIsProjectMode] = useState(isProjectView);
-  const [projectData, setProjectData] = useState<any>(null);
-  const [isInspectorOpen, setIsInspectorOpen] = useState(false);
-  const [isInstructionsModalOpen, setIsInstructionsModalOpen] = useState(false);
-  const [isSkillsModalOpen, setIsSkillsModalOpen] = useState(false);
-  const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [statusFeed, setStatusFeed] = useState<string[]>([]);
   const [isCoworkMode, setIsCoworkMode] = useState(false);
@@ -212,19 +362,6 @@ const LegalAI: React.FC<LegalAIProps> = ({
   const promptAttempted = useRef(false);
 
   useEffect(() => {
-    if (location.state?.caseId) {
-      setActiveProjectId(location.state.caseId);
-      setIsProjectMode(true);
-      fetchProjectData(location.state.caseId);
-    }
-  }, [location.state]);
-
-  const fetchProjectData = async (id: string) => {
-    const { data, error } = await supabase.from('cases').select('*').eq('id', id).single();
-    if (!error && data) setProjectData(data);
-  };
-
-  useEffect(() => {
     if (activeSpecialist) {
       if (!isCanvasOpen) setIsCanvasOpen(true);
       if (!activeArtifact && !draftContent) {
@@ -296,10 +433,6 @@ const LegalAI: React.FC<LegalAIProps> = ({
     // Switch to active chats implicitly
     const event = new CustomEvent('app-view-change', { detail: 'Active chats' });
     window.dispatchEvent(event);
-    // The App component handles the subView prop, but since LegalAI is a child, 
-    // we might need a more direct way if subView is passed from App.tsx.
-    // For now, let's assume the user click on the sidebar/rail works, 
-    // or we can just trigger a re-render if we were in the persona view.
   };
 
   const handleContinueSession = async (historyId: string) => {
@@ -744,57 +877,59 @@ const LegalAI: React.FC<LegalAIProps> = ({
                   connectedIds={connectedIds}
                   onOpenConnectors={() => setIsConnectorModalOpen(true)}
                   onToggleIntegration={onToggleIntegration}
-                  selectedTunnelIds={selectedTunnelIds}
-                  onToggleTunnel={handleToggleTunnel}
                 />
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-5xl mt-12 pb-12">
-                    {!isProjectMode && messages.length === 0 && (
-                      activeSpecialist?.suggestions ? (
-                        activeSpecialist.suggestions.map((suggestion, idx) => (
-                          <QuickActionButton
-                            key={idx}
-                            icon={getSuggestionIcon(suggestion.icon)}
-                            label={suggestion.label}
-                            description={suggestion.description}
-                            onClick={() => handleSendMessage(suggestion.prompt)}
-                            color={suggestion.color}
-                          />
-                        ))
-                      ) : (
-                        <>
-                          <QuickActionButton
-                            icon={<DocumentTextIcon className="w-4 h-4" />}
-                            label="Conveyancing Guide"
-                            description="Land Registration Act 2012"
-                            onClick={() => handleSendMessage("Explain the conveyancing requirements under the Kenyan Land Registration Act 2012.")}
-                            color="black"
-                          />
-                          <QuickActionButton
-                            icon={<ScaleIcon className="w-4 h-4" />}
-                            label="Explain Muruatetu"
-                            description="Supreme Court landmark ruling"
-                            onClick={() => handleSendMessage("Explain the Muruatetu case landmark ruling and its impact on sentencing in Kenya.")}
-                            color="black"
-                          />
-                          <QuickActionButton
-                            icon={<BriefcaseIcon className="w-4 h-4" />}
-                            label="Employment Act"
-                            description="Lawful termination process"
-                            onClick={() => handleSendMessage("What is the lawful process for termination of employment under the Employment Act of Kenya?")}
-                            color="black"
-                          />
-                          <QuickActionButton
-                            icon={<ShieldCheckIcon className="w-4 h-4" />}
-                            label="Constitution 2010"
-                            description="Bill of Rights & Devolution"
-                            onClick={() => handleSendMessage("Explain the core principles of the Bill of Rights and Devolution in the Constitution of Kenya 2010.")}
-                            color="black"
-                          />
-                        </>
-                      )
-                    )}
-                  </div>
-      </div>
+              </div>
+
+              <div className="w-full max-w-6xl px-4 flex flex-col items-center">
+                <div className="flex flex-col items-center mb-16 w-full">
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-5xl">
+                  {activeSpecialist?.suggestions ? (
+                    activeSpecialist.suggestions.map((suggestion, idx) => (
+                      <QuickActionButton
+                        key={idx}
+                        icon={getSuggestionIcon(suggestion.icon)}
+                        label={suggestion.label}
+                        description={suggestion.description}
+                        onClick={() => handleSendMessage(suggestion.prompt)}
+                        color={suggestion.color}
+                      />
+                    ))
+                  ) : (
+                    <>
+                      <QuickActionButton
+                        icon={<DocumentTextIcon className="w-6 h-6" />}
+                        label="Conveyancing Guide"
+                        description="Land Registration Act 2012"
+                        onClick={() => handleSendMessage("Explain the conveyancing requirements under the Kenyan Land Registration Act.")}
+                        color="grey"
+                      />
+                      <QuickActionButton
+                        icon={<ScaleIcon className="w-6 h-6" />}
+                        label="Explain Muruatetu"
+                        description="Supreme Court landmark ruling"
+                        onClick={() => handleSendMessage("Explain the Muruatetu case to me and its impact on Kenyan law.")}
+                        color="red"
+                      />
+                      <QuickActionButton
+                        icon={<BriefcaseIcon className="w-6 h-6" />}
+                        label="Employment Act"
+                        description="Lawful termination process"
+                        onClick={() => handleSendMessage("Summarize the lawful termination process in Kenya.")}
+                        color="blue"
+                      />
+                      <QuickActionButton
+                        icon={<ShieldCheckIcon className="w-6 h-6" />}
+                        label="Constitution 2010"
+                        description="Bill of Rights & Devolution"
+                        onClick={() => handleSendMessage("What are the key highlights of the Kenyan Constitution 2010 regarding the Bill of Rights?")}
+                        color="green"
+                      />
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
           ) : (
             <div className={`w-full space-y-12 pb-60 px-4 md:px-6 ${isCoworkPage ? 'min-h-[60vh] flex flex-col items-center justify-center pt-20' : ''}`}>
@@ -835,57 +970,7 @@ const LegalAI: React.FC<LegalAIProps> = ({
                 />
               ))}
 
-              <AnimatePresence>
-            {isProjectMode && !isInspectorOpen && (
-              <motion.button
-                initial={{ opacity: 0, scale: 0.8, x: 20 }}
-                animate={{ opacity: 1, scale: 1, x: 0 }}
-                exit={{ opacity: 0, scale: 0.8, x: 20 }}
-                onClick={() => setIsInspectorOpen(true)}
-                className="fixed right-8 top-32 z-50 p-4 bg-white border border-gray-100 rounded-full shadow-2xl hover:border-black transition-all group flex items-center gap-3"
-              >
-                 <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center relative">
-                    <Shield className="w-5 h-5 text-primary" />
-                    <div className="absolute inset-0 bg-primary/20 rounded-full animate-ping" />
-                 </div>
-                 <span className="text-[10px] font-black text-black uppercase tracking-widest pr-2">Inspect Matter</span>
-              </motion.button>
-            )}
-          </AnimatePresence>
-
-          <MatterInspector 
-            isOpen={isInspectorOpen}
-            onClose={() => setIsInspectorOpen(false)}
-            project={projectData}
-            onEditInstructions={() => setIsInstructionsModalOpen(true)}
-            onManageSkills={() => setIsSkillsModalOpen(true)}
-            onManageFiles={() => {}}
-            onManageConnectors={() => {}}
-          />
-
-          <ProjectInstructionsModal 
-             isOpen={isInstructionsModalOpen}
-             onClose={() => setIsInstructionsModalOpen(false)}
-             instructions={projectData?.description || ''}
-             onSave={async (val) => {
-                const { error } = await supabase.from('cases').update({ description: val }).eq('id', activeProjectId);
-                if (!error) {
-                   setProjectData({ ...projectData, description: val });
-                   setIsInstructionsModalOpen(false);
-                }
-             }}
-          />
-
-          <ProjectSkillsModal 
-            isOpen={isSkillsModalOpen}
-            onClose={() => setIsSkillsModalOpen(false)}
-            currentSkills={projectData?.metadata?.skills || []}
-            availableSkills={[]} // Should be passed from ProjectView or shared constant
-            onUpdateSkills={async (skills) => {
-               const { error } = await supabase.from('cases').update({ metadata: { ...projectData.metadata, skills } }).eq('id', activeProjectId);
-               if (!error) setProjectData({ ...projectData, metadata: { ...projectData.metadata, skills } });
-            }}
-          />
+              {/* Real-time Status Feed */}
               {/* Status is now handled by StatePill inside LegalResponse */}
 
               <div ref={chatEndRef} />
@@ -911,8 +996,6 @@ const LegalAI: React.FC<LegalAIProps> = ({
                 connectedIds={connectedIds}
                 onOpenConnectors={() => setIsConnectorModalOpen(true)}
                 onToggleIntegration={onToggleIntegration}
-                selectedTunnelIds={selectedTunnelIds}
-                onToggleTunnel={handleToggleTunnel}
               />
             </div>
           </div>
@@ -1192,26 +1275,26 @@ const QuickActionButton = ({ icon, label, description, onClick, color = 'red' }:
   };
 
   const cardBgMap = {
-    red: 'bg-white border-gray-100 hover:border-red-600 shadow-red-500/5',
-    black: 'bg-white border-gray-100 hover:border-black shadow-black/5',
-    blue: 'bg-white border-gray-100 hover:border-blue-600 shadow-blue-500/5',
-    green: 'bg-white border-gray-100 hover:border-green-600 shadow-green-500/5',
-    grey: 'bg-white border-gray-100 hover:border-amber-600 shadow-amber-500/5',
+    red: 'bg-red-50 border-red-100 hover:border-red-600 shadow-red-500/5',
+    black: 'bg-gray-50 border-gray-100 hover:border-black shadow-black/5',
+    blue: 'bg-blue-50 border-blue-100 hover:border-blue-600 shadow-blue-500/5',
+    green: 'bg-green-50 border-green-100 hover:border-green-600 shadow-green-500/5',
+    grey: 'bg-amber-50 border-amber-100 hover:border-amber-600 shadow-amber-500/5',
   };
 
   return (
     <motion.button
-      whileHover={{ y: -4, scale: 1.01 }}
-      whileTap={{ scale: 0.99 }}
+      whileHover={{ y: -8, scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className={`flex flex-col items-center text-center gap-3 p-6 ${cardBgMap[color]} border border-gray-100 rounded-[20px] hover:shadow-xl transition-all group relative overflow-hidden min-h-[160px] justify-center w-full`}
+      className={`flex flex-col items-center text-center gap-5 p-10 ${cardBgMap[color]} border-2 rounded-[17px] hover:shadow-2xl transition-all group relative overflow-hidden min-h-[240px] justify-center w-full`}
     >
-      <div className={`p-3 rounded-[10px] ${colorMap[color]} transition-all shadow-sm border border-black/5 mb-1`}>
-        {React.cloneElement(icon as React.ReactElement<any>, { className: 'w-5 h-5' })}
+      <div className={`p-5 rounded-[12px] ${colorMap[color]} transition-all shadow-sm border border-black/5 mb-2`}>
+        {React.cloneElement(icon as React.ReactElement, { className: 'w-8 h-8' })}
       </div>
       <div>
-        <h4 className="text-base font-bold text-black tracking-tight mb-1 leading-tight">{label}</h4>
-        <p className="text-[9px] font-medium text-gray-400 uppercase tracking-widest line-clamp-1">{description}</p>
+        <h4 className="text-xl font-black text-black tracking-tighter mb-2 leading-none whitespace-nowrap">{label}</h4>
+        <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest line-clamp-1">{description}</p>
       </div>
     </motion.button>
   );
@@ -1232,3 +1315,4 @@ const header_button = ({ icon, tooltip, onClick }: { icon: React.ReactNode, tool
 );
 
 export default LegalAI;
+```

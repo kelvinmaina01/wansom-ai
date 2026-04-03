@@ -141,12 +141,12 @@ const Overview: React.FC = () => {
         {/* Quick Actions */}
         <div className="flex flex-wrap gap-4 mb-12 justify-center">
           {[
+            { label: 'Start a project', icon: Plus, bg: 'bg-green-50', text: 'text-green-600', isNew: true, onClick: () => navigate('/app/projects/new') },
             { label: 'Draft A Contract', icon: PenTool, bg: 'bg-red-50', text: 'text-red-600', prompt: "I need to draft a professional legal contract. Please guide me through choosing the right template, defining the parties, and outlining the core terms and conditions for a robust agreement." },
             { label: 'Review Documents', icon: FileText, bg: 'bg-blue-50', text: 'text-blue-600', prompt: "I have a legal document that needs a comprehensive review. Please help me analyze it for potential risks, hidden liabilities, and compliance with current statutory requirements." },
             { label: 'Prepare for A Case', icon: Briefcase, bg: 'bg-amber-50', text: 'text-amber-600', prompt: "I am preparing for a legal case. Please help me organize the facts, identify relevant precedents, and structure a powerful legal argument or case brief." },
-            { label: 'Start A Project', icon: Plus, bg: 'bg-green-50', text: 'text-green-600', prompt: "I want to start a new legal project. Please walk me through the initialization steps: defining the scope, setting up folders, and assigning the right AI Persona to specialize in this matter." },
             { label: 'Start A Workflow', icon: Zap, bg: 'bg-purple-50', text: 'text-purple-600', onClick: () => {} }, // Workflow page coming later
-          ].map((action) => (
+          ].map((action: any) => (
             <button 
               key={action.label} 
               onClick={() => action.prompt ? triggerPrompt(action.prompt) : action.onClick?.()}
@@ -155,7 +155,12 @@ const Overview: React.FC = () => {
               <div className={`p-1.5 ${action.bg} rounded-lg ${action.text}`}>
                 <action.icon className="w-4 h-4" />
               </div>
-              {action.label}
+              <span className="flex items-center gap-2">
+                {action.label}
+                {action.isNew && (
+                   <span className="px-2 py-0.5 bg-[#ff5a5f] text-[8px] text-white font-black rounded-full uppercase tracking-widest shadow-sm">New</span>
+                )}
+              </span>
             </button>
           ))}
         </div>
@@ -175,7 +180,7 @@ const Overview: React.FC = () => {
                 Start a new project, upload files, and assign a Persona to streamline your workflow.
               </p>
               <button 
-                onClick={() => triggerPrompt("I'm ready to start a new legal project. Let's begin by defining the matter name, client details, and choosing the specialized persona for this workflow.")}
+                onClick={() => navigate('/app/projects/new')}
                 className="flex items-center gap-2 px-6 py-3 bg-white/90 backdrop-blur-sm text-blue-600 rounded-xl font-bold hover:bg-white transition-colors shadow-lg shadow-black/10"
               >
                 Create project
@@ -197,7 +202,7 @@ const Overview: React.FC = () => {
                 Access and manage your saved projects, review files, and continue your work seamlessly.
               </p>
               <button 
-                onClick={() => triggerPrompt("I'd like to open an existing project. Please show me a summary of my active matters so I can choose which one to continue working on.")}
+                onClick={() => navigate('/app/cases')}
                 className="flex items-center gap-2 px-6 py-3 bg-white/90 backdrop-blur-sm text-purple-600 rounded-xl font-bold hover:bg-white transition-colors shadow-lg shadow-black/10"
               >
                 View projects

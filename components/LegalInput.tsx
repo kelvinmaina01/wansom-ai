@@ -460,7 +460,7 @@ const LegalInput: React.FC<LegalInputProps> = ({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="-mt-[2px] mx-0 bg-white border-2 border-t-0 border-[#F0F0F0] rounded-b-[2.5rem] p-5 px-10 flex items-center justify-between shadow-2xl shadow-black/[0.02] relative z-0 transition-all hover:bg-gray-50 group backdrop-blur-none"
+            className="-mt-[2px] mx-0 bg-transparent border-2 border-t-0 border-[#F0F0F0]/50 rounded-b-[2.5rem] p-5 px-10 flex items-center justify-between relative z-0 transition-all hover:bg-gray-50/50 group backdrop-blur-none"
           >
             <div 
                className="flex items-center gap-6 hover:opacity-70 transition-opacity cursor-pointer flex-1"
@@ -490,7 +490,7 @@ const LegalInput: React.FC<LegalInputProps> = ({
                    <motion.div 
                      key={item.id} 
                      whileHover={{ y: -4, scale: 1.1, zIndex: 50 }}
-                     className="w-10 h-10 rounded-full border-2 border-white bg-white p-1.5 shadow-lg relative"
+                     className="w-10 h-10 rounded-full border-2 border-primary bg-white p-1.5 shadow-lg relative"
                      style={{ zIndex: 40 - idx }}
                      title={`Connect ${item.name}`}
                    >

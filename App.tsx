@@ -26,12 +26,14 @@ import AgenticMentorship from './components/AgenticMentorship';
 import LibraryPage from './components/LibraryPage';
 import CaseManager from './components/CaseManager';
 import DocumentInsights from './components/DocumentInsights';
+import IntelligenceHub from './components/IntelligenceHub';
 import KockpitDashboard from './components/KockpitDashboard';
 import AdminLogin from './components/AdminLogin';
-import IntelligenceHub from './components/IntelligenceHub';
-import SupportSidebar from './components/SupportSidebar';
-import BookDemoForm from './components/BookDemoForm';
 import EnterpriseBooking from './components/EnterpriseBooking';
+import BookDemoForm from './components/BookDemoForm';
+import ProjectComposer from './components/ProjectComposer';
+import ProjectView from './components/ProjectView';
+import SupportSidebar from './components/SupportSidebar';
 import { WorkspaceType, AppView, LegalSpecialist, Notification } from './types';
 import { ChevronRight, Bell, HelpCircle, Scale, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 
@@ -80,7 +82,9 @@ const ROUTE_TO_VIEW: Record<string, AppView> = {
   'library': AppView.LIBRARY,
   'case-management': AppView.CASE_MANAGEMENT,
   'insights': AppView.DOCUMENT_INSIGHTS,
-  'intelligence-hub': AppView.INTELLIGENCE_HUB
+  'intelligence-hub': AppView.INTELLIGENCE_HUB,
+  'projects/new': AppView.PROJECT_NEW,
+  'projects/:id': AppView.PROJECT_VIEW
 };
 
 const VIEW_TO_ROUTE: Record<string, string> = {
@@ -97,7 +101,9 @@ const VIEW_TO_ROUTE: Record<string, string> = {
   [AppView.LIBRARY]: 'library',
   [AppView.CASE_MANAGEMENT]: 'case-management',
   [AppView.DOCUMENT_INSIGHTS]: 'insights',
-  [AppView.INTELLIGENCE_HUB]: 'intelligence-hub'
+  [AppView.INTELLIGENCE_HUB]: 'intelligence-hub',
+  [AppView.PROJECT_NEW]: 'projects/new',
+  [AppView.PROJECT_VIEW]: 'projects/:id'
 };
 
 // App shell layout for authenticated in-app views
@@ -175,7 +181,13 @@ const AppLayout: React.FC<{ supabaseUser: User | null; activeWorkspace: any }> =
   // Derive currentView from the current route
   const pathParts = location.pathname.split('/').filter(Boolean);
   const appIndex = pathParts.indexOf('app');
-  const pathSegment = appIndex !== -1 && pathParts[appIndex + 1] ? pathParts[appIndex + 1] : 'overview';
+  let pathSegment = appIndex !== -1 && pathParts[appIndex + 1] ? pathParts.slice(appIndex + 1).join('/') : 'overview';
+  
+  // Dynamic route matching for projects/:id
+  if (pathParts[appIndex + 1] === 'projects' && pathParts[appIndex + 2] && pathParts[appIndex + 2] !== 'new') {
+    pathSegment = 'projects/:id';
+  }
+  
   const currentView = ROUTE_TO_VIEW[pathSegment] || AppView.LEGAL_AI;
 
   const handleViewChange = (view: AppView) => {
@@ -183,6 +195,8 @@ const AppLayout: React.FC<{ supabaseUser: User | null; activeWorkspace: any }> =
     navigate(`/app/${route}`);
     if (isSidebarCollapsed) setIsSidebarCollapsed(false);
   };
+
+  const isProjectView = currentView === AppView.PROJECT_VIEW || currentView === AppView.PROJECT_NEW || !!(location.state as any)?.caseId;
 
   const handleMarkAsRead = (id: string) => {
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
@@ -201,7 +215,7 @@ const AppLayout: React.FC<{ supabaseUser: User | null; activeWorkspace: any }> =
       case AppView.OVERVIEW:
         return <Overview />;
       case AppView.LEGAL_AI:
-        return <LegalAI userEmail={user.email} activeSpecialist={activeSpecialist} subView={legalAISubView} onChatActive={setIsChatActive} />;
+        return <LegalAI userEmail={user.email} activeSpecialist={activeSpecialist} subView={legalAISubView} onChatActive={setIsChatActive} isProjectView={isProjectView} connectedIds={connectedIds} onToggleIntegration={toggleConnection} />;
       case AppView.INTEGRATIONS:
         return <Integrations connectedIds={connectedIds} onToggle={toggleConnection} workspaceId={activeWorkspace?.id} />;
       case AppView.JUDICIAL_ANALYTICS:
@@ -236,6 +250,10 @@ const AppLayout: React.FC<{ supabaseUser: User | null; activeWorkspace: any }> =
         return <AgenticMentorship user={user} />;
       case AppView.LIBRARY:
         return <LibraryPage />;
+      case AppView.PROJECT_NEW:
+        return <ProjectComposer />;
+      case AppView.PROJECT_VIEW:
+        return <ProjectView />;
       case AppView.PROFILE:
         return (
           <ProfilePage
@@ -277,7 +295,7 @@ const AppLayout: React.FC<{ supabaseUser: User | null; activeWorkspace: any }> =
       />
 
       {/* Panel 2: Contextual Sidebar */}
-      {currentView !== AppView.PROFILE && (
+      {currentView !== AppView.PROFILE && currentView !== AppView.PROJECT_NEW && (
         <div className={`transition-all duration-300 ease-in-out overflow-hidden border-r border-white/5 ${isSidebarCollapsed ? 'w-0 opacity-0' : 'w-64 opacity-100'}`}>
           <ContextualSidebar
             currentView={currentView}
@@ -303,6 +321,7 @@ const AppLayout: React.FC<{ supabaseUser: User | null; activeWorkspace: any }> =
             workspaceId={activeWorkspace?.id}
             connectedIds={connectedIds}
             documentMetadata={documentMetadata}
+            isProjectView={isProjectView}
           />
         </div>
       )}

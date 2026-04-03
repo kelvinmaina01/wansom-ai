@@ -25,7 +25,9 @@ async function runMigrations() {
             '00001_initial_schema.sql',
             '00002_files_folders.sql',
             '00003_judicial_analytics.sql',
-            '00004_onboarding_responses.sql'
+            '00004_onboarding_responses.sql',
+            '008_project_hub_expansion.sql',
+            '009_project_history_distinction.sql'
         ];
 
         for (const file of migrationFiles) {

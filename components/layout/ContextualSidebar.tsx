@@ -39,6 +39,7 @@ interface ContextualSidebarProps {
   connectedIds?: Set<string>;
   isSidebarCollapsed?: boolean;
   documentMetadata?: { title: string; status: string; actions: any[] } | null;
+  isProjectView?: boolean;
 }
 
 interface SidebarSection {
@@ -59,6 +60,7 @@ const ContextualSidebar: React.FC<ContextualSidebarProps> = ({
   connectedIds = new Set(),
   isSidebarCollapsed = false,
   documentMetadata,
+  isProjectView = false
 }) => {
   const [teamMembers, setTeamMembers] = React.useState<any[]>([]);
   const [invitations, setInvitations] = React.useState<any[]>([]);
@@ -317,6 +319,16 @@ const ContextualSidebar: React.FC<ContextualSidebarProps> = ({
             { label: 'Intelligence Overview', active: true, icon: <FileText className="w-5 h-5 text-red-500" /> },
           ] : [
             { label: 'Analyzing Document...', active: true, icon: <Zap className="w-5 h-5 animate-pulse text-red-500" /> }
+          ]
+        };
+      case AppView.PROJECT_NEW:
+      case AppView.PROJECT_VIEW:
+        return {
+          title: 'Matter Command',
+          sections: [
+            { label: 'Project Dashboard', active: currentView === AppView.PROJECT_VIEW, icon: <LayoutGrid className="w-5 h-5" /> },
+            { label: 'Matter History', active: false, icon: <Clock className="w-5 h-5" /> },
+            { label: 'Team Pulse', icon: <Users className="w-5 h-5" /> },
           ]
         };
       default:
