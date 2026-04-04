@@ -273,7 +273,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
       {/* Features Grid - Redesigned to Fly.io Style (Single Card) */}
       <section id="features" className="py-32 px-6 bg-ai-studio relative overflow-hidden">
         <div className="max-w-7xl mx-auto">
-          <div className="relative p-10 md:p-16 rounded-[2.5rem] bg-gradient-to-br from-purple-50/10 to-blue-50/5 border border-white/10 shadow-2xl overflow-visible group">
+          <div className="relative p-10 md:p-16 rounded-[2.5rem] bg-gradient-to-br from-purple-50/10 to-blue-50/5 border border-white/10 overflow-visible group">
             <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 blur-[120px] rounded-full pointer-events-none group-hover:bg-primary/20 transition-all duration-700"></div>
             
             <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
@@ -295,7 +295,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
               </div>
 
               {/* Right Side: Overlapping Notebook Paper (Refined) */}
-              <div className="flex-1 w-full max-w-lg lg:absolute lg:-right-4 lg:top-1/2 lg:-translate-y-1/2 z-30">
+              <div className="flex-1 w-full max-w-lg lg:absolute lg:-right-4 lg:top-1/2 lg:-translate-y-[55%] z-30">
                 <div className="bg-[#fffdf5] rounded-[2rem] border border-[#e8e4d1] relative overflow-hidden transform lg:rotate-3">
                   {/* Red Margin Line */}
                   <div className="absolute left-12 top-0 bottom-0 w-[2px] bg-red-200/60" />
@@ -326,7 +326,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                 </div>
 
                 {/* Decorative paper stack effect */}
-                <div className="absolute inset-0 bg-white/10 -z-10 rounded-[2rem] translate-x-4 translate-y-4 shadow-xl border border-white/5 lg:rotate-3"></div>
+                <div className="absolute inset-0 bg-white/10 -z-10 rounded-[2rem] translate-x-4 translate-y-1 border border-white/5 lg:rotate-3"></div>
               </div>
             </div>
           </div>
