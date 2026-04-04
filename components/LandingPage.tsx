@@ -252,7 +252,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                 <img 
                   src={logo} 
                   alt="Partner Logo" 
-                  className="h-10 md:h-14 w-auto object-contain brightness-100 contrast-100 invert" 
+                  className="h-10 md:h-14 w-auto object-contain brightness-0 invert opacity-80 hover:opacity-100 transition-opacity" 
                 />
               </div>
             ))}
@@ -262,7 +262,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                 <img 
                   src={logo} 
                   alt="Partner Logo" 
-                  className="h-10 md:h-14 w-auto object-contain brightness-100 contrast-100 invert" 
+                  className="h-10 md:h-14 w-auto object-contain brightness-0 invert opacity-80 hover:opacity-100 transition-opacity" 
                 />
               </div>
             ))}
