@@ -73,6 +73,7 @@ const Files: React.FC = () => {
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
   const [folders, setFolders] = useState<Folder[]>([]);
   const [files, setFiles] = useState<UploadedFile[]>([]);
+  const [isFilesLoading, setIsFilesLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFileIds, setSelectedFileIds] = useState<Set<string>>(new Set());
@@ -83,18 +84,22 @@ const Files: React.FC = () => {
   const [showStarredOnly, setShowStarredOnly] = useState(false);
   const [sortConfig, setSortConfig] = useState<{ key: keyof UploadedFile; direction: 'asc' | 'desc' } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  // Track upload ingestion phases per temp file id
+  const [ingestionPhase, setIngestionPhase] = useState<Record<string, number>>({});
 
   const fetchData = async () => {
+    setIsFilesLoading(true);
     try {
       const [foldersRes, filesRes] = await Promise.all([
         apiClient.get('/api/folders'),
         apiClient.get('/api/files')
       ]);
-
       if (foldersRes.ok) setFolders(await foldersRes.json());
       if (filesRes.ok) setFiles(await filesRes.json());
     } catch (error) {
       console.error('Error fetching files/folders:', error);
+    } finally {
+      setIsFilesLoading(false);
     }
   };
 
@@ -156,6 +161,8 @@ const Files: React.FC = () => {
     }
   };
 
+  const INGESTION_PHASES = ['Parsing document', 'Extracting entities', 'Vectorizing content', 'Ready'];
+
   const handleFiles = async (newFiles: File[]) => {
     const tempFiles: UploadedFile[] = newFiles.map(file => ({
       id: `temp-${Math.random().toString(36).substr(2, 9)}`,
@@ -172,26 +179,34 @@ const Files: React.FC = () => {
 
     setFiles(prev => [...tempFiles, ...prev]);
 
+    // Animate ingestion phases for each temp file
+    tempFiles.forEach(tempFile => {
+      let phase = 0;
+      setIngestionPhase(prev => ({ ...prev, [tempFile.id]: 0 }));
+      const interval = setInterval(() => {
+        phase++;
+        if (phase < INGESTION_PHASES.length) {
+          setIngestionPhase(prev => ({ ...prev, [tempFile.id]: phase }));
+        } else {
+          clearInterval(interval);
+        }
+      }, 900);
+    });
+
     for (const [index, file] of newFiles.entries()) {
       const formData = new FormData();
       formData.append('document', file);
       if (currentFolderId) formData.append('folderId', currentFolderId);
-
       try {
-        const response = await apiClient.fetch('/api/files/upload', {
-          method: 'POST',
-          body: formData,
-          // Note: Browser handles Content-Type for FormData
-          headers: {} 
-        });
-
+        const response = await apiClient.fetch('/api/files/upload', { method: 'POST', body: formData, headers: {} });
         if (!response.ok) throw new Error('Upload failed');
         const data = await response.json();
-
         setFiles(prev => prev.map(f => f.id === tempFiles[index].id ? data.file : f));
+        setIngestionPhase(prev => { const next = { ...prev }; delete next[tempFiles[index].id]; return next; });
       } catch (error) {
         console.error('File upload error:', error);
         setFiles(prev => prev.map(f => f.id === tempFiles[index].id ? { ...f, status: 'error' } : f));
+        setIngestionPhase(prev => { const next = { ...prev }; delete next[tempFiles[index].id]; return next; });
       }
     }
   };
@@ -384,62 +399,67 @@ const Files: React.FC = () => {
             <p className="text-gray-500 text-sm font-medium">Your data, always your property. Manage your legal repository. Your files remain secure.</p>
           </div>
 
-          {/* Overview Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {/* Overview Cards - Clean solid design, no glassmorphism */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {/* Storage Card */}
-            <div className="relative overflow-hidden p-6 rounded-[15px] border border-white/20 shadow-xl bg-blue-600/90 backdrop-blur-xl text-white group hover:scale-[1.02] transition-transform duration-300">
-              <div className="absolute -right-10 -top-10 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors"></div>
-              <div className="flex items-center gap-4 mb-4 relative z-10">
-                <div className="p-3 bg-white/20 rounded-[15px] backdrop-blur-md shadow-inner">
-                  <HardDrive className="w-6 h-6 text-white" />
+            <div className="bg-white border border-blue-100 border-l-4 border-l-blue-500 rounded-2xl p-6 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all group min-h-[140px] flex flex-col justify-between">
+              <div className="flex items-center justify-between">
+                <h3 className="text-gray-500 text-xs font-bold uppercase tracking-widest">Storage Used</h3>
+                <div className="p-2.5 bg-blue-50 rounded-xl">
+                  <HardDrive className="w-4 h-4 text-blue-600" />
                 </div>
-                <span className="text-blue-100 text-xs font-bold uppercase tracking-wider">Storage</span>
               </div>
-              <div className="text-3xl font-bold text-white mb-4 tracking-tight relative z-10">{formatSize(stats.totalSize)}</div>
-              <div className="w-full bg-black/20 h-2 rounded-full overflow-hidden backdrop-blur-sm relative z-10">
-                <div className="bg-white h-full rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)]" style={{ width: '15%' }}></div>
+              <div>
+                <div className="text-3xl font-bold text-gray-900 leading-none mb-2">{formatSize(stats.totalSize)}</div>
+                <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                  <div className="bg-blue-500 h-full rounded-full" style={{ width: '15%' }} />
+                </div>
+                <p className="text-[10px] text-gray-400 font-semibold mt-1.5">15% of 5 GB used</p>
               </div>
             </div>
 
             {/* Total Files Card */}
-            <div className="relative overflow-hidden p-6 rounded-[15px] border border-white/20 shadow-xl bg-purple-600/90 backdrop-blur-xl text-white group hover:scale-[1.02] transition-transform duration-300">
-              <div className="absolute -right-10 -top-10 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors"></div>
-              <div className="flex items-center gap-4 mb-4 relative z-10">
-                <div className="p-3 bg-white/20 rounded-[15px] backdrop-blur-md shadow-inner">
-                  <FileIcon className="w-6 h-6 text-white" />
+            <div className="bg-white border border-purple-100 border-l-4 border-l-purple-500 rounded-2xl p-6 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all group min-h-[140px] flex flex-col justify-between">
+              <div className="flex items-center justify-between">
+                <h3 className="text-gray-500 text-xs font-bold uppercase tracking-widest">Total Files</h3>
+                <div className="p-2.5 bg-purple-50 rounded-xl">
+                  <FileIcon className="w-4 h-4 text-purple-600" />
                 </div>
-                <span className="text-purple-100 text-xs font-bold uppercase tracking-wider">Total Files</span>
               </div>
-              <div className="text-3xl font-bold text-white relative z-10">{stats.totalFiles}</div>
+              <div>
+                <div className="text-3xl font-bold text-gray-900 leading-none mb-1">{stats.totalFiles}</div>
+                <p className="text-[10px] text-gray-400 font-semibold">Across all folders</p>
+              </div>
             </div>
 
             {/* Folders Card */}
-            <div className="relative overflow-hidden p-6 rounded-[15px] border border-white/20 shadow-xl bg-orange-600/90 backdrop-blur-xl text-white group hover:scale-[1.02] transition-transform duration-300">
-              <div className="absolute -right-10 -top-10 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors"></div>
-              <div className="flex items-center gap-4 mb-4 relative z-10">
-                <div className="p-3 bg-white/20 rounded-[15px] backdrop-blur-md shadow-inner">
-                  <FolderIcon className="w-6 h-6 text-white" />
+            <div className="bg-white border border-orange-100 border-l-4 border-l-orange-500 rounded-2xl p-6 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all group min-h-[140px] flex flex-col justify-between">
+              <div className="flex items-center justify-between">
+                <h3 className="text-gray-500 text-xs font-bold uppercase tracking-widest">Folders</h3>
+                <div className="p-2.5 bg-orange-50 rounded-xl">
+                  <FolderIcon className="w-4 h-4 text-orange-500" />
                 </div>
-                <span className="text-orange-100 text-xs font-bold uppercase tracking-wider">Folders</span>
               </div>
-              <div className="text-3xl font-bold text-white relative z-10">{stats.totalFolders}</div>
+              <div>
+                <div className="text-3xl font-bold text-gray-900 leading-none mb-1">{stats.totalFolders}</div>
+                <p className="text-[10px] text-gray-400 font-semibold">Organized collections</p>
+              </div>
             </div>
 
             {/* Types Card */}
-            <div className="relative overflow-hidden p-6 rounded-[15px] border border-white/20 shadow-xl bg-emerald-600/90 backdrop-blur-xl text-white group hover:scale-[1.02] transition-transform duration-300">
-              <div className="absolute -right-10 -top-10 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors"></div>
-              <div className="flex items-center gap-4 mb-4 relative z-10">
-                <div className="p-3 bg-white/20 rounded-[15px] backdrop-blur-md shadow-inner">
-                  <PieChart className="w-6 h-6 text-white" />
+            <div className="bg-white border border-emerald-100 border-l-4 border-l-emerald-500 rounded-2xl p-6 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all group min-h-[140px] flex flex-col justify-between">
+              <div className="flex items-center justify-between">
+                <h3 className="text-gray-500 text-xs font-bold uppercase tracking-widest">File Types</h3>
+                <div className="p-2.5 bg-emerald-50 rounded-xl">
+                  <PieChart className="w-4 h-4 text-emerald-600" />
                 </div>
-                <span className="text-emerald-100 text-xs font-bold uppercase tracking-wider">Types</span>
               </div>
-              <div className="flex flex-wrap gap-2 mt-1 relative z-10">
-                {Object.entries(stats.typeCounts).slice(0, 4).map(([type, count]) => (
-                  <div key={type} className="px-3 py-1.5 bg-white/20 backdrop-blur-md rounded-lg text-[10px] font-bold uppercase text-white border border-white/10 shadow-sm">
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {Object.entries(stats.typeCounts).length > 0 ? Object.entries(stats.typeCounts).slice(0, 4).map(([type, count]) => (
+                  <div key={type} className="px-2.5 py-1 bg-emerald-50 rounded-lg text-[10px] font-bold uppercase text-emerald-700 border border-emerald-100">
                     {type}: {count}
                   </div>
-                ))}
+                )) : <p className="text-[10px] text-gray-400 font-semibold">No files yet</p>}
               </div>
             </div>
           </div>
@@ -578,248 +598,238 @@ const Files: React.FC = () => {
 
           {/* Content Grid/List */}
           <div className="bg-white border border-gray-100 rounded-[15px] overflow-hidden shadow-sm min-h-[600px] mb-20 p-2">
-            {/* Folders Grid (Only at root) */}
-            {visibleFolders.length > 0 && (
-              <div className="p-6 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 border-b border-gray-50">
-                {visibleFolders.map(folder => (
-                  <button
-                    key={folder.id}
-                    onClick={() => setCurrentFolderId(folder.id)}
-                    className="p-4 bg-gray-50 hover:bg-blue-50 border border-transparent hover:border-blue-100 rounded-[15px] flex flex-col items-center gap-3 transition-all group text-center"
-                  >
-                    <div className="w-12 h-12 bg-white rounded-[15px] flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
-                      <FolderIcon className="w-6 h-6 text-yellow-500 fill-yellow-500" />
+
+            {/* Branch 1: Skeleton while loading */}
+            {isFilesLoading ? (
+              <div className="p-6 space-y-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 animate-pulse">
+                    <div className="w-12 h-12 bg-gray-200 rounded-xl shrink-0" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-3 w-48 bg-gray-200 rounded-full" />
+                      <div className="h-2 w-32 bg-gray-100 rounded-full" />
                     </div>
-                    <span className="text-xs font-bold text-gray-700 group-hover:text-blue-700 truncate w-full">{folder.name}</span>
-                  </button>
+                    <div className="h-3 w-16 bg-gray-100 rounded-full" />
+                    <div className="h-3 w-20 bg-gray-100 rounded-full" />
+                  </div>
                 ))}
               </div>
-            )}
 
-            {/* Files Table */}
-            {visibleFiles.length > 0 ? (
-              <div className="w-full">
-                {/* Table Header */}
-                <div className="grid grid-cols-[auto_auto_1fr_auto_auto_auto_auto_auto] gap-4 p-4 border-b border-gray-100 text-xs font-bold text-gray-400 uppercase tracking-wider items-center">
-                  <div className="w-5 flex justify-center">
-                    <input
-                      type="checkbox"
-                      checked={visibleFiles.length > 0 && selectedFileIds.size === visibleFiles.length}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectedFileIds(new Set(visibleFiles.map(f => f.id)));
-                        } else {
-                          setSelectedFileIds(new Set());
-                        }
-                      }}
-                      className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-                    />
-                  </div> 
-                  <div className="w-5"></div> {/* Star column */}
-                  <div
-                    className="cursor-pointer hover:text-black flex items-center gap-1"
-                    onClick={() => handleSort('name')}
-                  >
-                    Name <ArrowUpDown className="w-3 h-3" />
-                  </div>
-                  <div className="w-20 text-center">Type</div>
-                  <div
-                    className="w-24 cursor-pointer hover:text-black flex items-center gap-1"
-                    onClick={() => handleSort('size')}
-                  >
-                    Size <ArrowUpDown className="w-3 h-3" />
-                  </div>
-                  <div
-                    className="w-40 cursor-pointer hover:text-black flex items-center gap-1"
-                    onClick={() => handleSort('created_at')}
-                  >
-                    Uploaded <ArrowUpDown className="w-3 h-3" />
-                  </div>
-                  <div className="w-32">By</div>
-                  <div className="w-10 text-right">Actions</div>
+            /* Branch 2: Premium empty state */
+            ) : visibleFolders.length === 0 && visibleFiles.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-24 px-8 text-center">
+                <div className="w-20 h-20 bg-gray-50 border-2 border-dashed border-gray-200 rounded-3xl flex items-center justify-center mb-6">
+                  <FolderIcon className="w-10 h-10 text-gray-300" />
                 </div>
-
-                {/* Table Rows */}
-                <div className="divide-y divide-gray-50">
-                  {visibleFiles.map((file) => (
-                    <div
-                      key={file.id}
-                      onClick={() => toggleSelection(file.id)}
-                      className={`grid grid-cols-[auto_auto_1fr_auto_auto_auto_auto_auto] gap-4 p-5 items-center hover:bg-gray-50 transition-all cursor-pointer group border-b border-transparent ${selectedFileIds.has(file.id) ? 'bg-blue-50/40 border-blue-100' : ''}`}
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Your Legal Vault is Empty</h3>
+                <p className="text-sm text-gray-500 font-medium max-w-xs leading-relaxed mb-8">
+                  Upload your first legal document to start AI-powered analysis, indexing, and case management.
+                </p>
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="px-6 py-3 bg-black text-white rounded-2xl text-sm font-bold hover:bg-gray-800 transition-all shadow-xl shadow-black/10 flex items-center gap-2"
+                  >
+                    <Upload className="w-4 h-4" />
+                    Upload First Document
+                  </button>
+                  {!currentFolderId && (
+                    <button
+                      onClick={() => setIsFolderModalOpen(true)}
+                      className="px-6 py-3 bg-white border border-gray-200 text-gray-700 rounded-2xl text-sm font-bold hover:bg-gray-50 transition-all flex items-center gap-2"
                     >
-                      {/* Checkbox */}
+                      <FolderPlus className="w-4 h-4" />
+                      Create Folder
+                    </button>
+                  )}
+                </div>
+                <div className="mt-10 flex items-center gap-2 text-[10px] text-gray-400 font-semibold">
+                  <Shield className="w-3.5 h-3.5" />
+                  End-to-end encrypted · Your data stays yours
+                </div>
+              </div>
+
+            /* Branch 3: Actual content */
+            ) : (
+              <>
+                {/* Folders Grid (Only at root) */}
+                {visibleFolders.length > 0 && (
+                  <div className="p-6 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 border-b border-gray-50">
+                    {visibleFolders.map(folder => (
+                      <button
+                        key={folder.id}
+                        onClick={() => setCurrentFolderId(folder.id)}
+                        className="p-4 bg-gray-50 hover:bg-blue-50 border border-transparent hover:border-blue-100 rounded-[15px] flex flex-col items-center gap-3 transition-all group text-center"
+                      >
+                        <div className="w-12 h-12 bg-white rounded-[15px] flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                          <FolderIcon className="w-6 h-6 text-yellow-500 fill-yellow-500" />
+                        </div>
+                        <span className="text-xs font-bold text-gray-700 group-hover:text-blue-700 truncate w-full">{folder.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Files Table */}
+                {visibleFiles.length > 0 ? (
+                  <div className="w-full">
+                    {/* Table Header */}
+                    <div className="grid grid-cols-[auto_auto_1fr_auto_auto_auto_auto_auto] gap-4 p-4 border-b border-gray-100 text-xs font-bold text-gray-400 uppercase tracking-wider items-center">
                       <div className="w-5 flex justify-center">
                         <input
                           type="checkbox"
-                          checked={selectedFileIds.has(file.id)}
+                          checked={visibleFiles.length > 0 && selectedFileIds.size === visibleFiles.length}
                           onChange={(e) => {
-                             e.stopPropagation();
-                             toggleSelection(file.id);
+                            if (e.target.checked) {
+                              setSelectedFileIds(new Set(visibleFiles.map(f => f.id)));
+                            } else {
+                              setSelectedFileIds(new Set());
+                            }
                           }}
-                          className="w-5 h-5 rounded-lg border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer transition-transform active:scale-90"
+                          className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                         />
                       </div>
-
-                      {/* Star */}
-                      <div className="w-5 flex justify-center">
-                        <button onClick={(e) => {
-                           e.stopPropagation();
-                           toggleStar(file.id);
-                        }}>
-                          <Star className={`w-5 h-5 transition-all ${file.is_starred ? 'fill-yellow-400 text-yellow-400 scale-110' : 'text-gray-200 hover:text-yellow-400'}`} />
-                        </button>
+                      <div className="w-5"></div>
+                      <div className="cursor-pointer hover:text-black flex items-center gap-1" onClick={() => handleSort('name')}>
+                        Name <ArrowUpDown className="w-3 h-3" />
                       </div>
-
-                      {/* Name & Tags */}
-                      <div className="flex items-center gap-4 min-w-0">
-                        <div className="relative flex-shrink-0">
-                          {getFileIcon(file.type, 'w-12 h-12')}
-                          {file.status === 'analyzing' && (
-                            <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-amber-400 rounded-full border-2 border-white animate-pulse" />
-                          )}
-                          {file.status === 'error' && (
-                            <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 rounded-full border-2 border-white" />
-                          )}
-                          {file.status === 'completed' && (
-                            <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white" />
-                          )}
-                        </div>
-                        <div className="flex flex-col min-w-0">
-                          <span className="text-sm font-bold text-black truncate" title={file.name}>{file.name}</span>
-                          {file.tags.length > 0 && (
-                            <div className="flex gap-1 mt-0.5">
-                              {file.tags.map(tag => (
-                                <span key={tag} className="px-1.5 py-0.5 bg-gray-100 rounded text-[9px] font-bold text-gray-500 uppercase tracking-wide">
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                        </div>
+                      <div className="w-20 text-center">Type</div>
+                      <div className="w-24 cursor-pointer hover:text-black flex items-center gap-1" onClick={() => handleSort('size')}>
+                        Size <ArrowUpDown className="w-3 h-3" />
                       </div>
-
-                      {/* Type */}
-                      <div className="w-20 flex justify-center">
-                        <span className="px-2 py-1 bg-gray-100 rounded-md text-[10px] font-bold uppercase text-gray-600">
-                          {file.type}
-                        </span>
+                      <div className="w-40 cursor-pointer hover:text-black flex items-center gap-1" onClick={() => handleSort('created_at')}>
+                        Uploaded <ArrowUpDown className="w-3 h-3" />
                       </div>
-
-                      {/* Size */}
-                      <div className="w-24 text-sm font-medium text-gray-500">
-                        {formatSize(file.size)}
-                      </div>
-
-                      {/* Uploaded */}
-                      <div className="w-40 text-sm font-medium text-gray-500 truncate">
-                        {formatTimeAgo(file.created_at)}
-                      </div>
-
-                      {/* By */}
-                      <div className="w-32 text-sm font-medium text-gray-500 truncate">
-                        {file.uploaded_by}
-                      </div>
-
-                      {/* Actions */}
-                      <div className="w-10 flex justify-end relative action-menu">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setActiveDropdownId(activeDropdownId === file.id ? null : file.id);
-                          }}
-                          className="p-2 text-gray-400 hover:text-black hover:bg-gray-100 rounded-lg transition-colors"
-                        >
-                          <MoreVertical className="w-4 h-4" />
-                        </button>
-
-                        {/* Dropdown Menu */}
-                        <AnimatePresence>
-                          {activeDropdownId === file.id && (
-                            <motion.div
-                              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                              animate={{ opacity: 1, scale: 1, y: 0 }}
-                              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                              className="absolute right-0 top-full mt-2 w-48 bg-white rounded-[15px] shadow-xl border border-gray-100 z-50 overflow-hidden"
-                            >
-                              <div className="p-1" onClick={(e) => e.stopPropagation()}>
-                                <button 
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    navigate(`/app/insights/${file.id}?mode=savre`);
-                                  }}
-                                  className="w-full flex items-center gap-3 px-3 py-2 text-sm font-bold text-red-600 hover:bg-red-50 rounded-lg transition-colors text-left"
-                                >
-                                  <Zap className="w-4 h-4" />
-                                  Document Intelligence
-                                </button>
-                                <button 
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    navigate(`/app/insights/${file.id}`);
-                                  }}
-                                  className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors text-left"
-                                >
-                                  <BrainCircuit className="w-4 h-4" />
-                                  Analyse with AI
-                                </button>
-                                <button 
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    window.open(`/api/files/${file.id}/view`, '_blank');
-                                  }}
-                                  className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors text-left"
-                                >
-                                  <Eye className="w-4 h-4" />
-                                  View
-                                </button>
-                                <button 
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    window.open(`/api/files/${file.id}/download`, '_blank');
-                                  }}
-                                  className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors text-left"
-                                >
-                                  <Download className="w-4 h-4" />
-                                  Download
-                                </button>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    openMoveModal(file.id);
-                                  }}
-                                  className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors text-left"
-                                >
-                                  <FolderInput className="w-4 h-4" />
-                                  Move to Folder
-                                </button>
-                                <div className="h-px bg-gray-100 my-1"></div>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDeleteFile(file.id);
-                                  }}
-                                  className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors text-left"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                  Delete
-                                </button>
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
+                      <div className="w-32">By</div>
+                      <div className="w-10 text-right">Actions</div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-20 text-center">
-                <div className="w-16 h-16 bg-gray-50 rounded-[15px] flex items-center justify-center mb-4">
-                  <FileIcon className="w-8 h-8 text-gray-300" />
-                </div>
-                <h3 className="text-lg font-bold text-black mb-1">No files found</h3>
-                <p className="text-sm text-gray-400">Upload documents or change your search/filters.</p>
-              </div>
+
+                    {/* Table Rows */}
+                    <div className="divide-y divide-gray-50">
+                      {visibleFiles.map((file) => {
+                        const phase = ingestionPhase[file.id];
+                        const isIngesting = file.status === 'analyzing' && phase !== undefined;
+                        return (
+                          <div
+                            key={file.id}
+                            onClick={() => toggleSelection(file.id)}
+                            className={`grid grid-cols-[auto_auto_1fr_auto_auto_auto_auto_auto] gap-4 p-5 items-center hover:bg-gray-50 transition-all cursor-pointer group border-b border-transparent ${selectedFileIds.has(file.id) ? 'bg-blue-50/40 border-blue-100' : ''}`}
+                          >
+                            {/* Checkbox */}
+                            <div className="w-5 flex justify-center">
+                              <input type="checkbox" checked={selectedFileIds.has(file.id)}
+                                onChange={(e) => { e.stopPropagation(); toggleSelection(file.id); }}
+                                className="w-5 h-5 rounded-lg border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                              />
+                            </div>
+                            {/* Star */}
+                            <div className="w-5 flex justify-center">
+                              <button onClick={(e) => { e.stopPropagation(); toggleStar(file.id); }}>
+                                <Star className={`w-5 h-5 transition-all ${file.is_starred ? 'fill-yellow-400 text-yellow-400 scale-110' : 'text-gray-200 hover:text-yellow-400'}`} />
+                              </button>
+                            </div>
+                            {/* Name & Ingestion Progress */}
+                            <div className="flex items-center gap-4 min-w-0">
+                              <div className="relative flex-shrink-0">
+                                {getFileIcon(file.type, 'w-12 h-12')}
+                                {file.status === 'analyzing' && <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-amber-400 rounded-full border-2 border-white animate-pulse" />}
+                                {file.status === 'error' && <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 rounded-full border-2 border-white" />}
+                                {file.status === 'completed' && <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white" />}
+                              </div>
+                              <div className="flex flex-col min-w-0">
+                                <span className="text-sm font-bold text-black truncate" title={file.name}>{file.name}</span>
+                                {isIngesting ? (
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <div className="flex gap-0.5">
+                                      {['Parsing', 'Extracting', 'Vectorizing', 'Ready'].map((step, i) => (
+                                        <div key={i} className={`h-1 w-6 rounded-full transition-all duration-500 ${i <= phase ? 'bg-amber-400' : 'bg-gray-200'}`} />
+                                      ))}
+                                    </div>
+                                    <span className="text-[9px] font-bold text-amber-500 uppercase tracking-wide">
+                                      {['Parsing document', 'Extracting entities', 'Vectorizing', 'Ready'][phase] ?? 'Processing'}
+                                    </span>
+                                  </div>
+                                ) : file.tags.length > 0 ? (
+                                  <div className="flex gap-1 mt-0.5">
+                                    {file.tags.map(tag => (
+                                      <span key={tag} className="px-1.5 py-0.5 bg-gray-100 rounded text-[9px] font-bold text-gray-500 uppercase">{tag}</span>
+                                    ))}
+                                  </div>
+                                ) : null}
+                              </div>
+                            </div>
+                            {/* Type */}
+                            <div className="w-20 flex justify-center">
+                              <span className="px-2 py-1 bg-gray-100 rounded-md text-[10px] font-bold uppercase text-gray-600">{file.type}</span>
+                            </div>
+                            {/* Size */}
+                            <div className="w-24 text-sm font-medium text-gray-500">{formatSize(file.size)}</div>
+                            {/* Uploaded */}
+                            <div className="w-40 text-sm font-medium text-gray-500 truncate">{formatTimeAgo(file.created_at)}</div>
+                            {/* By */}
+                            <div className="w-32 text-sm font-medium text-gray-500 truncate">{file.uploaded_by}</div>
+                            {/* Actions */}
+                            <div className="w-10 flex justify-end relative action-menu">
+                              <button
+                                onClick={(e) => { e.stopPropagation(); setActiveDropdownId(activeDropdownId === file.id ? null : file.id); }}
+                                className="p-2 text-gray-400 hover:text-black hover:bg-gray-100 rounded-lg transition-colors"
+                              >
+                                <MoreVertical className="w-4 h-4" />
+                              </button>
+                              <AnimatePresence>
+                                {activeDropdownId === file.id && (
+                                  <motion.div
+                                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                                    className="absolute right-0 top-full mt-2 w-48 bg-white rounded-[15px] shadow-xl border border-gray-100 z-50 overflow-hidden"
+                                  >
+                                    <div className="p-1" onClick={(e) => e.stopPropagation()}>
+                                      <button onClick={(e) => { e.stopPropagation(); navigate(`/app/insights/${file.id}?mode=savre`); }}
+                                        className="w-full flex items-center gap-3 px-3 py-2 text-sm font-bold text-red-600 hover:bg-red-50 rounded-lg transition-colors text-left">
+                                        <Zap className="w-4 h-4" /> Document Intelligence
+                                      </button>
+                                      <button onClick={(e) => { e.stopPropagation(); navigate(`/app/insights/${file.id}`); }}
+                                        className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors text-left">
+                                        <BrainCircuit className="w-4 h-4" /> Analyse with AI
+                                      </button>
+                                      <button onClick={(e) => { e.stopPropagation(); window.open(`/api/files/${file.id}/view`, '_blank'); }}
+                                        className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors text-left">
+                                        <Eye className="w-4 h-4" /> View
+                                      </button>
+                                      <button onClick={(e) => { e.stopPropagation(); window.open(`/api/files/${file.id}/download`, '_blank'); }}
+                                        className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors text-left">
+                                        <Download className="w-4 h-4" /> Download
+                                      </button>
+                                      <button onClick={(e) => { e.stopPropagation(); openMoveModal(file.id); }}
+                                        className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors text-left">
+                                        <FolderInput className="w-4 h-4" /> Move to Folder
+                                      </button>
+                                      <div className="h-px bg-gray-100 my-1" />
+                                      <button onClick={(e) => { e.stopPropagation(); handleDeleteFile(file.id); }}
+                                        className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors text-left">
+                                        <Trash2 className="w-4 h-4" /> Delete
+                                      </button>
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-20 text-center">
+                    <div className="w-16 h-16 bg-gray-50 rounded-[15px] flex items-center justify-center mb-4">
+                      <FileIcon className="w-8 h-8 text-gray-300" />
+                    </div>
+                    <h3 className="text-lg font-bold text-black mb-1">No files found</h3>
+                    <p className="text-sm text-gray-400">Upload documents or change your search/filters.</p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -924,6 +934,7 @@ const Files: React.FC = () => {
           </div>
         )}
       </AnimatePresence>
+
       {/* Folder Creation Modal */}
       <AnimatePresence>
         {isFolderModalOpen && (
@@ -990,7 +1001,6 @@ const Files: React.FC = () => {
          onMove={() => openMoveModal()}
          onDelete={handleDeleteSelected}
       />
-
     </div>
   );
 };
