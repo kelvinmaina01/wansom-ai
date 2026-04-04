@@ -252,7 +252,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                 <img 
                   src={logo} 
                   alt="Partner Logo" 
-                  className="h-10 md:h-14 w-auto object-contain brightness-100 contrast-100" 
+                  className="h-10 md:h-14 w-auto object-contain brightness-100 contrast-100 invert" 
                 />
               </div>
             ))}
@@ -262,7 +262,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                 <img 
                   src={logo} 
                   alt="Partner Logo" 
-                  className="h-10 md:h-14 w-auto object-contain brightness-100 contrast-100" 
+                  className="h-10 md:h-14 w-auto object-contain brightness-100 contrast-100 invert" 
                 />
               </div>
             ))}
@@ -295,8 +295,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
               </div>
 
               {/* Right Side: Overlapping Notebook Paper (Refined) */}
-              <div className="flex-1 w-full max-w-lg lg:absolute lg:-right-4 lg:top-1/2 lg:-translate-y-[55%] z-30">
-                <div className="bg-[#fffdf5] rounded-[2rem] border border-[#e8e4d1] relative overflow-hidden transform lg:rotate-3">
+              <div className="flex-1 w-full max-w-lg lg:absolute lg:-right-4 lg:top-[48%] lg:-translate-y-1/2 z-30">
+                <div className="bg-[#fffdf5] rounded-[2rem] border border-[#e8e4d1] relative overflow-hidden transform lg:rotate-3 text-neutral-900">
                   {/* Red Margin Line */}
                   <div className="absolute left-12 top-0 bottom-0 w-[2px] bg-red-200/60" />
                   
@@ -310,7 +310,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                   />
 
                   {/* Content */}
-                  <div className="relative z-10 py-12 pl-20 pr-10 space-y-6">
+                  <div className="relative z-10 py-8 pl-20 pr-10 space-y-4">
                     {PRECISION_FEATURES.map((feature, idx) => (
                       <div key={idx} className="flex gap-4 group/item">
                         <div className="mt-1 shrink-0">
