@@ -10,13 +10,18 @@ const SuggestionChips: React.FC<SuggestionChipsProps> = ({ suggestions, onSelect
   return (
     <div>
       <div style={{
-        fontSize: 10, fontWeight: 700,
-        letterSpacing: '0.08em', textTransform: 'uppercase' as const,
-        color: '#999', marginBottom: 6, marginTop: 4
+        fontSize: 10,
+        fontWeight: 700,
+        letterSpacing: '0.08em',
+        textTransform: 'uppercase' as const,
+        color: 'var(--text3)',
+        marginBottom: 6,
+        marginTop: 10,
+        fontFamily: 'var(--font2)',
       }}>
         Follow-up suggestions
       </div>
-      <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap' }}>
+      <div className="suggestions-wrap">
         {suggestions.map((s, i) => (
           <div
             key={i}
@@ -24,7 +29,7 @@ const SuggestionChips: React.FC<SuggestionChipsProps> = ({ suggestions, onSelect
             style={{ animationDelay: `${i * 0.06}s` }}
             onClick={() => onSelect(s)}
           >
-            {s} <span className="arrow">→</span>
+            {s}
           </div>
         ))}
       </div>

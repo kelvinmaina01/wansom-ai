@@ -27,22 +27,27 @@ const PauseCard: React.FC<PauseCardProps> = ({ data, onContinue }) => {
 
   return (
     <div className="pause-card">
+      {/* Header */}
       <div className="pause-header">
         <span style={{ fontSize: 14 }}>⏸</span>
         <span className="pause-title">{data.title || 'AI paused — collecting details'}</span>
       </div>
+
+      {/* Body */}
       <div className="pause-body">
         <div className="pause-desc">{data.description}</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {/* Render fields in pairs (row layout) where possible */}
-          {renderFields(data.fields, values, submitted, handleChange)}
-        </div>
+
+        {/* Field grid — pairs short fields in 2-col grid */}
+        {renderFields(data.fields, values, submitted, handleChange)}
+
         <button
-          className={`pause-continue ${submitted ? 'submitted' : ''}`}
+          className={`pause-continue ${submitted ? 'done' : ''}`}
           onClick={handleContinue}
           disabled={submitted}
         >
-          {submitted ? '✓ Details collected — drafting…' : `✦ ${data.buttonText || 'Continue'} →`}
+          {submitted
+            ? '✓ Details collected — drafting…'
+            : `✦ ${data.buttonText || 'Continue'} →`}
         </button>
       </div>
     </div>
@@ -57,23 +62,15 @@ function renderFields(
 ) {
   const rows: React.ReactNode[] = [];
   let i = 0;
-  
+
   while (i < fields.length) {
     const f1 = fields[i];
-    const f2 = i + 1 < fields.length ? fields[i + 1] : null;
-    
-    // Pair short fields (text + select) in a row, full-width for longer ones
-    if (f2 && f1.type !== 'select' && f2.type !== 'select') {
+    const f2 = i + 1 < fields.length && fields[i + 1].type !== 'textarea' ? fields[i + 1] : null;
+
+    // Pair two short fields side-by-side
+    if (f2 && f1.type !== 'textarea') {
       rows.push(
-        <div key={f1.id} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-          {renderField(f1, values, disabled, onChange)}
-          {renderField(f2, values, disabled, onChange)}
-        </div>
-      );
-      i += 2;
-    } else if (f2 && (f1.type === 'select' || f2.type === 'select')) {
-      rows.push(
-        <div key={f1.id} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        <div key={f1.id} className="pf-grid">
           {renderField(f1, values, disabled, onChange)}
           {renderField(f2, values, disabled, onChange)}
         </div>
@@ -81,12 +78,14 @@ function renderFields(
       i += 2;
     } else {
       rows.push(
-        <div key={f1.id}>{renderField(f1, values, disabled, onChange)}</div>
+        <div key={f1.id} className="pf-full">
+          {renderField(f1, values, disabled, onChange)}
+        </div>
       );
       i += 1;
     }
   }
-  
+
   return rows;
 }
 
@@ -96,81 +95,38 @@ function renderField(
   disabled: boolean,
   onChange: (id: string, val: string) => void
 ) {
-  const isTextArea = field.type === 'textarea';
-  
   return (
-    <div style={{ width: '100%' }}>
-      <div className="pf-label" style={{ 
-        fontSize: '10px', 
-        fontWeight: 700, 
-        color: 'rgba(255,255,255,0.4)', 
-        textTransform: 'uppercase', 
-        letterSpacing: '0.05em',
-        marginBottom: '6px'
-      }}>
-        {field.label}
-      </div>
+    <div>
+      <div className="pf-label">{field.label}</div>
+
       {field.type === 'select' && field.options ? (
         <select
-          className="pf-input"
+          className="pf-select"
           value={values[field.id] || field.defaultValue || ''}
-          onChange={(e) => onChange(field.id, e.target.value)}
+          onChange={e => onChange(field.id, e.target.value)}
           disabled={disabled}
-          style={{ 
-            width: '100%',
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: '10px',
-            padding: '10px 14px',
-            color: '#fff',
-            fontSize: '13px',
-            cursor: disabled ? 'default' : 'pointer',
-            height: '42px',
-            outline: 'none'
-          }}
         >
           {field.options.map(opt => (
-            <option key={opt} value={opt} style={{ background: '#1a1a1a' }}>{opt}</option>
+            <option key={opt} value={opt}>{opt}</option>
           ))}
         </select>
-      ) : isTextArea ? (
+      ) : field.type === 'textarea' ? (
         <textarea
           className="pf-input no-scrollbar"
           placeholder={field.placeholder}
           value={values[field.id] || ''}
-          onChange={(e) => onChange(field.id, e.target.value)}
+          onChange={e => onChange(field.id, e.target.value)}
           disabled={disabled}
           rows={3}
-          style={{ 
-            width: '100%',
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: '10px',
-            padding: '10px 14px',
-            color: '#fff',
-            fontSize: '13px',
-            resize: 'none',
-            outline: 'none'
-          }}
+          style={{ resize: 'none' }}
         />
       ) : (
         <input
           className="pf-input"
           placeholder={field.placeholder}
           value={values[field.id] || ''}
-          onChange={(e) => onChange(field.id, e.target.value)}
+          onChange={e => onChange(field.id, e.target.value)}
           disabled={disabled}
-          style={{ 
-            width: '100%',
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: '10px',
-            padding: '10px 14px',
-            color: '#fff',
-            fontSize: '13px',
-            height: '42px',
-            outline: 'none'
-          }}
         />
       )}
     </div>

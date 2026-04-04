@@ -1,10 +1,23 @@
-import React from 'react';
-import { 
-  FileText, Link as LinkIcon, Puzzle, 
+import React, { useEffect, useState } from 'react';
+import {
+  FileText, Link as LinkIcon, Puzzle,
   ChevronRight, Brain, Zap, Shield,
-  MessageSquare, Settings, Info, Plus
+  Settings, Info, Loader2, X
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { supabase } from '../lib/supabase';
+
+// ─── All known connectors for icon rendering ─────────────────────────────────
+const CONNECTOR_META: Record<string, { name: string; icon: string }> = {
+  gdrive: { name: 'Google Drive', icon: 'https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg' },
+  slack: { name: 'Slack', icon: '/integrations/slack.png' },
+  gmail: { name: 'Gmail', icon: 'https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg' },
+  gcal: { name: 'Google Calendar', icon: 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg' },
+  gsheets: { name: 'Google Sheets', icon: 'https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg' },
+  onedrive: { name: 'OneDrive', icon: '/integrations/onedrive.png' },
+  teams: { name: 'Microsoft Teams', icon: 'https://i.ibb.co/TqhfJhvT/microsoft-teams-6971301-1280.webp' },
+  outlook: { name: 'Outlook', icon: '/integrations/outlook.png' },
+};
 
 interface MatterInspectorProps {
   isOpen: boolean;
@@ -23,12 +36,49 @@ const MatterInspector: React.FC<MatterInspectorProps> = ({
   onEditInstructions,
   onManageSkills,
   onManageFiles,
-  onManageConnectors
+  onManageConnectors,
 }) => {
+  const [fileCount, setFileCount] = useState<number | null>(null);
+  const [loadingFiles, setLoadingFiles] = useState(false);
+
+  // ─── Fetch real file count for this project ────────────────────────────────
+  useEffect(() => {
+    if (!isOpen || !project?.id) return;
+
+    const fetchFileCount = async () => {
+      setLoadingFiles(true);
+      try {
+        const { count } = await supabase
+          .from('files')
+          .select('*', { count: 'exact', head: true })
+          .eq('folder_id', project.id); // linked by folder/case ID
+
+        // Also check project_documents table if it exists
+        const { count: docCount } = await supabase
+          .from('project_documents')
+          .select('*', { count: 'exact', head: true })
+          .eq('case_id', project.id)
+          .catch(() => ({ count: null })) as any;
+
+        setFileCount((count || 0) + (docCount || 0));
+      } catch {
+        setFileCount(0);
+      } finally {
+        setLoadingFiles(false);
+      }
+    };
+
+    fetchFileCount();
+  }, [isOpen, project?.id]);
+
   if (!isOpen) return null;
 
+  // ─── Real connector IDs from project metadata ─────────────────────────────
+  const connectorIds: string[] = project?.metadata?.connectors || [];
+  const enabledSkills: string[] = project?.metadata?.skills || [];
+
   return (
-    <motion.div 
+    <motion.div
       initial={{ x: '100%' }}
       animate={{ x: 0 }}
       exit={{ x: '100%' }}
@@ -38,115 +88,145 @@ const MatterInspector: React.FC<MatterInspectorProps> = ({
       <div className="p-8 space-y-10">
         {/* Header */}
         <div className="flex items-center justify-between">
-           <div className="flex items-center gap-3">
-              <Shield className="w-5 h-5 text-primary" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Matter Inspector</span>
-           </div>
-           <button onClick={onClose} className="p-2 hover:bg-gray-50 rounded-full transition-colors text-gray-400">
-              <ChevronRight className="w-6 h-6" />
-           </button>
+          <div className="flex items-center gap-3">
+            <Shield className="w-5 h-5 text-primary" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Matter Inspector</span>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-gray-50 rounded-full transition-colors text-gray-400">
+            <ChevronRight className="w-6 h-6" />
+          </button>
         </div>
 
-        {/* Project Info Summary */}
+        {/* Project Summary */}
         <div className="space-y-2">
-           <h2 className="text-3xl font-black text-black tracking-tighter leading-none">{project?.title}</h2>
-           <p className="text-gray-400 font-medium text-sm">Matter for <span className="text-black font-bold">{project?.client_name}</span></p>
+          <h2 className="text-3xl font-black text-black tracking-tighter leading-none">{project?.title}</h2>
+          <p className="text-gray-400 font-medium text-sm">
+            Matter for <span className="text-black font-bold">{project?.client_name}</span>
+          </p>
+          {project?.metadata?.jurisdiction && (
+            <span className="inline-block px-2.5 py-1 text-[9px] font-black uppercase tracking-widest bg-gray-100 text-gray-500 rounded-full">
+              {project.metadata.jurisdiction}
+            </span>
+          )}
         </div>
 
         {/* Action Modules */}
         <div className="space-y-4">
-           {/* Instructions */}
-           <div 
-             onClick={onEditInstructions}
-             className="p-6 bg-gray-50/50 border border-gray-100 rounded-[24px] hover:border-black transition-all cursor-pointer group"
-           >
-              <div className="flex items-center justify-between mb-4">
-                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-gray-100 shadow-sm">
-                       <Brain className="w-5 h-5 text-black" />
-                    </div>
-                    <span className="text-sm font-black text-black uppercase tracking-widest text-[10px]">Instructions</span>
-                 </div>
-                 <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-black transition-colors" />
-              </div>
-              <p className="text-xs text-gray-400 font-medium line-clamp-2 leading-relaxed">
-                 {project?.description || "No specific instructions added yet."}
-              </p>
-           </div>
 
-           {/* Skills */}
-           <div 
-             onClick={onManageSkills}
-             className="p-6 bg-gray-50/50 border border-gray-100 rounded-[24px] hover:border-black transition-all cursor-pointer group"
-           >
-              <div className="flex items-center justify-between mb-4">
-                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-gray-100 shadow-sm">
-                       <Puzzle className="w-5 h-5 text-black" />
-                    </div>
-                    <span className="text-sm font-black text-black uppercase tracking-widest text-[10px]">Skills</span>
-                 </div>
-                 <div className="px-3 py-1 bg-black text-white text-[9px] font-black rounded-lg uppercase tracking-widest">
-                    {project?.metadata?.skills?.length || 0} Enabled
-                 </div>
+          {/* Instructions */}
+          <div onClick={onEditInstructions} className="p-6 bg-gray-50/50 border border-gray-100 rounded-[24px] hover:border-black transition-all cursor-pointer group">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-gray-100 shadow-sm">
+                  <Brain className="w-5 h-5 text-black" />
+                </div>
+                <span className="text-[10px] font-black text-black uppercase tracking-widest">Instructions</span>
               </div>
+              <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-black transition-colors" />
+            </div>
+            <p className="text-xs text-gray-400 font-medium line-clamp-2 leading-relaxed">
+              {project?.description || 'No specific instructions added yet.'}
+            </p>
+          </div>
+
+          {/* Skills */}
+          <div onClick={onManageSkills} className="p-6 bg-gray-50/50 border border-gray-100 rounded-[24px] hover:border-black transition-all cursor-pointer group">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-gray-100 shadow-sm">
+                  <Puzzle className="w-5 h-5 text-black" />
+                </div>
+                <span className="text-[10px] font-black text-black uppercase tracking-widest">Skills</span>
+              </div>
+              <div className="px-3 py-1 bg-black text-white text-[9px] font-black rounded-lg uppercase tracking-widest">
+                {enabledSkills.length} Enabled
+              </div>
+            </div>
+            {enabledSkills.length > 0 ? (
               <div className="flex flex-wrap gap-2">
-                 {(project?.metadata?.skills || []).slice(0, 3).map((s: string) => (
-                    <span key={s} className="px-2 py-1 bg-white border border-gray-100 rounded text-[9px] font-bold text-gray-400 uppercase tracking-wider">{s.split('-')[1] || s}</span>
-                 ))}
-                 {(project?.metadata?.skills?.length > 3) && (
-                    <span className="text-[9px] font-bold text-gray-300 ml-1">+{project.metadata.skills.length - 3} More</span>
-                 )}
+                {enabledSkills.slice(0, 4).map((s: string) => (
+                  <span key={s} className="px-2 py-1 bg-white border border-gray-100 rounded text-[9px] font-bold text-gray-500 uppercase tracking-wider">
+                    {s.replace(/^(doc-|design-|logic-|jurisdiction-)/, '').replace(/-/g, ' ')}
+                  </span>
+                ))}
+                {enabledSkills.length > 4 && (
+                  <span className="text-[9px] font-bold text-gray-300 ml-1">+{enabledSkills.length - 4} More</span>
+                )}
               </div>
-           </div>
+            ) : (
+              <p className="text-xs text-gray-300 font-medium">No skills enabled for this project.</p>
+            )}
+          </div>
 
-           {/* Connectors */}
-           <div 
-             onClick={onManageConnectors}
-             className="p-6 bg-gray-50/50 border border-gray-100 rounded-[24px] hover:border-black transition-all cursor-pointer group"
-           >
-              <div className="flex items-center justify-between mb-2">
-                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-gray-100 shadow-sm">
-                       <LinkIcon className="w-5 h-5 text-black" />
+          {/* Connectors — real data from metadata */}
+          <div onClick={onManageConnectors} className="p-6 bg-gray-50/50 border border-gray-100 rounded-[24px] hover:border-black transition-all cursor-pointer group">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-gray-100 shadow-sm">
+                  <LinkIcon className="w-5 h-5 text-black" />
+                </div>
+                <span className="text-[10px] font-black text-black uppercase tracking-widest">Connectors</span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-black transition-colors" />
+            </div>
+            {connectorIds.length > 0 ? (
+              <div className="flex items-center gap-2 flex-wrap">
+                {connectorIds.map(id => {
+                  const meta = CONNECTOR_META[id];
+                  if (!meta) return null;
+                  return (
+                    <div key={id} className="flex items-center gap-1.5 px-2 py-1 bg-white border border-gray-100 rounded-lg">
+                      <img src={meta.icon} alt={meta.name} className="w-3.5 h-3.5 object-contain"
+                        onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                      <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider">{meta.name}</span>
                     </div>
-                    <span className="text-sm font-black text-black uppercase tracking-widest text-[10px]">Connectors</span>
-                 </div>
-                 <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-black transition-colors" />
+                  );
+                })}
               </div>
-              <div className="flex items-center gap-1">
-                 <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/Google_Chrome_icon_%28February_2022%29.svg" className="w-4 h-4 grayscale opacity-30" />
-                 <img src="https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg" className="w-4 h-4 grayscale opacity-30" />
+            ) : (
+              <div className="flex items-center gap-2 text-gray-300">
+                <Zap className="w-4 h-4" />
+                <p className="text-xs font-medium">No connectors active for this project.</p>
               </div>
-           </div>
+            )}
+          </div>
 
-           {/* Files */}
-           <div 
-             onClick={onManageFiles}
-             className="p-6 bg-gray-50/50 border border-gray-100 rounded-[24px] hover:border-black transition-all cursor-pointer group"
-           >
-              <div className="flex items-center justify-between">
-                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-gray-100 shadow-sm">
-                       <FileText className="w-5 h-5 text-black" />
-                    </div>
-                    <span className="text-sm font-black text-black uppercase tracking-widest text-[10px]">Files</span>
-                 </div>
-                 <span className="text-gray-300 text-xs font-bold">0 Uploaded</span>
+          {/* Files — real count from Supabase */}
+          <div onClick={onManageFiles} className="p-6 bg-gray-50/50 border border-gray-100 rounded-[24px] hover:border-black transition-all cursor-pointer group">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-gray-100 shadow-sm">
+                  <FileText className="w-5 h-5 text-black" />
+                </div>
+                <span className="text-[10px] font-black text-black uppercase tracking-widest">Files</span>
               </div>
-           </div>
+              {loadingFiles ? (
+                <Loader2 className="w-4 h-4 animate-spin text-gray-300" />
+              ) : (
+                <span className={`text-xs font-bold ${fileCount && fileCount > 0 ? 'text-black' : 'text-gray-300'}`}>
+                  {fileCount ?? 0} {fileCount === 1 ? 'File' : 'Files'}
+                </span>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* Footer Settings */}
+        {/* Footer Actions */}
         <div className="pt-10 border-t border-gray-50 flex items-center justify-between">
-           <button className="flex items-center gap-2 text-[10px] font-black text-gray-300 hover:text-black transition-all uppercase tracking-widest">
-              <Settings className="w-4 h-4" />
-              Project Settings
-           </button>
-           <button className="flex items-center gap-2 text-[10px] font-black text-gray-300 hover:text-black transition-all uppercase tracking-widest">
-              <Info className="w-4 h-4" />
-              Activity Log
-           </button>
+          <button
+            onClick={() => alert('Project Settings panel coming soon.')}
+            className="flex items-center gap-2 text-[10px] font-black text-gray-300 hover:text-black transition-all uppercase tracking-widest"
+          >
+            <Settings className="w-4 h-4" />
+            Project Settings
+          </button>
+          <button
+            onClick={() => alert('Activity Log will load the full audit trail for this project.')}
+            className="flex items-center gap-2 text-[10px] font-black text-gray-300 hover:text-black transition-all uppercase tracking-widest"
+          >
+            <Info className="w-4 h-4" />
+            Activity Log
+          </button>
         </div>
       </div>
     </motion.div>

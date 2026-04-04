@@ -27,7 +27,8 @@ async function runMigrations() {
             '00003_judicial_analytics.sql',
             '00004_onboarding_responses.sql',
             '008_project_hub_expansion.sql',
-            '009_project_history_distinction.sql'
+            '009_project_history_distinction.sql',
+            '010_user_settings_fixes.sql'
         ];
 
         for (const file of migrationFiles) {

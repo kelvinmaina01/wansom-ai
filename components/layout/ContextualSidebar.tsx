@@ -70,48 +70,55 @@ const ContextualSidebar: React.FC<ContextualSidebarProps> = ({
     if (!workspaceId) return;
 
     const fetchTeam = async () => {
-      // First verify the current user is a member of this workspace before fetching
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      try {
+        // First verify the current user is a member of this workspace before fetching
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
 
-      // Fetch members (RLS allows if user is in the workspace)
-      const { data: members, error: membersError } = await supabase
-        .from('workspace_members')
-        .select('role, user_id')
-        .eq('workspace_id', workspaceId);
+        // Fetch members (RLS allows if user is in the workspace)
+        const { data: members, error: membersError } = await supabase
+          .from('workspace_members')
+          .select('role, user_id')
+          .eq('workspace_id', workspaceId);
 
-      if (membersError) {
-        // User is likely not a member of this workspace — silently skip
-        return;
-      }
+        if (membersError) {
+          // User is likely not a member of this workspace — silently skip
+          return;
+        }
 
-      // Check current user's role
-      const currentUserMember = members?.find(m => m.user_id === user.id);
-      
-      // Only fetch invitations if the user is an owner/admin (avoids 403 error for regular members)
-      if (currentUserMember && (currentUserMember.role === 'owner' || currentUserMember.role === 'admin')) {
-        const { data: invites, error: invitesError } = await supabase
-          .from('workspace_invitations')
-          .select('email, role')
-          .eq('workspace_id', workspaceId)
-          .eq('status', 'pending');
+        // Check current user's role
+        const currentUserMember = members?.find(m => m.user_id === user.id);
+        
+        // Only fetch invitations if the user is an owner/admin (avoids 403 error for regular members)
+        if (currentUserMember && (currentUserMember.role === 'owner' || currentUserMember.role === 'admin')) {
+          const { data: invites, error: invitesError } = await supabase
+            .from('workspace_invitations')
+            .select('email, role')
+            .eq('workspace_id', workspaceId)
+            .eq('status', 'pending');
 
-        if (!invitesError && invites) setInvitations(invites);
-      }
+          if (!invitesError && invites) setInvitations(invites);
+        }
 
-      if (members) {
-        // Fetch profiles for members
-        const userIds = members.map(m => m.user_id);
-        const { data: profiles } = await supabase
-          .from('user_settings')
-          .select('id, profile_name, profile_avatar_url')
-          .in('id', userIds);
+        if (members) {
+          // Fetch profiles for members
+          const userIds = members.map(m => m.user_id);
+          const { data: profiles } = await supabase
+            .from('user_settings')
+            .select('id, profile_name, profile_avatar_url')
+            .in('id', userIds);
 
-        const membersWithProfiles = members.map(m => ({
-          ...m,
-          profile: profiles?.find(p => p.id === m.user_id)
-        }));
-        setTeamMembers(membersWithProfiles);
+          const membersWithProfiles = members.map(m => ({
+            ...m,
+            profile: profiles?.find(p => p.id === m.user_id)
+          }));
+          setTeamMembers(membersWithProfiles);
+        }
+      } catch (err: any) {
+        // Suppress AbortError / lock stealing errors during React strict mode rapid unmounts
+        if (err.name !== 'AbortError' && !err.message?.includes('Lock')) {
+          console.warn('[ContextualSidebar] non-critical fetch error:', err.message);
+        }
       }
     };
 

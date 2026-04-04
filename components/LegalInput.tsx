@@ -63,6 +63,8 @@ const LegalInput: React.FC<LegalInputProps> = ({
   const [placeholder, setPlaceholder] = useState('');
   const [isModeOpen, setIsModeOpen] = useState(false);
   const [isConnectorOpen, setIsConnectorOpen] = useState(false);
+  const [isJurisdictionOpen, setIsJurisdictionOpen] = useState(false);
+  const [selectedJurisdiction, setSelectedJurisdiction] = useState<string>('Jurisdictions');
   const [showConnectorShelf, setShowConnectorShelf] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -70,7 +72,25 @@ const LegalInput: React.FC<LegalInputProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const connectorRef = useRef<HTMLDivElement>(null);
+  const jurisdictionRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const JURISDICTIONS = [
+    { id: 'global', label: 'All Jurisdictions' },
+    { id: 'kenya', label: 'Kenya' },
+    { id: 'uganda', label: 'Uganda' },
+    { id: 'tanzania', label: 'Tanzania' },
+    { id: 'rwanda', label: 'Rwanda' },
+    { id: 'burundi', label: 'Burundi' },
+    { id: 'south-sudan', label: 'South Sudan' },
+    { id: 'drc', label: 'DR Congo' },
+    { id: 'somalia', label: 'Somalia' },
+    { id: 'eac-court', label: 'EAC Court' },
+    { id: 'nigeria', label: 'Nigeria' },
+    { id: 'south-africa', label: 'South Africa' },
+    { id: 'ghana', label: 'Ghana' },
+    { id: 'achpr', label: 'ACHPR Court' }
+  ];
 
   const isCompact = variant === 'compact';
 
@@ -98,6 +118,9 @@ const LegalInput: React.FC<LegalInputProps> = ({
       }
       if (connectorRef.current && !connectorRef.current.contains(event.target as Node)) {
         setIsConnectorOpen(false);
+      }
+      if (jurisdictionRef.current && !jurisdictionRef.current.contains(event.target as Node)) {
+        setIsJurisdictionOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -194,7 +217,7 @@ const LegalInput: React.FC<LegalInputProps> = ({
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         onDrop={onDrop}
-        className={`bg-white border-2 ${isDragging ? 'border-primary/30' : 'border-[#F0F0F0]'} transition-all duration-300 shadow-2xl shadow-black/5 hover:border-gray-200 group-within:border-gray-300 relative z-10 ${
+        className={`bg-white border-2 ${isDragging ? 'border-primary/30' : 'border-[#F0F0F0] hover:border-red-200 group-within:border-red-200'} transition-colors duration-300 shadow-2xl shadow-black/5 relative z-10 ${
           showConnectorShelf && (connectedIds?.size === 0) ? 'rounded-t-[2.5rem] rounded-b-none' : 'rounded-[2.5rem]'
         } p-4`}
       >
@@ -376,6 +399,45 @@ const LegalInput: React.FC<LegalInputProps> = ({
               <span className="text-[10px] font-black uppercase tracking-widest">{webSearchEnabled ? 'Search ON' : 'Search'}</span>
             </button>
 
+            {/* Jurisdiction Selector */}
+            <div className="relative" ref={jurisdictionRef}>
+              <button
+                onClick={() => setIsJurisdictionOpen(!isJurisdictionOpen)}
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-100 text-gray-600 hover:text-black hover:bg-gray-50 transition-all font-sans"
+              >
+                <Globe className="w-4 h-4 text-gray-500" />
+                <span className="text-xs font-bold leading-none select-none">{selectedJurisdiction === 'global' ? 'Jurisdictions' : selectedJurisdiction}</span>
+              </button>
+
+              <AnimatePresence>
+                {isJurisdictionOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: -12, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute bottom-full right-0 mb-6 w-56 bg-white border border-gray-100 shadow-2xl rounded-[1.5rem] p-2 z-[100] max-h-64 overflow-y-auto no-scrollbar"
+                  >
+                    {JURISDICTIONS.map((j) => (
+                      <button
+                        key={j.id}
+                        onClick={() => {
+                          setSelectedJurisdiction(j.label);
+                          setIsJurisdictionOpen(false);
+                        }}
+                        className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-colors ${
+                          selectedJurisdiction === j.label || (selectedJurisdiction === 'Jurisdictions' && j.id === 'global')
+                            ? 'bg-black text-white'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-black'
+                        }`}
+                      >
+                        {j.label}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             {/* Mode Selector */}
             <div className="relative" ref={dropdownRef}>
               <button
@@ -460,17 +522,17 @@ const LegalInput: React.FC<LegalInputProps> = ({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="-mt-[2px] mx-0 bg-transparent border-2 border-t-0 border-[#F0F0F0]/50 rounded-b-[2.5rem] p-5 px-10 flex items-center justify-between relative z-0 transition-all hover:bg-gray-50/50 group backdrop-blur-none"
+            className="-mt-[2px] mx-0 bg-white border-2 border-t-0 border-[#F0F0F0] hover:border-red-200 rounded-b-[2.5rem] p-5 px-10 flex items-center justify-between relative z-0 transition-colors duration-500 group backdrop-blur-none"
           >
             <div 
                className="flex items-center gap-6 hover:opacity-70 transition-opacity cursor-pointer flex-1"
             >
-              <Plug2 className="w-6 h-6 text-black" style={{ transform: 'rotate(45deg)' }} />
+              <Plug2 className="w-6 h-6 text-gray-400 group-hover:text-red-300 transition-colors duration-500" style={{ transform: 'rotate(45deg)' }} />
               <div 
                 className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 overflow-hidden"
                 onClick={() => window.location.href = '/app/integrations'}
               >
-                <span className="text-[14px] font-black uppercase text-black tracking-[0.2em] whitespace-nowrap">
+                <span className="text-[14px] font-black uppercase text-gray-700 group-hover:text-red-400/80 transition-colors duration-500 tracking-[0.2em] whitespace-nowrap">
                   Connect tools to Lawlify
                 </span>
                 <div className="hidden md:block h-6 w-[2px] bg-gray-100" />
@@ -483,13 +545,12 @@ const LegalInput: React.FC<LegalInputProps> = ({
             <div className="flex items-center gap-6">
               {/* Tool Icons (Overlapping Stacks) */}
               <div 
-                className="flex items-center -space-x-3 mr-4 cursor-pointer hover:scale-[1.02] transition-transform"
+                className="flex items-center -space-x-3 mr-4 cursor-pointer"
                 onClick={onOpenConnectors}
               >
                  {allIntegrations.slice(0, 4).map((item, idx) => (
                    <motion.div 
                      key={item.id} 
-                     whileHover={{ y: -4, scale: 1.1, zIndex: 50 }}
                      className="w-10 h-10 rounded-full border-2 border-primary bg-white p-1.5 shadow-lg relative"
                      style={{ zIndex: 40 - idx }}
                      title={`Connect ${item.name}`}
@@ -506,7 +567,7 @@ const LegalInput: React.FC<LegalInputProps> = ({
               
               <button 
                 onClick={() => setShowConnectorShelf(false)}
-                className="p-1 text-gray-300 hover:text-black transition-colors"
+                className="p-1.5 text-gray-300 hover:scale-105 hover:text-red-300 transition-all flex items-center justify-center rounded-full"
                 title="Close discovery feed"
               >
                 <X className="w-4 h-4" />

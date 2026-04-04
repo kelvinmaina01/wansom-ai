@@ -7,15 +7,16 @@ interface ActionBarProps {
   onAction: (action: string) => void;
 }
 
+/** Maps AI-emitted style to simulation CSS class */
 const STYLE_MAP: Record<string, string> = {
-  primary: 'chat-act-btn chat-act-primary',
-  secondary: 'chat-act-btn chat-act-secondary',
-  drive: 'chat-act-btn chat-act-drive',
+  primary:   'act-btn act-p',
+  secondary: 'act-btn act-s',
+  drive:     'act-btn act-drive',
 };
 
 const ActionBar: React.FC<ActionBarProps> = ({ actions, onAction }) => {
   return (
-    <div className="chat-action-bar">
+    <div className="action-bar">
       {actions.map((act, i) => (
         <button
           key={i}

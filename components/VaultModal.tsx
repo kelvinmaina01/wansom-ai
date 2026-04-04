@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   XMarkIcon, 
@@ -6,6 +6,8 @@ import {
   DocumentIcon,
   CheckIcon
 } from '@heroicons/react/24/outline';
+import { Loader2 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 interface VaultDocument {
   id: string;
@@ -13,6 +15,7 @@ interface VaultDocument {
   type: string;
   lastModified: string;
   content: string;
+  storage_path?: string;
 }
 
 interface VaultModalProps {
@@ -21,17 +24,47 @@ interface VaultModalProps {
   onAddDocuments: (documents: VaultDocument[]) => void;
 }
 
-const MOCK_VAULT_DOCS: VaultDocument[] = [
-  { id: '1', name: 'Lease_Agreement_Upper_Hill.pdf', type: 'PDF', lastModified: '2026-03-20', content: '[Content of Lease Agreement]' },
-  { id: '2', name: 'Employment_Contract_Kenya_v2.docx', type: 'DOCX', lastModified: '2026-03-21', content: '[Content of Employment Contract]' },
-  { id: '3', name: 'Verifying_Affidavit_Sample.pdf', type: 'PDF', lastModified: '2026-03-19', content: '[Content of Affidavit]' },
-];
-
 const VaultModal: React.FC<VaultModalProps> = ({ isOpen, onClose, onAddDocuments }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [docs, setDocs] = useState<VaultDocument[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const filteredDocs = MOCK_VAULT_DOCS.filter(doc => 
+  // Fetch real files from Supabase on open
+  useEffect(() => {
+    if (!isOpen) return;
+    setSelectedIds([]);
+    const fetchFiles = async () => {
+      setLoading(true);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        const { data, error } = await supabase
+          .from('files')
+          .select('id, name, type, created_at, storage_path')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(50);
+        if (!error && data) {
+          setDocs(data.map(f => ({
+            id: f.id,
+            name: f.name,
+            type: (f.type || 'doc').toUpperCase(),
+            lastModified: new Date(f.created_at).toLocaleDateString(),
+            content: `[File: ${f.name}]`,
+            storage_path: f.storage_path,
+          })));
+        }
+      } catch (e) {
+        console.error('VaultModal fetch error:', e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFiles();
+  }, [isOpen]);
+
+  const filteredDocs = docs.filter(doc => 
     doc.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -42,7 +75,7 @@ const VaultModal: React.FC<VaultModalProps> = ({ isOpen, onClose, onAddDocuments
   };
 
   const handleAdd = () => {
-    const selectedDocs = MOCK_VAULT_DOCS.filter(doc => selectedIds.includes(doc.id));
+    const selectedDocs = docs.filter(doc => selectedIds.includes(doc.id));
     onAddDocuments(selectedDocs);
     onClose();
     setSelectedIds([]);
@@ -72,10 +105,7 @@ const VaultModal: React.FC<VaultModalProps> = ({ isOpen, onClose, onAddDocuments
                 <h2 className="text-xl font-bold text-black tracking-tight">Add Documents from Vault</h2>
                 <p className="text-sm text-gray-400 font-medium">Select documents from your vault to add to this workspace</p>
               </div>
-              <button 
-                onClick={onClose}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
+              <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                 <XMarkIcon className="w-6 h-6 text-gray-400" />
               </button>
             </div>
@@ -96,7 +126,12 @@ const VaultModal: React.FC<VaultModalProps> = ({ isOpen, onClose, onAddDocuments
 
             {/* Document List */}
             <div className="max-h-[400px] overflow-y-auto p-2 no-scrollbar">
-              {filteredDocs.length > 0 ? (
+              {loading ? (
+                <div className="py-12 flex flex-col items-center gap-3 text-gray-400">
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                  <span className="text-sm font-medium">Loading your vault...</span>
+                </div>
+              ) : filteredDocs.length > 0 ? (
                 <div className="space-y-1">
                   {filteredDocs.map(doc => (
                     <button
@@ -122,17 +157,16 @@ const VaultModal: React.FC<VaultModalProps> = ({ isOpen, onClose, onAddDocuments
                   <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mb-4">
                     <DocumentIcon className="w-8 h-8 text-gray-200" />
                   </div>
-                  <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px]">No documents in this folder</p>
+                  <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px]">
+                    {docs.length === 0 ? 'No files uploaded yet' : 'No documents match your search'}
+                  </p>
                 </div>
               )}
             </div>
 
             {/* Footer */}
             <div className="p-6 border-t border-gray-50 flex items-center justify-end gap-3 bg-gray-50/30">
-              <button 
-                onClick={onClose}
-                className="px-6 py-2.5 text-sm font-bold text-gray-500 hover:text-black transition-colors"
-              >
+              <button onClick={onClose} className="px-6 py-2.5 text-sm font-bold text-gray-500 hover:text-black transition-colors">
                 Cancel
               </button>
               <button 

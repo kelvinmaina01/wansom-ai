@@ -29,31 +29,36 @@ const FollowUpCard: React.FC<FollowUpCardProps> = ({ data, onSubmit, onSkip }) =
 
   return (
     <div className="fup-card">
+      {/* Header — matches simulation: fup-header, fup-header-title, fup-header-sub */}
       <div className="fup-header">
-        <div className="fup-header-icon">💬</div>
+        <span style={{ fontSize: 14 }}>💬</span>
         <div className="fup-header-title">AI needs a few details</div>
         <div className="fup-header-sub">
           {data.questions.length} question{data.questions.length > 1 ? 's' : ''}
         </div>
       </div>
+
       <div className="fup-body">
         <div className="fup-question">{data.intro}</div>
-        
+
         {data.questions.map((q, qi) => (
           <div key={q.id} style={{ marginBottom: qi < data.questions.length - 1 ? 14 : 0 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: '#1a1a1a', marginBottom: 7 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)', marginBottom: 8, fontFamily: 'var(--font)' }}>
               {q.question}
             </div>
+
+            {/* Options — simulation class: fup-opts / fup-opt / fup-radio */}
             {q.options && (
-              <div>
-                {q.options.map((opt) => (
+              <div className="fup-opts">
+                {q.options.map(opt => (
                   <div
                     key={opt}
-                    className={`fup-option ${answers[q.id] === opt ? 'selected' : ''}`}
+                    className={`fup-opt ${answers[q.id] === opt ? 'selected' : ''}`}
                     onClick={() => handleSelect(q.id, opt)}
                     style={{ pointerEvents: submitted ? 'none' : 'auto' }}
                   >
-                    <div className="fup-option-icon">
+                    {/* Radio indicator — simulation class: fup-radio */}
+                    <div className="fup-radio">
                       {answers[q.id] === opt ? '●' : '○'}
                     </div>
                     <span>{opt}</span>
@@ -61,12 +66,13 @@ const FollowUpCard: React.FC<FollowUpCardProps> = ({ data, onSubmit, onSkip }) =
                 ))}
               </div>
             )}
+
             {q.allowFreeText && (
               <input
                 className="pf-input"
                 placeholder={q.placeholder || 'Type your answer...'}
                 value={answers[q.id] || ''}
-                onChange={(e) => handleSelect(q.id, e.target.value)}
+                onChange={e => handleSelect(q.id, e.target.value)}
                 disabled={submitted}
                 style={{ marginTop: 8 }}
               />
@@ -74,18 +80,17 @@ const FollowUpCard: React.FC<FollowUpCardProps> = ({ data, onSubmit, onSkip }) =
           </div>
         ))}
 
-        <div style={{ marginTop: 14, display: 'flex', gap: 8, alignItems: 'center' }}>
+        {/* Actions — simulation class: fup-actions / fup-submit / fup-skip */}
+        <div className="fup-actions">
           <button
-            className={`fup-submit ${submitted ? 'submitted' : ''}`}
+            className="fup-submit"
             onClick={handleSubmit}
             disabled={submitted}
+            style={submitted ? { background: 'var(--green)', opacity: 1 } : {}}
           >
-            {submitted ? '✓ Submitted' : 'Continue →'}
+            {submitted ? '✓ Continuing…' : 'Continue →'}
           </button>
-          <div
-            style={{ fontSize: 11, color: '#999', cursor: 'pointer' }}
-            onClick={handleSkip}
-          >
+          <div className="fup-skip" onClick={handleSkip}>
             Skip these
           </div>
         </div>

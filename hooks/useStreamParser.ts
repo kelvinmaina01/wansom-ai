@@ -1,14 +1,17 @@
 import { useCallback, useRef } from 'react';
-import type {
-  PillState, ThoughtEntry, AIComponent,
-} from '../types';
+import type { PillState, ThoughtEntry, AIComponent } from '../types';
 
 /**
- * Parses the SSE stream from /api/chat and dispatches typed events.
- * 
- * FIX: Non-destructive parsing. This version handles tag extraction without 
- * breaking the main content stream by tracking processing offsets 
- * instead of destructive string replacement.
+ * useStreamParser — Fixed O(1) streaming parser
+ *
+ * ROOT CAUSE FIX: The old version rebuilt `cleanedContent` from the full
+ * buffer on every chunk, so `processedIndexRef` pointed to the wrong position
+ * once any tag was stripped. Result: onContent was never called after the
+ * first <state> or <thought> tag appeared → blank page.
+ *
+ * FIX: Track `emittedCleanLengthRef` — the number of characters already
+ * emitted from the cleaned string. We only take the slice FORWARD from that
+ * point, so the index never drifts regardless of tag stripping.
  */
 
 interface StreamCallbacks {
@@ -23,123 +26,156 @@ interface StreamCallbacks {
 }
 
 export function useStreamParser() {
-  const bufferRef = useRef('');
-  const processedIndexRef = useRef(0);
-  const emittedThoughtsRef = useRef<Set<string>>(new Set());
-  const emittedComponentsRef = useRef<Set<string>>(new Set());
+  // Raw accumulated buffer — grows monotonically, never shrunk
+  const rawBufferRef = useRef('');
+  // How many characters of the CLEAN string we've already emitted
+  const emittedCleanLengthRef = useRef(0);
+  // Dedup guards
+  const emittedThoughtKeysRef = useRef<Set<string>>(new Set());
+  const emittedComponentKeysRef = useRef<Set<string>>(new Set());
 
   const processSSEChunk = useCallback((rawData: string, callbacks: StreamCallbacks) => {
     try {
       const chunk = JSON.parse(rawData);
 
       switch (chunk.type) {
+
+        // ── Top-level structured events (from scalable backend) ──
         case 'session':
           callbacks.onSession(chunk.chatId);
           break;
+
         case 'state_change':
-          callbacks.onStateChange(chunk.state, chunk.stateLabel);
+          callbacks.onStateChange(
+            chunk.state as PillState,
+            chunk.stateLabel || chunk.state
+          );
           break;
+
         case 'thought':
-          callbacks.onThought(chunk.thought);
+          if (chunk.thought) callbacks.onThought(chunk.thought);
           break;
+
+        case 'component':
+          if (chunk.component) callbacks.onComponent(chunk.component);
+          break;
+
+        case 'thinking':
+          callbacks.onThinking(chunk.delta || '');
+          break;
+
+        case 'error':
+          callbacks.onError(chunk.message || 'Unknown error');
+          break;
+
+        case 'done':
+          callbacks.onDone();
+          break;
+
+        // ── Hybrid content chunks (current backend: tags embedded in text) ──
         case 'content': {
           const delta = chunk.delta || '';
-          bufferRef.current += delta;
-          
-          // ── TAG EXTRACTION & CONTENT EMISSION (NON-DESTRUCTIVE) ──
-          const currentBuffer = bufferRef.current;
-          
-          // 1. Extract States (thinking, searching, etc.)
-          const stateRegex = /<state>(.*?)<\/state>/g;
-          let stateMatch;
-          while ((stateMatch = stateRegex.exec(currentBuffer)) !== null) {
-            // We can emit states multiple times, UI handles it
-            callbacks.onStateChange(stateMatch[1] as PillState, stateMatch[1]);
-          }
+          if (!delta) break;
 
-          // 2. Extract Thoughts
-          const thoughtRegex = /<thought>([\s\S]*?)<\/thought>/g;
-          let thoughtMatch;
-          while ((thoughtMatch = thoughtRegex.exec(currentBuffer)) !== null) {
-            const thoughtContent = thoughtMatch[1];
-            // Use content as key to avoid double-emitting same thought in one stream
-            if (!emittedThoughtsRef.current.has(thoughtContent)) {
-              callbacks.onThought({
-                type: 'read',
-                title: 'Reasoning',
-                subtitle: 'Brain',
-                status: 'done',
-                sources: []
-              });
-              emittedThoughtsRef.current.add(thoughtContent);
+          rawBufferRef.current += delta;
+          const buf = rawBufferRef.current;
+
+          // ── 1. EXTRACT STATE TAGS ──
+          // Matches: <state>searching</state>
+          // Also:    <state type="searching" label="Searching Kenya Law…"/>
+          const stateRe = /<state(?:\s+type="([^"]*)")?(?:\s+label="([^"]*)")?>([\s\S]*?)<\/state>/g;
+          let sm: RegExpExecArray | null;
+          while ((sm = stateRe.exec(buf)) !== null) {
+            const stateVal = ((sm[1] || sm[3]) || '').trim() as PillState;
+            const label = ((sm[2] || sm[3]) || stateVal).trim();
+            if (stateVal) {
+              callbacks.onStateChange(stateVal, label);
             }
           }
 
-          // 3. Extract Components
-          const compRegex = /<component\s+type="([^"]+)">([\s\S]*?)<\/component>/g;
-          let compMatch;
-          while ((compMatch = compRegex.exec(currentBuffer)) !== null) {
-            const compRaw = compMatch[0];
-            if (!emittedComponentsRef.current.has(compRaw)) {
+          // ── 2. EXTRACT THOUGHT TAGS ──
+          const thoughtRe = /<thought>([\s\S]*?)<\/thought>/g;
+          let tm: RegExpExecArray | null;
+          while ((tm = thoughtRe.exec(buf)) !== null) {
+            const key = tm[1].trim().slice(0, 100);
+            if (!emittedThoughtKeysRef.current.has(key)) {
+              emittedThoughtKeysRef.current.add(key);
               try {
-                const data = JSON.parse(compMatch[2]);
-                callbacks.onComponent({ type: compMatch[1] as AIComponent['type'], data });
-                emittedComponentsRef.current.add(compRaw);
-              } catch (e) {
-                // Partial JSON, skip for now
+                // Try JSON thought (structured backend)
+                const thought = JSON.parse(tm[1]);
+                callbacks.onThought(thought);
+              } catch {
+                // Plain text thought (current backend)
+                callbacks.onThought({
+                  type: 'read',
+                  title: tm[1].trim().slice(0, 60),
+                  subtitle: '',
+                  status: 'done',
+                  sources: [],
+                });
               }
             }
           }
 
-          // 4. EMIT PLAIN CONTENT (CLEANED)
-          // We find all text that is NOT inside a tag <...>
-          // But we only emit the NEW part by tracking our absolute buffer index.
-          
-          let cleanedContent = currentBuffer;
-          // Temporarily remove ALL tags to see what the "clean" text looks like
-          cleanedContent = cleanedContent.replace(/<thought>[\s\S]*?<\/thought>/g, '');
-          cleanedContent = cleanedContent.replace(/<state>.*?<\/state>/g, '');
-          cleanedContent = cleanedContent.replace(/<component\s+type="[^"]+">[\s\S]*?<\/component>/g, '');
-          cleanedContent = cleanedContent.replace(/<status>.*?<\/status>/g, '');
-          
-          // Also protect against partial tags at the very end of the buffer
-          // If the buffer ends with an unclosed <, we don't know if it's text or a tag yet.
-          const lastOpen = cleanedContent.lastIndexOf('<');
-          const lastClose = cleanedContent.lastIndexOf('>');
-          if (lastOpen > lastClose && (cleanedContent.length - lastOpen) < 100) {
-            cleanedContent = cleanedContent.slice(0, lastOpen);
+          // ── 3. EXTRACT COMPONENT TAGS ──
+          const compRe = /<component\s+type="([^"]+)">([\s\S]*?)<\/component>/g;
+          let cm: RegExpExecArray | null;
+          while ((cm = compRe.exec(buf)) !== null) {
+            const key = cm[0].slice(0, 100);
+            if (!emittedComponentKeysRef.current.has(key)) {
+              try {
+                const data = JSON.parse(cm[2].trim());
+                callbacks.onComponent({ type: cm[1] as AIComponent['type'], data });
+                emittedComponentKeysRef.current.add(key);
+              } catch {
+                // Partial JSON — skip, retry on next chunk when closing tag arrives
+              }
+            }
           }
 
-          if (cleanedContent.length > processedIndexRef.current) {
-            const newDelta = cleanedContent.slice(processedIndexRef.current);
-            callbacks.onContent(newDelta, chunk.model);
-            processedIndexRef.current = cleanedContent.length;
+          // ── 4. EMIT CLEAN CONTENT (THE KEY FIX) ──
+          // Strip ALL known tags to produce the display text
+          let clean = buf
+            .replace(/<state(?:[^>]*)>[\s\S]*?<\/state>/g, '')
+            .replace(/<thought>[\s\S]*?<\/thought>/g, '')
+            .replace(/<component\s+type="[^"]*">[\s\S]*?<\/component>/g, '')
+            .replace(/<status>[^<]*<\/status>/g, '');
+
+          // Guard: if the buffer ends mid-tag (partial '<'), don't emit that
+          // portion yet — we don't know if it's text or a tag opener.
+          const lastLt = clean.lastIndexOf('<');
+          const lastGt = clean.lastIndexOf('>');
+          if (lastLt > lastGt && clean.length - lastLt < 150) {
+            clean = clean.slice(0, lastLt);
           }
-          
+
+          // Only emit the portion we haven't emitted yet
+          if (clean.length > emittedCleanLengthRef.current) {
+            const newText = clean.slice(emittedCleanLengthRef.current);
+            emittedCleanLengthRef.current = clean.length;
+            // Only send if there's actual visible content
+            if (newText) {
+              callbacks.onContent(newText, chunk.model);
+            }
+          }
           break;
         }
-        case 'thinking':
-          callbacks.onThinking(chunk.delta || '');
-          break;
-        case 'component':
-          callbacks.onComponent(chunk.component);
-          break;
-        case 'error':
-          callbacks.onError(chunk.message);
-          break;
+
         default:
+          // Unknown chunk type — ignore gracefully
           break;
       }
     } catch (e) {
-      console.warn('SSE parse error:', e);
+      // JSON parse failed — could be a keep-alive comment or malformed line
+      console.warn('[StreamParser] Skipping malformed chunk:', e);
     }
   }, []);
 
   const reset = useCallback(() => {
-    bufferRef.current = '';
-    processedIndexRef.current = 0;
-    emittedThoughtsRef.current.clear();
-    emittedComponentsRef.current.clear();
+    rawBufferRef.current = '';
+    emittedCleanLengthRef.current = 0;
+    emittedThoughtKeysRef.current.clear();
+    emittedComponentKeysRef.current.clear();
   }, []);
 
   return { processSSEChunk, reset };

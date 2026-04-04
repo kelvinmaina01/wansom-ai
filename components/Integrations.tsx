@@ -316,7 +316,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: (catIdx * 0.1) + (itemIdx * 0.05) }}
-                          className="bg-white border border-black rounded-[17px] p-6 hover:border-red-600 transition-all group relative overflow-hidden flex flex-col justify-between"
+                          className="bg-white border border-black rounded-[17px] p-5 hover:border-red-600 hover:scale-[1.02] hover:shadow-sm transition-all group relative overflow-hidden flex flex-col justify-between cursor-pointer"
                         >
                           <div className="relative z-10">
                             <div className="flex items-start justify-between mb-6">
@@ -378,7 +378,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                           </div>
 
                           {/* Subtle hover accent */}
-                          <div className="absolute bottom-0 right-0 w-1 h-0 bg-red-600 group-hover:h-full transition-all duration-300 rounded-r-[17px]" />
+
                         </motion.div>
                       ))}
                     </div>

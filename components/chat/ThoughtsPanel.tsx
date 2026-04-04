@@ -10,65 +10,58 @@ interface ThoughtsPanelProps {
 
 const ICONS: Record<string, string> = {
   search: '🔍',
-  read: '📖',
-  calc: '🔢',
-  doc: '📄',
-  check: '✓',
+  read:   '📖',
+  calc:   '🔢',
+  doc:    '📄',
+  check:  '✓',
+};
+
+/** Maps thought type to simulation icon class */
+const ICON_CLASS: Record<string, string> = {
+  search: 'tg-search',
+  read:   'tg-read',
+  calc:   'tg-calc',
+  doc:    'tg-read',
+  check:  'tg-check',
 };
 
 const ThoughtsPanel: React.FC<ThoughtsPanelProps> = ({ thoughts, isOpen, onToggle }) => {
-  if (!isOpen) return null;
-
   return (
-    <div
-      className="h-full flex flex-col border-l border-gray-100 bg-white"
-      style={{
-        width: 280,
-        minWidth: 280,
-        transition: 'width 0.3s ease, min-width 0.3s ease',
-        overflow: 'hidden',
-        flexShrink: 0,
-      }}
-    >
+    <div className={`thoughts-panel ${isOpen ? 'open' : ''}`}>
       {/* Header */}
-      <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-sm font-semibold text-gray-900">
-          💭 Thoughts
-        </div>
-        <button
-          onClick={onToggle}
-          className="text-gray-400 hover:text-gray-700 transition-colors text-lg leading-none"
-        >
-          ✕
-        </button>
+      <div className="tp-header">
+        <div className="tp-title">💭 Thoughts</div>
+        <button className="tp-close" onClick={onToggle}>✕</button>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-3" style={{ scrollbarWidth: 'thin' }}>
+      <div className="tp-content">
         {thoughts.length === 0 ? (
-          <div className="text-center text-gray-400 text-xs py-8">
+          <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', padding: '20px 0', fontFamily: 'var(--font2)' }}>
             Run a query to see AI reasoning
           </div>
         ) : (
-          thoughts.map((t) => (
+          thoughts.map(t => (
             <div key={t.id} className="thought-group">
               <div className="tg-header">
-                <div className={`tg-icon ${t.type}`}>
+                {/* Icon box — simulation: tg-icon + type-specific class */}
+                <div className={`tg-icon ${ICON_CLASS[t.type] || 'tg-check'}`}>
                   {ICONS[t.type] || '●'}
                 </div>
-                <div style={{ flex: 1 }}>
+                <div className="tg-text">
                   <div className="tg-title">{t.title}</div>
-                  <div className="tg-sub">{t.subtitle.split('·')[0].trim()}</div>
+                  <div className="tg-sub">{t.subtitle?.split('·')[0]?.trim()}</div>
                 </div>
                 <span className={`tg-status ${t.status === 'done' ? 'ts-done' : 'ts-live'}`}>
                   {t.status === 'done' ? '✓ Done' : '● Live'}
                 </span>
               </div>
+
               {/* Source pills */}
               {t.sources && t.sources.length > 0 && (
                 <div className="tg-sources">
                   {t.sources.map((src, i) => (
-                    <span key={i} className="tg-source-pill">{src}</span>
+                    <span key={i} className="tg-src-pill">{src}</span>
                   ))}
                 </div>
               )}

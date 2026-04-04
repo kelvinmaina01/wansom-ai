@@ -85,27 +85,6 @@ interface LegalAIProps {
   onToggleIntegration: (id: string) => void;
 }
 
-const MOCK_PROMPTS: SavedPrompt[] = [
-  { id: '1', title: 'Contract Review', content: 'Review this contract for any hidden liabilities and ensure compliance with Kenyan Law.', category: 'Commercial', lastUsed: new Date() },
-  { id: '2', title: 'Case Summary', content: 'Summarize the following case law focusing on the ratio decidendi.', category: 'Research', lastUsed: new Date() },
-  { id: '3', title: 'Legal Opinion', content: 'Draft a legal opinion on the following facts regarding land ownership.', category: 'Conveyancing', lastUsed: new Date() },
-];
-
-const MOCK_PERSONAS: Persona[] = [
-  { id: '1', name: 'Senior Partner', role: 'Strategic Advisor', description: 'Provides high-level strategic legal advice with a focus on risk mitigation.', instructions: 'Act as a senior partner in a top-tier Kenyan law firm. Be concise, authoritative, and focus on strategic risks.' },
-  { id: '2', name: 'Research Associate', role: 'Legal Researcher', description: 'Specializes in deep legal research and case law analysis.', instructions: 'Act as a meticulous legal researcher. Provide detailed citations from the Kenya Law Reports and focus on legal precedents.' },
-  { id: '3', name: 'Drafting Expert', role: 'Document Specialist', description: 'Expert in drafting precise and legally sound contracts and pleadings.', instructions: 'Act as a legal drafting expert. Focus on precision, clarity, and adherence to Kenyan legal drafting standards.' },
-];
-
-const MOCK_DRAFTS: Draft[] = [
-  { id: '1', title: 'Lease Agreement - Upper Hill', content: 'This Lease Agreement is made on...', type: 'document', lastModified: new Date() },
-  { id: '2', title: 'Advice on Tax Compliance', content: 'Regarding your inquiry on KRA compliance...', type: 'advice', lastModified: new Date() },
-];
-
-const MOCK_HISTORY: ChatHistory[] = [
-  { id: '1', title: 'Land Dispute Analysis', lastMessage: 'The court ruled in favor of...', timestamp: new Date(), messages: [] },
-  { id: '2', title: 'Employment Contract Review', lastMessage: 'The termination clause is...', timestamp: new Date(), messages: [] },
-];
 
 const LegalAI: React.FC<LegalAIProps> = ({ 
   userEmail, 
@@ -148,6 +127,10 @@ const LegalAI: React.FC<LegalAIProps> = ({
   const [activeProvisioningIntegration, setActiveProvisioningIntegration] = useState<any>(null);
   const [selectedTunnelIds, setSelectedTunnelIds] = useState<Set<string>>(new Set());
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+  const [savedPrompts, setSavedPrompts] = useState<SavedPrompt[]>([]);
+  const [liveDrafts, setLiveDrafts] = useState<Draft[]>([]);
+  const [promptsLoading, setPromptsLoading] = useState(false);
+  const [draftsLoading, setDraftsLoading] = useState(false);
 
   // New response system hooks
   const { thoughts, isOpen: isThoughtsOpen, addThought, updateThoughtStatus, clearThoughts, toggle: toggleThoughts } = useThoughts();
@@ -247,6 +230,8 @@ const LegalAI: React.FC<LegalAIProps> = ({
   useEffect(() => {
     fetchPersonas();
     fetchHistory();
+    fetchSavedPrompts();
+    fetchLiveDrafts();
   }, []);
 
   useEffect(() => {
@@ -268,6 +253,45 @@ const LegalAI: React.FC<LegalAIProps> = ({
       .select('*')
       .order('created_at', { ascending: true });
     if (!error && data) setPersonas(data);
+  };
+
+  const fetchSavedPrompts = async () => {
+    setPromptsLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data, error } = await supabase
+        .from('saved_prompts')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+      if (!error && data) setSavedPrompts(data);
+    } catch (e) {
+      console.error('Failed to fetch saved prompts:', e);
+    } finally {
+      setPromptsLoading(false);
+    }
+  };
+
+  const fetchLiveDrafts = async () => {
+    setDraftsLoading(true);
+    try {
+      const res = await apiClient.get('/api/drafts');
+      if (res.ok) {
+        const data = await res.json();
+        setLiveDrafts(data.map((d: any) => ({
+          id: d.id,
+          title: d.title,
+          content: d.content,
+          type: d.type || 'document',
+          lastModified: new Date(d.updated_at || d.created_at),
+        })));
+      }
+    } catch (e) {
+      console.error('Failed to fetch drafts:', e);
+    } finally {
+      setDraftsLoading(false);
+    }
   };
 
   const fetchHistory = async () => {
@@ -521,10 +545,15 @@ const LegalAI: React.FC<LegalAIProps> = ({
               } : m));
             },
             onComponent: (component) => {
-              accumulatedComponents.push(component);
-              setMessages(prev => prev.map(m => m.id === assistantId ? {
-                ...m, components: [...accumulatedComponents]
-              } : m));
+              // Use functional updater to avoid stale closure — never read accumulatedComponents directly
+              setMessages(prev => prev.map(m => {
+                if (m.id !== assistantId) return m;
+                const existing = m.components || [];
+                // Deduplicate by type + first 80 chars of JSON
+                const sig = `${component.type}:${JSON.stringify(component.data).slice(0, 80)}`;
+                if (existing.some(c => `${c.type}:${JSON.stringify(c.data).slice(0, 80)}` === sig)) return m;
+                return { ...m, components: [...existing, component] };
+              }));
 
               // Auto-open canvas for doc previews
               if (component.type === 'doc_preview') {
@@ -549,7 +578,17 @@ const LegalAI: React.FC<LegalAIProps> = ({
               }
             },
             onError: (message) => {
-              throw new Error(message);
+              // Directly update state to error instead of throwing (which gets swallowed by the parser)
+              setMessages(prev => prev.map(m => m.id === assistantId ? {
+                ...m,
+                content: `Something went wrong: ${message}`,
+                isGenerating: false,
+                isError: true,
+                pillState: 'done' as PillState,
+                pillLabel: 'Connection Error'
+              } : m));
+              setIsLoading(false);
+              setStatusFeed([]);
             },
             onDone: () => {
               // Handled after loop
@@ -558,13 +597,16 @@ const LegalAI: React.FC<LegalAIProps> = ({
         }
       }
 
-      // Finalize — mark done
-      setMessages(prev => prev.map(m => m.id === assistantId ? {
-        ...m,
-        isGenerating: false,
-        pillState: 'done' as PillState,
-        pillLabel: 'Analysis complete'
-      } : m));
+      // Finalize — mark done if we didn't hit an error already
+      setMessages(prev => prev.map(m => {
+        if (m.id !== assistantId || m.isError) return m;
+        return {
+          ...m,
+          isGenerating: false,
+          pillState: 'done' as PillState,
+          pillLabel: 'Analysis complete'
+        };
+      }));
 
       // Mark all thoughts as done
       thoughts.forEach(t => updateThoughtStatus(t.id, 'done'));
@@ -582,7 +624,7 @@ const LegalAI: React.FC<LegalAIProps> = ({
         content: friendlyMsg,
         isGenerating: false,
         isError: true,
-        pillState: 'drafting' as PillState,
+        pillState: 'done' as PillState,
         pillLabel: 'Connection Error'
       } : m));
       setIsLoading(false);
@@ -998,29 +1040,39 @@ const LegalAI: React.FC<LegalAIProps> = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {MOCK_PROMPTS.map(prompt => (
-            <div key={prompt.id} className="p-6 bg-white border border-gray-100 rounded-[15px] hover:shadow-2xl transition-all group relative overflow-hidden">
-              <div className="flex items-center justify-between mb-4">
-                <div className="px-3 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded-full uppercase tracking-widest">
-                  {prompt.category}
-                </div>
-                <button className="text-gray-300 hover:text-black transition-colors">
-                  <BookmarkIcon className="w-5 h-5 fill-current" />
-                </button>
-              </div>
-              <h3 className="text-xl font-bold text-black mb-2 tracking-tight">{prompt.title}</h3>
-              <p className="text-gray-400 text-xs leading-relaxed mb-6 line-clamp-3">{prompt.content}</p>
-              <div className="flex items-center justify-between pt-6 border-t border-gray-50">
-                <span className="text-[10px] font-medium text-gray-400">Used {prompt.lastUsed.toLocaleDateString()}</span>
-                <button
-                  onClick={() => handleSendMessage(prompt.content)}
-                  className="p-2 bg-gray-50 text-black rounded-[15px] hover:bg-primary hover:text-white transition-all"
-                >
-                  <BoltIcon className="w-4 h-4" />
-                </button>
-              </div>
+          {promptsLoading ? (
+            [1, 2, 3].map(i => <div key={i} className="h-40 bg-white border border-gray-100 rounded-[15px] animate-pulse" />)
+          ) : savedPrompts.length === 0 ? (
+            <div className="col-span-3 text-center py-24 flex flex-col items-center">
+              <BookmarkIcon className="w-12 h-12 text-gray-200 mb-4" />
+              <p className="text-gray-400 font-medium">No saved prompts yet.</p>
+              <p className="text-gray-300 text-sm mt-1">After a great prompt, save it from the chat for quick reuse.</p>
             </div>
-          ))}
+          ) : (
+            savedPrompts.map(prompt => (
+              <div key={prompt.id} className="p-6 bg-white border border-gray-100 rounded-[15px] hover:shadow-2xl transition-all group relative overflow-hidden">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="px-3 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded-full uppercase tracking-widest">
+                    {prompt.category}
+                  </div>
+                  <button className="text-gray-300 hover:text-black transition-colors">
+                    <BookmarkIcon className="w-5 h-5 fill-current" />
+                  </button>
+                </div>
+                <h3 className="text-xl font-bold text-black mb-2 tracking-tight">{prompt.title}</h3>
+                <p className="text-gray-400 text-xs leading-relaxed mb-6 line-clamp-3">{prompt.content}</p>
+                <div className="flex items-center justify-between pt-6 border-t border-gray-50">
+                  <span className="text-[10px] font-medium text-gray-400">{prompt.lastUsed ? new Date(prompt.lastUsed).toLocaleDateString() : 'Never used'}</span>
+                  <button
+                    onClick={() => handleSendMessage(prompt.content)}
+                    className="p-2 bg-gray-50 text-black rounded-[15px] hover:bg-primary hover:text-white transition-all"
+                  >
+                    <BoltIcon className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>
@@ -1076,23 +1128,39 @@ const LegalAI: React.FC<LegalAIProps> = ({
         </div>
 
         <div className="space-y-4">
-          {MOCK_DRAFTS.map(draft => (
-            <div key={draft.id} className="p-6 bg-white border border-gray-100 rounded-3xl hover:shadow-xl transition-all flex items-center justify-between group">
-              <div className="flex items-center gap-6">
-                <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400 group-hover:bg-primary/10 group-hover:text-primary transition-all">
-                  <DocumentDuplicateIcon className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-black tracking-tight">{draft.title}</h3>
-                  <div className="flex items-center gap-3 mt-1">
-                    <span className="text-[10px] font-bold text-primary uppercase tracking-widest">{draft.type}</span>
-                    <span className="text-gray-300">•</span>
-                    <span className="text-[10px] font-medium text-gray-400">Modified {draft.lastModified.toLocaleDateString()}</span>
+          {draftsLoading ? (
+            [1, 2].map(i => <div key={i} className="h-20 bg-white border border-gray-100 rounded-3xl animate-pulse" />)
+          ) : liveDrafts.length === 0 ? (
+            <div className="text-center py-24 flex flex-col items-center">
+              <DocumentDuplicateIcon className="w-12 h-12 text-gray-200 mb-4" />
+              <p className="text-gray-400 font-medium">No drafts yet.</p>
+              <p className="text-gray-300 text-sm mt-1">Documents generated in chat are saved here automatically.</p>
+            </div>
+          ) : (
+            liveDrafts.map(draft => (
+              <div key={draft.id} className="p-6 bg-white border border-gray-100 rounded-3xl hover:shadow-xl transition-all flex items-center justify-between group">
+                <div className="flex items-center gap-6">
+                  <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400 group-hover:bg-primary/10 group-hover:text-primary transition-all">
+                    <DocumentDuplicateIcon className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-black tracking-tight">{draft.title}</h3>
+                    <div className="flex items-center gap-3 mt-1">
+                      <span className="text-[10px] font-bold text-primary uppercase tracking-widest">{draft.type}</span>
+                      <span className="text-gray-300">•</span>
+                      <span className="text-[10px] font-medium text-gray-400">Modified {draft.lastModified.toLocaleDateString()}</span>
+                    </div>
                   </div>
                 </div>
+                <button
+                  onClick={() => { setDraftContent(draft.content); setArtifactTitle(draft.title); setIsCanvasOpen(true); }}
+                  className="px-4 py-2 bg-gray-50 text-black rounded-xl text-xs font-bold hover:bg-black hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                >
+                  Open
+                </button>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>

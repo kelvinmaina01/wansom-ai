@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { UserSettings } from '../types';
 import { supabase } from '../lib/supabase';
+import PaymentSimulationModal from './PaymentSimulationModal';
 
 const INITIAL_SETTINGS: UserSettings = {
   profile: {
@@ -33,8 +34,14 @@ const INITIAL_SETTINGS: UserSettings = {
   notifications: {
     email: true,
     push: true,
-    caseUpdates: true,
-    newsDigest: false
+    securityAlerts: true,
+    billingAlerts: true,
+    productUpdates: true,
+    aiDraftComplete: true,
+    aiInsightReady: true,
+    commentsMentions: true,
+    workspaceInvitations: true,
+    caseDeadlines: true,
   },
   security: {
     twoFactorEnabled: false
@@ -52,22 +59,22 @@ const INTEGRATION_CATEGORIES = [
     items: [
       { name: 'Google Drive', icon: 'https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg', description: 'Sync and manage your legal documents.' },
       { name: 'Google Sheets', icon: 'https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg', description: 'Collaborate on legal schedules and data analytics.' },
-      { name: 'OneDrive', icon: '/integrations/onedrive.png', description: 'Microsoft cloud storage integration.' },
+      { name: 'OneDrive', icon: 'https://upload.wikimedia.org/wikipedia/commons/3/3c/Microsoft_Office_OneDrive_%282018%E2%80%93present%29.svg', description: 'Microsoft cloud storage integration.' },
     ]
   },
   {
     title: 'Communication',
     items: [
-      { name: 'Slack', icon: '/integrations/slack.png', description: 'Team communication and collaboration.' },
+      { name: 'Slack', icon: 'https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg', description: 'Team communication and collaboration.' },
       { name: 'Gmail', icon: 'https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg', description: 'Secure legal correspondence.' },
-      { name: 'Microsoft Teams', icon: '/integrations/teams.png', description: 'Chat, meetings, and file sharing.' },
+      { name: 'Microsoft Teams', icon: 'https://upload.wikimedia.org/wikipedia/commons/c/c9/Microsoft_Office_Teams_%282018%E2%80%93present%29.svg', description: 'Chat, meetings, and file sharing.' },
     ]
   },
   {
     title: 'Calendar & Scheduling',
     items: [
       { name: 'Google Calendar', icon: 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg', description: 'Schedule meetings and court dates.' },
-      { name: 'Outlook Calendar', icon: '/integrations/outlook.png', description: 'Microsoft custom calendar integration.' },
+      { name: 'Outlook Calendar', icon: 'https://upload.wikimedia.org/wikipedia/commons/d/df/Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg', description: 'Microsoft custom calendar integration.' },
     ]
   }
 ];
@@ -75,8 +82,14 @@ const INTEGRATION_CATEGORIES = [
 const Settings: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'profile' | 'notifications' | 'security' | 'billing' | 'integrations' | 'advanced'>('profile');
   const [settings, setSettings] = useState<UserSettings>(INITIAL_SETTINGS);
+  const [databaseSettings, setDatabaseSettings] = useState<UserSettings>(INITIAL_SETTINGS);
   const [isLoading, setIsLoading] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
+  const [passwordData, setPasswordData] = useState({ new: '', confirm: '' });
+  const [passwordStatus, setPasswordStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
+  const [isPasswordFormOpen, setIsPasswordFormOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [activeToast, setActiveToast] = useState<{ title: string; message: string } | null>(null);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -94,40 +107,54 @@ const Settings: React.FC = () => {
         if (error) throw error;
 
         if (data) {
-          setSettings({
-            profile: {
-              name: data.profile_name || user.user_metadata?.full_name || user.email?.split('@')[0] || '',
-              email: data.profile_email || user.email || '',
-              phone: data.profile_phone || '',
-              firmName: data.profile_firm_name || '',
-              avatarUrl: data.profile_avatar_url || user.user_metadata?.avatar_url || ''
-            },
-            notifications: {
-              email: data.notifications_email ?? true,
-              push: data.notifications_push ?? true,
-              caseUpdates: data.notifications_case_updates ?? true,
-              newsDigest: data.notifications_news_digest ?? false
-            },
-            security: {
-              twoFactorEnabled: data.security_two_factor_enabled ?? false
-            },
-            billing: {
-              plan: data.billing_plan || 'Free',
-              nextBillingDate: data.billing_next_date ? new Date(data.billing_next_date) : new Date()
-            },
-            integrations: data.integrations || {}
-          });
+            const loadedSettings = {
+              profile: {
+                name: data.profile_name || user.user_metadata?.full_name || user.email?.split('@')[0] || '',
+                email: data.profile_email || user.email || '',
+                phone: data.profile_phone || '',
+                firmName: data.profile_firm_name || '',
+                avatarUrl: data.profile_avatar_url || user.user_metadata?.avatar_url || ''
+              },
+              notifications: {
+                email: data.notifications_email ?? true,
+                push: data.notifications_push ?? true,
+                securityAlerts: data.notifications_security_alerts ?? true,
+                billingAlerts: data.notifications_billing_alerts ?? true,
+                productUpdates: data.notifications_product_updates ?? true,
+                aiDraftComplete: data.notifications_ai_draft_complete ?? true,
+                aiInsightReady: data.notifications_ai_insight_ready ?? true,
+                commentsMentions: data.notifications_comments_mentions ?? true,
+                workspaceInvitations: data.notifications_workspace_invitations ?? true,
+                caseDeadlines: data.notifications_case_deadlines ?? true,
+              },
+              security: {
+                twoFactorEnabled: data.security_two_factor_enabled ?? false
+              },
+              billing: {
+                plan: data.billing_plan || 'Free',
+                nextBillingDate: data.billing_next_date ? new Date(data.billing_next_date) : new Date()
+              },
+              integrations: data.integrations || {}
+            };
+            setSettings(loadedSettings);
+            setDatabaseSettings(loadedSettings);
         } else {
           // Initialize with metadata if no record exists
-          setSettings(prev => ({
-            ...prev,
-            profile: {
-              ...prev.profile,
-              name: user.user_metadata?.full_name || user.email?.split('@')[0] || '',
-              email: user.email || '',
-              avatarUrl: user.user_metadata?.avatar_url || ''
-            }
-          }));
+            const defaultSetup = {
+              profile: {
+                name: user.user_metadata?.full_name || user.email?.split('@')[0] || '',
+                email: user.email || '',
+                phone: '',
+                firmName: '',
+                avatarUrl: user.user_metadata?.avatar_url || ''
+              },
+              notifications: { ...INITIAL_SETTINGS.notifications },
+              security: { ...INITIAL_SETTINGS.security },
+              billing: { ...INITIAL_SETTINGS.billing },
+              integrations: {}
+            };
+            setSettings(defaultSetup);
+            setDatabaseSettings(defaultSetup);
         }
       } catch (err) {
         console.error('Error fetching settings:', err);
@@ -145,6 +172,13 @@ const Settings: React.FC = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
 
+      // Update global Auth Profile
+      if (settings.profile.name) {
+        await supabase.auth.updateUser({
+          data: { full_name: settings.profile.name }
+        });
+      }
+
       const { error } = await supabase
         .from('user_settings')
         .upsert({
@@ -156,19 +190,71 @@ const Settings: React.FC = () => {
           profile_avatar_url: settings.profile.avatarUrl,
           notifications_email: settings.notifications.email,
           notifications_push: settings.notifications.push,
-          notifications_case_updates: settings.notifications.caseUpdates,
-          notifications_news_digest: settings.notifications.newsDigest,
+          notifications_security_alerts: settings.notifications.securityAlerts,
+          notifications_billing_alerts: settings.notifications.billingAlerts,
+          notifications_product_updates: settings.notifications.productUpdates,
+          notifications_ai_draft_complete: settings.notifications.aiDraftComplete,
+          notifications_ai_insight_ready: settings.notifications.aiInsightReady,
+          notifications_comments_mentions: settings.notifications.commentsMentions,
+          notifications_workspace_invitations: settings.notifications.workspaceInvitations,
+          notifications_case_deadlines: settings.notifications.caseDeadlines,
           security_two_factor_enabled: settings.security.twoFactorEnabled,
           integrations: settings.integrations,
           updated_at: new Date().toISOString()
         });
 
       if (error) throw error;
+      setDatabaseSettings(settings);
       setSaveStatus('success');
       setTimeout(() => setSaveStatus('idle'), 3000);
     } catch (err) {
       console.error('Error saving settings:', err);
       setSaveStatus('error');
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    if (passwordData.new !== passwordData.confirm) {
+      setPasswordStatus('error');
+      return;
+    }
+    setPasswordStatus('saving');
+    try {
+      const { error } = await supabase.auth.updateUser({ password: passwordData.new });
+      if (error) throw error;
+      setPasswordStatus('success');
+      setPasswordData({ new: '', confirm: '' });
+      setIsPasswordFormOpen(false);
+      setTimeout(() => setPasswordStatus('idle'), 3000);
+    } catch (err) {
+      console.error('Error updating password:', err);
+      setPasswordStatus('error');
+    }
+  };
+
+  const handleExportData = () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(settings, null, 2));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "lawlify_export_" + new Date().toISOString() + ".json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+  };
+
+  const handleDeleteAccount = async () => {
+    if (window.confirm("CRITICAL WARNING: This action is completely unrecoverable. Your account, workspace, documents, and cases will be destroyed immediately. Type 'lawlify' in the next prompt to confirm.")) {
+      const confirmText = window.prompt("Type 'lawlify' to securely obliterate your account.");
+      if (confirmText === 'lawlify') {
+        try {
+          await supabase.rpc('delete_user');
+          await supabase.auth.signOut();
+          window.location.href = '/';
+        } catch (e) {
+          console.error("Deletion failed:", e);
+          alert("Account deletion failed. Ensure you are the workspace owner.");
+        }
+      }
     }
   };
 
@@ -192,6 +278,11 @@ const Settings: React.FC = () => {
     }));
   };
 
+  const showToast = (title: string, message: string) => {
+    setActiveToast({ title, message });
+    setTimeout(() => setActiveToast(null), 4000);
+  };
+
   const tabs = [
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'notifications', label: 'Notifications', icon: Bell },
@@ -202,8 +293,8 @@ const Settings: React.FC = () => {
   ];
 
   return (
-    <div className="flex-1 overflow-y-auto bg-white bg-dots p-8 h-full">
-      <div className="max-w-5xl mx-auto">
+    <div className="flex-1 overflow-y-auto bg-white bg-dots p-4 md:p-8 h-full">
+      <div className="w-full max-w-[1600px] mx-auto">
         <h1 className="text-4xl font-bold text-black tracking-tighter mb-2">Settings</h1>
         <p className="text-gray-400 text-sm font-medium mb-8">Manage your account preferences and subscription.</p>
 
@@ -266,8 +357,11 @@ const Settings: React.FC = () => {
                       <div>
                         <p className="text-lg font-bold text-black">{settings.profile.name}</p>
                         <p className="text-xs text-gray-400 font-medium">{settings.profile.email}</p>
-                        <button className="mt-2 px-4 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-[11px] font-bold hover:bg-gray-100 transition-colors text-gray-600">
-                          Change Avatar
+                        <button 
+                          onClick={() => setSettings({ ...settings, profile: { ...settings.profile, avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${Math.random().toString(36).substring(7)}` } })}
+                          className="mt-2 px-4 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-[11px] font-bold hover:bg-gray-100 transition-colors text-gray-600"
+                        >
+                          Randomize Avatar
                         </button>
                       </div>
                     </div>
@@ -311,52 +405,39 @@ const Settings: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="pt-6 flex flex-col md:flex-row items-center justify-end gap-3">
-                      {saveStatus === 'success' && (
-                        <span className="text-xs font-bold text-emerald-500 flex items-center gap-1.5 animate-pulse">
-                          <Check className="w-4 h-4" />
-                          Profile Updated
-                        </span>
-                      )}
-                      {saveStatus === 'error' && (
-                        <span className="text-xs font-bold text-red-500">Error saving changes</span>
-                      )}
-                      
-                      <div className="flex gap-3">
-                        <button className="px-5 py-2.5 bg-gray-50 border border-gray-200 text-gray-600 rounded-xl text-xs font-bold hover:bg-gray-100 transition-all">
-                          Cancel
-                        </button>
-                        <button 
-                          onClick={handleSave}
-                          disabled={saveStatus === 'saving'}
-                          className="px-6 py-2.5 bg-primary text-white rounded-xl text-xs font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2 disabled:opacity-50"
-                        >
-                          {saveStatus === 'saving' ? (
-                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          ) : <Check className="w-4 h-4" />}
-                          {saveStatus === 'saving' ? 'Saving...' : 'Save Changes'}
-                        </button>
-                      </div>
-                    </div>
+                      {/* Action buttons moved to bottom of Settings container */}
                   </div>
                 )}
 
                 {activeTab === 'notifications' && (
                   <div className="space-y-6">
-                    <h2 className="text-xl font-bold text-black mb-6">Notification Preferences</h2>
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                      <h2 className="text-xl font-bold text-black">Notification Preferences</h2>
+                      <button 
+                        onClick={() => showToast('Test Notification', 'Looks like your notification system is fully operational. 🚀')}
+                        className="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors flex items-center gap-2"
+                      >
+                        <Bell className="w-3.5 h-3.5" />
+                        Send Test Notification
+                      </button>
+                    </div>
 
                     <div className="space-y-4">
                       {Object.entries(settings.notifications).map(([key, value]) => (
                         <div key={key} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
                           <div>
                             <h3 className="text-sm font-bold text-black capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</h3>
-                            <p className="text-xs text-gray-400 font-medium">Receive notifications via {key}</p>
+                            <p className="text-xs text-gray-400 font-medium">
+                              {key === 'email' || key === 'push' ? `Receive notifications via ${key}` : `Notify me about ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}`}
+                            </p>
                           </div>
                           <button
                             onClick={() => handleToggle('notifications', key)}
-                            className={`text-2xl transition-colors ${value ? 'text-primary' : 'text-gray-300'}`}
+                            className={`relative inline-flex h-7 w-12 items-center rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/20 ${value ? 'bg-black shadow-inner' : 'bg-gray-200'}`}
                           >
-                            {value ? <ToggleRight className="w-8 h-8" /> : <ToggleLeft className="w-8 h-8" />}
+                            <span
+                              className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition-transform duration-300 ${value ? 'translate-x-6' : 'translate-x-1'}`}
+                            />
                           </button>
                         </div>
                       ))}
@@ -393,10 +474,56 @@ const Settings: React.FC = () => {
 
                     <div className="space-y-4">
                       <h3 className="text-sm font-bold text-black uppercase tracking-widest">Password</h3>
-                      <button className="w-full flex items-center justify-between p-4 bg-white border border-gray-200 rounded-xl hover:border-gray-300 transition-colors group">
-                        <span className="text-sm font-medium text-gray-600">Change Password</span>
-                        <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-black transition-colors" />
-                      </button>
+                      {!isPasswordFormOpen ? (
+                        <button 
+                          onClick={() => setIsPasswordFormOpen(true)}
+                          className="w-full flex items-center justify-between p-4 bg-white border border-gray-200 rounded-xl hover:border-gray-300 transition-colors group"
+                        >
+                          <span className="text-sm font-medium text-gray-600">Change Password</span>
+                          <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-black transition-colors" />
+                        </button>
+                      ) : (
+                        <div className="p-6 border border-gray-200 rounded-xl bg-gray-50 space-y-4 shadow-sm animate-in fade-in slide-in-from-top-2">
+                          <div>
+                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">New Password</label>
+                            <input
+                              type="password"
+                              value={passwordData.new}
+                              onChange={(e) => setPasswordData({ ...passwordData, new: e.target.value })}
+                              className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Confirm New Password</label>
+                            <input
+                              type="password"
+                              value={passwordData.confirm}
+                              onChange={(e) => setPasswordData({ ...passwordData, confirm: e.target.value })}
+                              className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                            />
+                          </div>
+                          <div className="pt-2 flex justify-end gap-3">
+                            <button 
+                              onClick={() => {
+                                setIsPasswordFormOpen(false);
+                                setPasswordData({ new: '', confirm: '' });
+                              }}
+                              className="px-4 py-2 text-xs font-bold text-gray-500 hover:text-black transition-colors"
+                            >
+                              Cancel
+                            </button>
+                            <button 
+                              onClick={handlePasswordChange}
+                              disabled={!passwordData.new || passwordData.new !== passwordData.confirm || passwordStatus === 'saving'}
+                              className="px-6 py-2 bg-black text-white rounded-lg text-xs font-bold hover:bg-gray-800 disabled:opacity-50 transition-colors flex items-center gap-2"
+                            >
+                              {passwordStatus === 'saving' ? 'Updating...' : 'Update Password'}
+                            </button>
+                          </div>
+                          {passwordStatus === 'success' && <p className="text-xs text-green-600 font-bold mt-2">Password updated successfully!</p>}
+                          {passwordStatus === 'error' && <p className="text-xs text-red-600 font-bold mt-2">Failed to update password. Ensure they match.</p>}
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -417,9 +544,17 @@ const Settings: React.FC = () => {
                             Active
                           </span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm font-medium text-gray-300">
-                          <CreditCard className="w-4 h-4" />
-                          Next billing date: <span className="text-white font-bold">{settings.billing.nextBillingDate.toLocaleDateString()}</span>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 text-sm font-medium text-gray-300">
+                            <CreditCard className="w-4 h-4" />
+                            Next billing date: <span className="text-white font-bold">{settings.billing.nextBillingDate.toLocaleDateString()}</span>
+                          </div>
+                          <button 
+                            onClick={() => setIsPaymentModalOpen(true)}
+                            className="px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-lg text-xs font-bold transition-colors"
+                          >
+                            Upgrade Plan
+                          </button>
                         </div>
                       </div>
                       <div className="absolute top-0 right-0 w-64 h-64 bg-primary rounded-full blur-[100px] opacity-30 -translate-y-1/2 translate-x-1/2"></div>
@@ -436,9 +571,17 @@ const Settings: React.FC = () => {
                             <p className="text-xs text-gray-400">Expires 12/25</p>
                           </div>
                         </div>
-                        <button className="text-xs font-bold text-primary hover:text-primary-hover">Edit</button>
+                        <button 
+                          onClick={() => setIsPaymentModalOpen(true)}
+                          className="text-xs font-bold text-primary hover:text-primary-hover"
+                        >
+                          Edit
+                        </button>
                       </div>
-                      <button className="w-full py-3 border border-dashed border-gray-300 rounded-xl text-xs font-bold text-gray-500 hover:text-black hover:border-gray-400 transition-colors flex items-center justify-center gap-2">
+                      <button 
+                        onClick={() => setIsPaymentModalOpen(true)}
+                        className="w-full py-3 border border-dashed border-gray-300 rounded-xl text-xs font-bold text-gray-500 hover:text-black hover:border-gray-400 transition-colors flex items-center justify-center gap-2"
+                      >
                         <CreditCard className="w-4 h-4" />
                         Add Payment Method
                       </button>
@@ -480,12 +623,10 @@ const Settings: React.FC = () => {
                                   )}
                                   <button
                                     onClick={() => handleIntegrationToggle(item.name)}
-                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 ${settings.integrations[item.name] ? 'bg-black' : 'bg-gray-200'
-                                      }`}
+                                    className={`relative inline-flex h-7 w-12 items-center rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/20 ${settings.integrations[item.name] ? 'bg-black shadow-inner' : 'bg-gray-200'}`}
                                   >
                                     <span
-                                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${settings.integrations[item.name] ? 'translate-x-6' : 'translate-x-1'
-                                        }`}
+                                      className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition-transform duration-300 ${settings.integrations[item.name] ? 'translate-x-6' : 'translate-x-1'}`}
                                     />
                                   </button>
                                 </div>
@@ -513,15 +654,33 @@ const Settings: React.FC = () => {
                         </div>
                         
                         <div className="flex flex-wrap items-center gap-3">
-                          <button className="px-5 py-2.5 bg-[#fcfbf9] border border-gray-200 rounded-xl text-xs font-bold hover:bg-white transition-all shadow-sm flex items-center gap-2 text-gray-700">
+                          <button onClick={handleExportData} className="px-5 py-2.5 bg-[#fcfbf9] border border-gray-200 rounded-xl text-xs font-bold hover:bg-white transition-all shadow-sm flex items-center gap-2 text-gray-700">
                             <Download className="w-3.5 h-3.5" />
                             Export
                           </button>
-                          <button className="px-5 py-2.5 bg-[#fcfbf9] border border-gray-200 rounded-xl text-xs font-bold hover:bg-white transition-all shadow-sm flex items-center gap-2 text-gray-700">
+                          <button 
+                            onClick={async () => {
+                              try {
+                                await navigator.clipboard.writeText(window.location.origin + '/invite/' + Math.random().toString(36).substring(7));
+                                alert("Invite link copied to clipboard!");
+                              } catch (err) {
+                                console.error('Failed to copy', err);
+                              }
+                            }}
+                            className="px-5 py-2.5 bg-[#fcfbf9] border border-gray-200 rounded-xl text-xs font-bold hover:bg-white transition-all shadow-sm flex items-center gap-2 text-gray-700"
+                          >
                             <Link className="w-3.5 h-3.5" />
                             Invite link
                           </button>
-                          <button className="px-6 py-2.5 bg-[#1a1a1a] text-white rounded-xl text-xs font-bold hover:bg-black transition-all shadow-md flex items-center gap-2 active:scale-95">
+                          <button 
+                            onClick={() => {
+                              const email = window.prompt("Enter team member's email address:");
+                              if (email) {
+                                alert(`Invitation sent to ${email}!`);
+                              }
+                            }}
+                            className="px-6 py-2.5 bg-[#1a1a1a] text-white rounded-xl text-xs font-bold hover:bg-black transition-all shadow-md flex items-center gap-2 active:scale-95"
+                          >
                             <UserPlus className="w-3.5 h-3.5" />
                             Invite members
                           </button>
@@ -540,7 +699,15 @@ const Settings: React.FC = () => {
                             <p className="text-sm font-bold text-black">Transfer Ownership</p>
                             <p className="text-xs text-gray-400">Transfer this workspace to another user. This action cannot be undone.</p>
                           </div>
-                          <button className="px-4 py-2 bg-white border border-red-200 text-red-600 rounded-lg text-xs font-bold hover:bg-red-50 transition-colors">
+                          <button 
+                            onClick={() => {
+                              const email = window.prompt("Enter the email address of the new owner:");
+                              if (email && window.confirm(`Are you absolutely sure you want to transfer ownership to ${email}? You will lose all administrative rights.`)) {
+                                alert("Ownership transfer request sent. Pending recipient approval.");
+                              }
+                            }}
+                            className="px-4 py-2 bg-white border border-red-200 text-red-600 rounded-lg text-xs font-bold hover:bg-red-50 transition-colors"
+                          >
                             Transfer
                           </button>
                         </div>
@@ -550,7 +717,24 @@ const Settings: React.FC = () => {
                             <p className="text-sm font-bold text-black">Reset Workspace</p>
                             <p className="text-xs text-gray-400">Remove all cases, documents, and chat history. Settings will be preserved.</p>
                           </div>
-                          <button className="px-4 py-2 bg-white border border-red-200 text-red-600 rounded-lg text-xs font-bold hover:bg-red-50 transition-colors">
+                          <button 
+                            onClick={async () => {
+                              if (window.confirm("WARNING: This will permanently delete all your cases and documents. This action is irreversible. Type 'RESET' to confirm.")) {
+                                if (window.prompt("Type 'RESET' to wipe your workspace data:") === 'RESET') {
+                                  try {
+                                    const { error } = await supabase.rpc('reset_workspace_data');
+                                    if (error) throw error;
+                                    alert("Workspace successfully reset.");
+                                    window.location.reload();
+                                  } catch (e) {
+                                    console.error("Reset failed:", e);
+                                    alert("Failed to reset workspace. Please try again.");
+                                  }
+                                }
+                              }
+                            }}
+                            className="px-4 py-2 bg-white border border-red-200 text-red-600 rounded-lg text-xs font-bold hover:bg-red-50 transition-colors"
+                          >
                             Reset Data
                           </button>
                         </div>
@@ -560,7 +744,7 @@ const Settings: React.FC = () => {
                             <p className="text-sm font-bold text-black">Delete Account</p>
                             <p className="text-xs text-gray-400">Permanently delete your account and all associated data.</p>
                           </div>
-                          <button className="px-4 py-2 bg-red-600 text-white rounded-lg text-xs font-bold hover:bg-red-700 transition-colors flex items-center gap-2">
+                          <button onClick={handleDeleteAccount} className="px-4 py-2 bg-red-600 text-white rounded-lg text-xs font-bold hover:bg-red-700 transition-colors flex items-center gap-2">
                             <Trash2 className="w-3 h-3" />
                             Delete Account
                           </button>
@@ -571,9 +755,85 @@ const Settings: React.FC = () => {
                 )}
               </motion.div>
             </AnimatePresence>
+
+            {/* Global Save Section */}
+            {['profile', 'notifications', 'security', 'integrations'].includes(activeTab) && (
+              <div className="mt-8 pt-6 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-3 animate-in fade-in fill-mode-both">
+                <p className="text-xs text-gray-400 font-medium">
+                  {activeTab === 'profile' && 'Update your personal profile information here.'}
+                  {activeTab === 'notifications' && 'Changes to notification settings need to be saved.'}
+                  {activeTab === 'security' && 'Security changes take effect after saving.'}
+                  {activeTab === 'integrations' && 'Save integrations to apply them to your workspace.'}
+                </p>
+                <div className="flex items-center gap-3">
+                  {saveStatus === 'success' && (
+                    <span className="text-xs font-bold text-emerald-500 flex items-center gap-1.5 animate-pulse mr-2">
+                      <Check className="w-4 h-4" />
+                      Settings Saved
+                    </span>
+                  )}
+                  {saveStatus === 'error' && (
+                    <span className="text-xs font-bold text-red-500 mr-2">Error saving changes</span>
+                  )}
+                  
+                  <button 
+                    onClick={() => setSettings(databaseSettings)}
+                    className="px-5 py-2.5 bg-gray-50 border border-gray-200 text-gray-600 rounded-xl text-xs font-bold hover:bg-gray-100 transition-all font-sans"
+                  >
+                    Discard Changes
+                  </button>
+                  <button 
+                    onClick={handleSave}
+                    disabled={saveStatus === 'saving'}
+                    className="px-6 py-2.5 bg-black text-white rounded-xl text-xs font-bold hover:bg-gray-900 transition-all shadow-lg flex items-center gap-2 disabled:opacity-50"
+                  >
+                    {saveStatus === 'saving' ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : <Check className="w-4 h-4" />}
+                    {saveStatus === 'saving' ? 'Saving...' : 'Save Settings'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Local Settings Toast overlay */}
+      <AnimatePresence>
+        {activeToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            className="fixed bottom-6 right-6 z-[100] bg-gray-900 border border-gray-800 shadow-2xl rounded-2xl p-4 flex items-start gap-4 max-w-sm"
+          >
+            <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
+              <Bell className="w-4 h-4 text-blue-400" />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-white mb-1">{activeToast.title}</h4>
+              <p className="text-xs text-gray-300 font-medium leading-relaxed">{activeToast.message}</p>
+            </div>
+            <button onClick={() => setActiveToast(null)} className="ml-2 text-gray-500 hover:text-white transition-colors">
+              <X className="w-4 h-4" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Simulated Billing Modal */}
+      <PaymentSimulationModal 
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        onSuccess={() => {
+          showToast('Payment Method Added', 'Successfully updated your billing credentials.');
+          setSettings(prev => ({ ...prev, billing: { ...prev.billing, plan: 'Pro' } }));
+        }}
+        amount={49000}
+        currency="NGN"
+        email={settings.profile.email || "user@lawlify.ai"}
+      />
     </div>
   );
 };

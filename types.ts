@@ -103,7 +103,22 @@ export interface UserSettings {
   notifications: {
     email: boolean;
     push: boolean;
-    slack: boolean;
+    sms: boolean;
+    whatsapp: boolean;
+    securityAlerts: boolean;
+    billingAlerts: boolean;
+    productUpdates: boolean;
+    aiDraftComplete: boolean;
+    aiInsightReady: boolean;
+    commentsMentions: boolean;
+    workspaceInvitations: boolean;
+    caseDeadlines: boolean;
+    digest: 'instant' | 'daily' | 'weekly';
+    quietHours: {
+      enabled: boolean;
+      start: string;
+      end: string;
+    };
   };
   security: {
     twoFactorEnabled: boolean;

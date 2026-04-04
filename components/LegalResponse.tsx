@@ -108,10 +108,10 @@ const LegalResponse: React.FC<LegalResponseProps> = ({
             </button>
           </div>
           <div className="flex-1 flex flex-col items-end">
-            <div className="p-1 px-4 mb-1 text-[16px] font-medium text-gray-800 leading-relaxed text-right w-full">
+            <div className="bg-white p-4 px-6 md:px-8 mb-2 rounded-3xl shadow-sm border border-gray-100 text-[16px] font-medium text-gray-800 leading-relaxed max-w-full">
               {message.content}
             </div>
-            <div className="mt-1 text-[10px] font-bold text-gray-300 uppercase tracking-widest mr-4">
+            <div className="text-[10px] font-bold text-gray-300 uppercase tracking-widest mr-4">
               You • {message.timestamp.toLocaleTimeString('en-KE', { hour: '2-digit', minute: '2-digit' })}
             </div>
           </div>
