@@ -34,6 +34,8 @@ import integrationRoutes from './routes/integrations.js';
 import workspaceRoutes from './routes/workspaces.js';
 import intelligenceRoutes from './routes/intelligence.js';
 import { modelDispatcher } from './services/modelDispatcher.js';
+import dashboardRoutes from './routes/dashboard.js';
+import skillsRoutes from './routes/skills.js';
 
 // Simple password verification (supports both plain text and bcrypt)
 async function verifyPassword(plainPassword, hashedPassword) {
@@ -80,6 +82,8 @@ let supabase = null;
 if (supabaseUrl && supabaseKey) {
     supabase = createClient(supabaseUrl, supabaseKey);
     logger.info('Supabase client initialized via Service Role key.');
+    // Make supabase available to route handlers via app.locals
+    app.locals.supabase = supabase;
 }
 
 const authenticate = async (req, res, next) => {
@@ -117,6 +121,8 @@ const authenticate = async (req, res, next) => {
 app.use('/api/integrations', authenticate, integrationRoutes);
 app.use('/api/workspaces', authenticate, workspaceRoutes);
 app.use('/api/intelligence', authenticate, intelligenceRoutes);
+app.use('/api/dashboard', authenticate, dashboardRoutes);
+app.use('/api/skills', skillsRoutes); // Skills are public (no auth needed for composer)
 
 // Request Logging
 app.use((req, res, next) => {
@@ -438,9 +444,29 @@ app.post('/api/chat', authenticate, async (req, res) => {
             let citationsData = [];
 
             try {
+                // Fetch previous history if this is an ongoing chat
+                let historyMessages = [];
+                if (providedChatId) {
+                    const { data: dbMessages } = await supabase
+                        .from('legal_messages')
+                        .select('role, content')
+                        .eq('chat_history_id', providedChatId)
+                        .order('timestamp', { ascending: true });
+                    
+                    if (dbMessages) {
+                        historyMessages = dbMessages.map(m => ({
+                            role: m.role,
+                            content: m.content
+                        }));
+                    }
+                }
+                
+                // Append the current message
+                historyMessages.push({ role: 'user', content: message });
+
                 const streamGenerator = documentId
-                    ? modelDispatcher.queryDocumentStream(documentId, message)
-                    : modelDispatcher.dispatchStream(message, {
+                    ? await modelDispatcher.queryDocumentStream(documentId, message)
+                    : await modelDispatcher.dispatchStream(historyMessages, {
                         context: {
                             taskType: specialistId?.includes('drafter') ? 'reasoning' : 'research',
                             specialistId,
@@ -472,6 +498,16 @@ app.post('/api/chat', authenticate, async (req, res) => {
                         artifact: artifactData || null,
                         citations: citationsData || []
                     }]);
+
+                // 5. Log activity (fire and forget)
+                supabase.from('activity_logs').insert([{
+                    user_id: userId,
+                    case_id: req.body.caseId || null,
+                    action: artifactData ? 'drafted' : 'analyzed',
+                    target: message.substring(0, 80) + (message.length > 80 ? '...' : ''),
+                    icon: artifactData ? 'FileText' : 'Scale',
+                    metadata: { model: currentModel, chatId }
+                }]).then(() => {}).catch(() => {});
 
                 return res.end();
             } catch (error) {
@@ -1195,10 +1231,10 @@ app.get('/api/drafts', authenticate, async (req, res) => {
     try {
         if (!supabase) return res.json([]);
         const { data, error } = await supabase
-            .from('ai_drafts')
+            .from('drafts')
             .select('*')
             .eq('user_id', req.user.id)
-            .order('updated_at', { ascending: false });
+            .order('last_modified', { ascending: false });
         if (error) throw error;
         res.json(data || []);
     } catch (e) {
@@ -1231,7 +1267,7 @@ Write a highly professional, well-structured legal draft. Output only the conten
         };
 
         const { data, error } = await supabase
-            .from('ai_drafts')
+            .from('drafts')
             .insert(draftData)
             .select()
             .single();
@@ -1248,8 +1284,8 @@ app.put('/api/drafts/:id', authenticate, async (req, res) => {
     try {
         const { title, content, status } = req.body;
         const { data, error } = await supabase
-            .from('ai_drafts')
-            .update({ title, content, status, updated_at: new Date().toISOString() })
+            .from('drafts')
+            .update({ title, content, last_modified: new Date().toISOString() })
             .eq('id', req.params.id)
             .eq('user_id', req.user.id)
             .select()
@@ -1264,7 +1300,7 @@ app.put('/api/drafts/:id', authenticate, async (req, res) => {
 app.delete('/api/drafts/:id', authenticate, async (req, res) => {
     try {
         const { error } = await supabase
-            .from('ai_drafts')
+            .from('drafts')
             .delete()
             .eq('id', req.params.id)
             .eq('user_id', req.user.id);
@@ -1292,3 +1328,4 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
     logger.info(`Backend Service running on port ${PORT}`);
 });
+

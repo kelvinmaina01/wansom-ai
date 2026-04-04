@@ -173,13 +173,18 @@ export class ModelDispatcher {
   get deepseek() { return null; }
   get groq() { return null; }
 
-  async dispatchStream(messages, options = {}) {
+  async dispatchStream(messagesInput, options = {}) {
     // FORCE CONSISTENCY: Override any incoming modelType to gemini-2.0-flash
     const modelType = 'gemini'; 
     const targetModel = "gemini-2.0-flash";
     const temperature = options.temperature || 0.7;
 
     logger.info(`Consolidated Dispatch: Redirecting all tasks to ${targetModel}`);
+
+    // Normalize messages to array explicitly
+    const messages = typeof messagesInput === 'string' 
+      ? [{ role: 'user', content: messagesInput }] 
+      : messagesInput;
 
     try {
       const model = this.genAI.getGenerativeModel({ 
