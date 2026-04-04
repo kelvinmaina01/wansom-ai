@@ -32,22 +32,21 @@ import {
   UserCheck
 } from 'lucide-react';
 
-const ADOPTED_COMPANIES = [
-  { name: 'Bowmans', domain: 'bowmanslaw.com' },
-  { name: 'ALN Africa', domain: 'aln.africa' },
-  { name: 'ENSafrica', domain: 'ensafrica.com' },
-  { name: 'Webber Wentzel', domain: 'webberwentzel.com' },
-  { name: 'Adams & Adams', domain: 'adamsadams.com' },
-  { name: 'CDH Law', domain: 'cliffedekkerhofmeyr.com' },
-  { name: 'Dentons', domain: 'dentons.com' },
-  { name: 'LawPavilion', domain: 'lawpavilion.com' },
-  { name: 'Lawyers Hub', domain: 'lawyershub.ke' },
-  { name: 'Anjarwalla & Khanna', domain: 'aandk.law' },
-  { name: 'University of Nairobi', domain: 'uonbi.ac.ke' },
-  { name: 'Strathmore University', domain: 'strathmore.edu' },
-  { name: 'Makerere University', domain: 'mak.ac.ug' },
-  { name: 'University of Dar es Salaam', domain: 'udsm.ac.tz' },
-  { name: 'JKUAT Karen', domain: 'jkuat.ac.ke' },
+const PARTNER_LOGOS = [
+  "https://i.ibb.co/WN9rdRNn/TANZII.png",
+  "https://i.ibb.co/xqqt8cyp/download-3.png",
+  "https://i.ibb.co/KcyYxZtp/download-2.png",
+  "https://i.ibb.co/QvBNrR0g/download-1.png",
+  "https://i.ibb.co/wNKwkrm6/ng.png",
+  "https://i.ibb.co/XkjyKGjQ/lawcompany.jpg",
+  "https://i.ibb.co/20fzVNZc/omwanzaaaa.avif",
+  "https://i.ibb.co/KcYRFmMv/imggelogoooo.avif",
+  "https://i.ibb.co/1fP2sT2x/loooooooogo.avif",
+  "https://i.ibb.co/0RN9c7Gm/logoimge3.avif",
+  "https://i.ibb.co/svBJMHnc/ogoimage-3.avif",
+  "https://i.ibb.co/NdH6MP8y/logoimage3.avif",
+  "https://i.ibb.co/1YNYSdCr/logoimage2222222222222.avif",
+  "https://i.ibb.co/fJFd7Ft/download.jpg"
 ];
 
 const FAQ_CATEGORIES = [
@@ -123,6 +122,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
   const [activeFaqCategory, setActiveFaqCategory] = useState<string | null>(null);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [isKelvinOpen, setIsKelvinOpen] = useState(false);
+
+  const PARTNER_LOGOS_RANDOMIZED = useMemo(() => {
+    return [...PARTNER_LOGOS].sort(() => Math.random() - 0.5);
+  }, []);
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -243,16 +246,24 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
           </p>
         </div>
         <div className="relative flex overflow-x-hidden group">
-          <div className="flex animate-marquee whitespace-nowrap items-center py-8">
-            {ADOPTED_COMPANIES.map((company, index) => (
-              <div key={index} className="flex items-center mx-12 opacity-30 hover:opacity-100 transition-all duration-700 cursor-default scale-110 md:scale-125">
-                <span className="text-xl font-bold tracking-tighter text-white/90 uppercase italic whitespace-nowrap">{company.name}</span>
+          <div className="flex animate-marquee whitespace-nowrap items-center py-6">
+            {PARTNER_LOGOS_RANDOMIZED.map((logo, index) => (
+              <div key={index} className="flex items-center mx-10 transition-all duration-500 hover:scale-110">
+                <img 
+                  src={logo} 
+                  alt="Partner Logo" 
+                  className="h-10 md:h-14 w-auto object-contain brightness-100 contrast-100" 
+                />
               </div>
             ))}
             {/* Duplicate for seamless loop */}
-            {ADOPTED_COMPANIES.map((company, index) => (
-              <div key={`dup-${index}`} className="flex items-center mx-12 opacity-30 hover:opacity-100 transition-all duration-700 cursor-default scale-110 md:scale-125">
-                <span className="text-xl font-bold tracking-tighter text-white/90 uppercase italic whitespace-nowrap">{company.name}</span>
+            {PARTNER_LOGOS_RANDOMIZED.map((logo, index) => (
+              <div key={`dup-${index}`} className="flex items-center mx-10 transition-all duration-500 hover:scale-110">
+                <img 
+                  src={logo} 
+                  alt="Partner Logo" 
+                  className="h-10 md:h-14 w-auto object-contain brightness-100 contrast-100" 
+                />
               </div>
             ))}
           </div>
