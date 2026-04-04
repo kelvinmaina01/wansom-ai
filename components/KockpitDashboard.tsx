@@ -200,19 +200,40 @@ const derivedLeads = [
 
 // === COMPONENTS ===
 
-const StatCard = ({ title, value, change, icon: Icon, trend, colorClass = "text-primary" }: any) => (
-  <div className="bg-white/5 border border-white/10 rounded-2xl p-6 relative overflow-hidden group hover:border-white/20 transition-all">
-
-    <div className="flex items-center gap-4 mb-4">
-      <div className={`p-3 rounded-xl bg-white/5 border border-white/10 ${colorClass}`}>
-        <Icon className="w-5 h-5" />
-      </div>
-      <h3 className="text-gray-400 font-medium">{title}</h3>
+// Skeleton loader for stat cards
+const SkeletonCard = () => (
+  <div className="bg-white/5 border border-white/10 rounded-2xl p-6 animate-pulse">
+    <div className="flex items-center gap-4 mb-5">
+      <div className="w-11 h-11 bg-white/10 rounded-xl" />
+      <div className="h-3 w-28 bg-white/10 rounded-full" />
     </div>
-    <div className="flex items-end gap-3">
-      <span className="text-3xl font-bold text-white">{value}</span>
-      <span className={`text-sm font-medium mb-1 flex items-center ${trend === 'up' ? 'text-green-500' : trend === 'down' ? 'text-red-500' : 'text-gray-500'}`}>
-        {trend === 'up' && <ArrowUpRight className="w-4 h-4 mr-1" />}
+    <div className="h-8 w-20 bg-white/10 rounded-lg mb-2" />
+    <div className="h-3 w-16 bg-white/10 rounded-full" />
+  </div>
+);
+
+const SkeletonChartCard = ({ height = 'h-[320px]' }: { height?: string }) => (
+  <div className="bg-white/5 border border-white/10 rounded-3xl p-6 animate-pulse">
+    <div className="flex items-center gap-3 mb-6">
+      <div className="w-5 h-5 bg-white/10 rounded" />
+      <div className="h-4 w-40 bg-white/10 rounded-full" />
+    </div>
+    <div className={`${height} bg-white/5 rounded-xl`} />
+  </div>
+);
+
+const StatCard = ({ title, value, change, icon: Icon, trend, colorClass = 'text-primary', accentColor = 'border-l-primary' }: any) => (
+  <div className={`bg-white/5 border border-white/10 border-l-4 ${accentColor} rounded-2xl p-6 relative overflow-hidden group hover:bg-white/[0.07] transition-all min-h-[140px] flex flex-col justify-between`}>
+    <div className="flex items-center justify-between mb-4">
+      <h3 className="text-gray-400 text-sm font-semibold">{title}</h3>
+      <div className={`p-2.5 rounded-xl bg-white/5 ${colorClass}`}>
+        <Icon className="w-4 h-4" />
+      </div>
+    </div>
+    <div>
+      <span className="text-3xl font-bold text-white block leading-none mb-1">{value}</span>
+      <span className={`text-xs font-semibold flex items-center gap-1 ${trend === 'up' ? 'text-green-400' : trend === 'down' ? 'text-red-400' : 'text-gray-500'}`}>
+        {trend === 'up' && <ArrowUpRight className="w-3 h-3" />}
         {change}
       </span>
     </div>
@@ -258,7 +279,7 @@ const DynamicChart = ({ data, type, xKey, yKey1, yKey2, title, icon: Icon, color
             {yKey2 && <Bar dataKey={yKey2} fill={line2Color} radius={[4, 4, 0, 0]} />}
           </BarChart>
         );
-      default: // bar
+      default:
         return (
           <BarChart data={data}>
             <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
@@ -274,15 +295,13 @@ const DynamicChart = ({ data, type, xKey, yKey1, yKey2, title, icon: Icon, color
   };
 
   return (
-    <div className="bg-white/5 border border-white/10 rounded-3xl p-6 hover:border-white/20 transition-all flex flex-col h-full">
+    <div className="bg-white/5 border border-white/10 rounded-3xl p-6 hover:bg-white/[0.07] transition-all flex flex-col h-full">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <Icon className="w-5 h-5 text-gray-400" />
           <h2 className="text-lg font-bold">{title}</h2>
         </div>
-        <div className="flex items-center gap-2">
-           <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest bg-white/5 px-2 py-1 rounded-md">{type}</span>
-        </div>
+        <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest bg-white/5 px-2 py-1 rounded-md border border-white/5">{type}</span>
       </div>
       <div className="flex-1 min-h-[220px]">
         <ResponsiveContainer width="100%" height="100%">
@@ -294,33 +313,21 @@ const DynamicChart = ({ data, type, xKey, yKey1, yKey2, title, icon: Icon, color
 };
 
 const CustomPieChart = ({ data, title, icon: Icon, valueSuffix = '%' }: any) => (
-  <div className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col hover:border-white/20 transition-colors">
+  <div className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col hover:bg-white/[0.07] transition-all">
     <div className="flex items-center gap-3 mb-4">
       <Icon className="w-5 h-5 text-gray-400" />
-      <h2 className="text-lg font-bold">{title}</h2>
+      <h2 className="text-base font-bold">{title}</h2>
     </div>
-    <div className="flex-1 min-h-[220px] relative">
+    <div className="flex-1 min-h-[200px]">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            innerRadius={50}
-            outerRadius={80}
-            paddingAngle={2}
-            dataKey="value"
-          >
+          <Pie data={data} cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={2} dataKey="value">
             {data.map((entry: any, index: number) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>
-          <Tooltip
-            formatter={(value) => `${value}${valueSuffix}`}
-            contentStyle={{ backgroundColor: '#111', border: '1px solid #333', borderRadius: '8px', color: '#fff' }}
-            itemStyle={{ color: '#fff' }}
-          />
-          <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '20px' }} />
+          <Tooltip formatter={(value) => `${value}${valueSuffix}`} contentStyle={{ backgroundColor: '#111', border: '1px solid #333', borderRadius: '8px', color: '#fff' }} itemStyle={{ color: '#fff' }} />
+          <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '14px' }} />
         </PieChart>
       </ResponsiveContainer>
     </div>
@@ -851,46 +858,83 @@ const KockpitDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [globalTimeRange, setGlobalTimeRange] = useState('7d');
   const [chartTypes, setChartTypes] = useState<Record<string, 'bar' | 'pie' | 'line' | 'scatter'>>({
-    growth: 'line',
-    usage: 'bar',
-    storage: 'pie',
-    geo: 'pie',
-    discovery: 'pie',
-    funnel: 'bar'
+    growth: 'line', usage: 'bar', storage: 'pie', geo: 'pie', discovery: 'pie', funnel: 'bar'
   });
+
+  // Live stats state
+  const [liveStats, setLiveStats] = useState({ totalUsers: 0, demoBookings: 0, supportTickets: 0, connectorRequests: 0 });
+  const [isStatsLoading, setIsStatsLoading] = useState(true);
+  const [liveActivity, setLiveActivity] = useState<any[]>([]);
+  const [isActivityLoading, setIsActivityLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLiveStats = async () => {
+      setIsStatsLoading(true);
+      try {
+        const [usersRes, demosRes, supportRes, connectorsRes] = await Promise.all([
+          supabase.from('user_settings').select('id', { count: 'exact', head: true }),
+          supabase.from('demo_requests').select('id', { count: 'exact', head: true }),
+          supabase.from('support_messages').select('id', { count: 'exact', head: true }),
+          supabase.from('connector_requests').select('id', { count: 'exact', head: true }),
+        ]);
+        setLiveStats({
+          totalUsers: usersRes.count ?? 0,
+          demoBookings: demosRes.count ?? 0,
+          supportTickets: supportRes.count ?? 0,
+          connectorRequests: connectorsRes.count ?? 0,
+        });
+      } catch (e) { console.error('Stats fetch error:', e); }
+      setIsStatsLoading(false);
+    };
+
+    const fetchLiveActivity = async () => {
+      setIsActivityLoading(true);
+      try {
+        const [demos, support, connectors] = await Promise.all([
+          supabase.from('demo_requests').select('id, full_name, email, created_at').order('created_at', { ascending: false }).limit(4),
+          supabase.from('support_messages').select('id, user_name, user_email, created_at').order('created_at', { ascending: false }).limit(3),
+          supabase.from('connector_requests').select('id, connector_name, user_email, created_at').order('created_at', { ascending: false }).limit(3),
+        ]);
+        const merged = [
+          ...(demos.data || []).map(d => ({ type: 'demo', user: d.full_name || d.email, detail: 'New Demo Booking', time: d.created_at, badge: 'bg-blue-500/20 text-blue-400' })),
+          ...(support.data || []).map(s => ({ type: 'support', user: s.user_name || s.user_email, detail: 'Support Message', time: s.created_at, badge: 'bg-pink-500/20 text-pink-400' })),
+          ...(connectors.data || []).map(c => ({ type: 'connector', user: c.user_email, detail: `Connector Request: ${c.connector_name}`, time: c.created_at, badge: 'bg-orange-500/20 text-orange-400' })),
+        ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 8);
+        setLiveActivity(merged);
+      } catch (e) { console.error('Activity fetch error:', e); }
+      setIsActivityLoading(false);
+    };
+
+    fetchLiveStats();
+    fetchLiveActivity();
+  }, []);
+
+  const formatTimeAgo = (dateStr: string) => {
+    const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
+    if (diff < 60) return `${diff}s ago`;
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return new Date(dateStr).toLocaleDateString();
+  };
 
   const toggleChartType = (id: string) => {
     const types: ('bar' | 'pie' | 'line' | 'scatter')[] = ['bar', 'pie', 'line', 'scatter'];
-    setChartTypes(prev => {
-      const current = prev[id];
-      const nextIndex = (types.indexOf(current) + 1) % types.length;
-      return { ...prev, [id]: types[nextIndex] };
-    });
+    setChartTypes(prev => { const current = prev[id]; const nextIndex = (types.indexOf(current) + 1) % types.length; return { ...prev, [id]: types[nextIndex] }; });
   };
 
   const ChartControls = ({ id }: { id: string }) => (
-    <div className="flex items-center gap-2">
-      <button 
-        onClick={() => toggleChartType(id)}
-        className="p-1.5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors title='Switch chart type'"
-      >
-        <RefreshCcw className="w-4 h-4" />
-      </button>
-    </div>
+    <button onClick={() => toggleChartType(id)} className="p-1.5 hover:bg-white/10 rounded-lg text-gray-500 hover:text-white transition-colors" title="Switch chart type">
+      <RefreshCcw className="w-4 h-4" />
+    </button>
   );
 
   const TimeFilter = () => (
-    <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg p-1">
-      {['1h', '24h', '7d', '30d', 'Custom'].map((range) => (
-        <button
-          key={range}
-          onClick={() => setGlobalTimeRange(range.toLowerCase())}
+    <div className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-lg p-1">
+      {['1h', '24h', '7d', '30d'].map((range) => (
+        <button key={range} onClick={() => setGlobalTimeRange(range.toLowerCase())}
           className={`px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${
-            globalTimeRange === range.toLowerCase() ? 'bg-primary text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'
-          }`}
-        >
-          {range}
-        </button>
+            globalTimeRange === range.toLowerCase() ? 'bg-primary text-white shadow-lg' : 'text-gray-500 hover:text-white'
+          }`}>{range}</button>
       ))}
     </div>
   );
@@ -1098,17 +1142,23 @@ const KockpitDashboard = () => {
                   initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
                   className="space-y-8"
                 >
-                  {/* Top Stats */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <StatCard title="Visitors" value="8" change="0%" icon={Users} trend="neutral" colorClass="text-blue-500" />
-                    <StatCard title="Page Views" value="148" change="+12%" icon={Activity} trend="up" colorClass="text-green-500" />
-                    <StatCard title="Bounce Rate" value="0%" change="0%" icon={TrendingUp} trend="neutral" colorClass="text-yellow-500" />
-                    <StatCard title="System Uptime" value="99.99%" change="Optimal" icon={ShieldAlert} trend="neutral" colorClass="text-primary" />
+                  {/* Top Stats — Live from Supabase */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+                    {isStatsLoading ? (
+                      Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
+                    ) : (
+                      <>
+                        <StatCard title="Registered Users" value={liveStats.totalUsers.toLocaleString()} change="Live" icon={Users} trend="neutral" colorClass="text-blue-400" accentColor="border-l-blue-500" />
+                        <StatCard title="Demo Bookings" value={liveStats.demoBookings.toLocaleString()} change="Total" icon={CalendarDays} trend="up" colorClass="text-primary" accentColor="border-l-primary" />
+                        <StatCard title="Support Tickets" value={liveStats.supportTickets.toLocaleString()} change="All time" icon={MessageSquare} trend="neutral" colorClass="text-pink-400" accentColor="border-l-pink-500" />
+                        <StatCard title="Connector Requests" value={liveStats.connectorRequests.toLocaleString()} change="Total" icon={Activity} trend="up" colorClass="text-orange-400" accentColor="border-l-orange-500" />
+                      </>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Primary Chart: Growth */}
-                    <div className="lg:col-span-2 bg-white/5 border border-white/10 rounded-3xl p-8 hover:border-white/20 transition-all flex flex-col">
+                    <div className="lg:col-span-2 bg-white/5 border border-white/10 rounded-3xl p-8 hover:bg-white/[0.07] transition-all flex flex-col">
                       <div className="flex items-center justify-between mb-8">
                         <div>
                           <h2 className="text-xl font-bold mb-1">Growth & Revenue Lifecycle</h2>
@@ -1168,7 +1218,7 @@ const KockpitDashboard = () => {
 
                     {/* Geography / Jurisdiction Pie Chart */}
                     <div className="flex flex-col">
-                      <div className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col hover:border-white/20 transition-colors h-full">
+                      <div className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col hover:bg-white/[0.07] transition-all h-full">
                         <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center gap-3">
                             <Globe className="w-5 h-5 text-gray-400" />
@@ -1290,7 +1340,7 @@ const KockpitDashboard = () => {
 
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Peak Time Usage (24h Area Chart) */}
-                    <div className="bg-white/5 border border-white/10 rounded-3xl p-8 hover:border-white/20 transition-all flex flex-col">
+                    <div className="bg-white/5 border border-white/10 rounded-3xl p-8 hover:bg-white/[0.07] transition-all flex flex-col">
                       <div className="flex items-center justify-between mb-8">
                         <div className="flex items-center gap-3">
                           <Clock className="w-5 h-5 text-gray-400" />
@@ -1331,7 +1381,7 @@ const KockpitDashboard = () => {
                     </div>
 
                     {/* Feature Usage Bar Chart */}
-                    <div className="bg-white/5 border border-white/10 rounded-3xl p-8 hover:border-white/20 transition-all flex flex-col">
+                    <div className="bg-white/5 border border-white/10 rounded-3xl p-8 hover:bg-white/[0.07] transition-all flex flex-col">
                       <div className="flex items-center justify-between mb-8">
                         <div className="flex items-center gap-3">
                           <Cpu className="w-5 h-5 text-gray-400" />
@@ -1361,6 +1411,53 @@ const KockpitDashboard = () => {
                         </ResponsiveContainer>
                       </div>
                     </div>
+                  </div>
+
+                  {/* Live Activity Feed */}
+                  <div className="bg-white/5 border border-white/10 rounded-3xl p-8 hover:bg-white/[0.07] transition-all">
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="flex items-center gap-3">
+                        <Activity className="w-5 h-5 text-gray-400" />
+                        <h2 className="text-lg font-bold">Live Activity Feed</h2>
+                      </div>
+                      <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-green-400">
+                        <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                        Real-time
+                      </div>
+                    </div>
+                    {isActivityLoading ? (
+                      <div className="space-y-3">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <div key={i} className="flex items-center gap-4 p-4 rounded-xl bg-white/5 animate-pulse">
+                            <div className="w-8 h-8 rounded-full bg-white/10 shrink-0" />
+                            <div className="flex-1 space-y-2">
+                              <div className="h-3 w-48 bg-white/10 rounded-full" />
+                              <div className="h-2 w-32 bg-white/5 rounded-full" />
+                            </div>
+                            <div className="h-2 w-16 bg-white/5 rounded-full" />
+                          </div>
+                        ))}
+                      </div>
+                    ) : liveActivity.length > 0 ? (
+                      <div className="space-y-2">
+                        {liveActivity.map((item, i) => (
+                          <div key={i} className="flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 transition-colors group">
+                            <div className={`w-2 h-2 rounded-full shrink-0 ${item.badge.split(' ')[0].replace('/20', '')}`} />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-semibold text-white truncate">{item.detail}</p>
+                              <p className="text-xs text-gray-500 truncate">{item.user}</p>
+                            </div>
+                            <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full ${item.badge}`}>{item.type}</span>
+                            <span className="text-[10px] text-gray-600 font-mono shrink-0">{formatTimeAgo(item.time)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="py-12 flex flex-col items-center gap-3 text-center">
+                        <Activity className="w-10 h-10 text-gray-700" />
+                        <p className="text-gray-500 font-semibold">No activity yet. Events will appear here in real-time.</p>
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               )}
