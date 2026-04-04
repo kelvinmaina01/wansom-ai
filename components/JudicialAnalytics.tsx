@@ -23,7 +23,8 @@ import {
   Sparkles,
   Clock,
   Award,
-  Hash
+  Hash,
+  Layers
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -32,7 +33,15 @@ import {
   Cell, 
   Tooltip, 
   ResponsiveContainer,
-  Label
+  Label,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend,
+  AreaChart,
+  Area
 } from 'recharts';
 
 // --- Types ---
@@ -303,8 +312,44 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
 
   if (isLoading) {
     return (
-      <div className="h-full flex items-center justify-center bg-gray-50">
-        <div className="w-12 h-12 border-4 border-primary/10 border-t-primary rounded-full animate-spin"></div>
+      <div className="p-8 max-w-7xl mx-auto space-y-8">
+        {/* Skeleton header */}
+        <div className="flex items-center gap-4 animate-pulse">
+          <div className="w-14 h-14 bg-gray-100 rounded-2xl" />
+          <div className="space-y-2">
+            <div className="h-5 w-48 bg-gray-100 rounded-full" />
+            <div className="h-3 w-72 bg-gray-50 rounded-full" />
+          </div>
+        </div>
+        {/* Skeleton stat cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="bg-white border border-gray-100 rounded-2xl p-8 animate-pulse min-h-[140px]">
+              <div className="h-4 w-20 bg-gray-100 rounded-full mb-6" />
+              <div className="h-8 w-16 bg-gray-200 rounded-lg mb-2" />
+              <div className="h-3 w-24 bg-gray-100 rounded-full" />
+            </div>
+          ))}
+        </div>
+        {/* Skeleton judge cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="bg-white border border-gray-100 rounded-2xl p-6 animate-pulse">
+              <div className="flex items-center gap-4 mb-5">
+                <div className="w-14 h-14 bg-gray-200 rounded-full shrink-0" />
+                <div className="space-y-2 flex-1">
+                  <div className="h-4 w-36 bg-gray-200 rounded-full" />
+                  <div className="h-3 w-28 bg-gray-100 rounded-full" />
+                </div>
+              </div>
+              <div className="h-2 w-full bg-gray-100 rounded-full mb-4" />
+              <div className="flex gap-2">
+                <div className="h-5 w-16 bg-gray-100 rounded-full" />
+                <div className="h-5 w-20 bg-gray-100 rounded-full" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -383,15 +428,16 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
         {filteredJudges.length > 0 ? filteredJudges.map((judge, idx) => (
           <motion.div
             key={judge.id}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.05 }}
             onClick={() => setSelectedJudge(judge)}
-            className="group bg-white border border-gray-100 rounded-2xl p-6 cursor-pointer hover:shadow-lg transition-all duration-300 relative overflow-hidden"
+            className="group bg-white border border-gray-100 rounded-2xl p-6 cursor-pointer hover:-translate-y-1 hover:shadow-xl hover:border-primary/20 transition-all duration-300 relative overflow-hidden flex flex-col"
           >
-            <div className="flex items-center gap-5 mb-6">
-              <div className="relative">
-                <div className="w-16 h-16 rounded-xl overflow-hidden border border-gray-100 group-hover:border-primary/20 transition-all">
+            {/* Top row: avatar + name */}
+            <div className="flex items-start gap-4 mb-5">
+              <div className="relative shrink-0">
+                <div className="w-14 h-14 rounded-xl overflow-hidden border border-gray-100 group-hover:border-primary/20 transition-all">
                   <img src={judge.image} alt={judge.name} className="w-full h-full object-cover" />
                 </div>
                 {judge.winRate > 60 && (
@@ -400,30 +446,52 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
                   </div>
                 )}
               </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-900 group-hover:text-primary transition-colors tracking-tight">{judge.name}</h3>
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none mt-0.5">{judge.title}</p>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-base font-bold text-gray-900 group-hover:text-primary transition-colors tracking-tight leading-tight">{judge.name}</h3>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">{judge.title}</p>
+                {/* Jurisdiction badge */}
+                <span className="inline-flex items-center gap-1 mt-2 px-2.5 py-1 bg-blue-50 border border-blue-100 rounded-full text-[9px] font-bold text-blue-600 uppercase tracking-widest">
+                  <Globe className="w-2.5 h-2.5" />
+                  {judge.jurisdiction}
+                </span>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 py-4 border-y border-gray-50">
-              <div>
-                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Success Rate</p>
-                <span className={`text-2xl font-bold ${judge.winRate > 50 ? 'text-emerald-500' : 'text-primary'}`}>{judge.winRate}%</span>
+            {/* Win rate progress bar */}
+            <div className="mb-5">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Success Rate</span>
+                <span className={`text-xl font-bold ${judge.winRate > 60 ? 'text-emerald-500' : judge.winRate > 45 ? 'text-amber-500' : 'text-primary'}`}>{judge.winRate}%</span>
               </div>
-              <div className="pl-4 border-l border-gray-50">
-                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Cases</p>
-                <span className="text-2xl font-bold text-gray-900">{judge.totalCases}</span>
+              <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${judge.winRate}%` }}
+                  transition={{ duration: 0.8, ease: 'easeOut', delay: idx * 0.05 + 0.2 }}
+                  className={`h-full rounded-full ${judge.winRate > 60 ? 'bg-emerald-500' : judge.winRate > 45 ? 'bg-amber-400' : 'bg-primary'}`}
+                />
+              </div>
+              <div className="flex justify-between mt-1.5">
+                <span className="text-[9px] text-gray-400 font-semibold">{judge.totalCases} cases</span>
+                <span className="text-[9px] text-gray-400 font-semibold">{judge.court}</span>
               </div>
             </div>
 
-            <div className="mt-4 flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                 <Globe className="w-3 h-3 text-gray-300" />
-                 <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">{judge.jurisdiction}</span>
+            {/* Specialty tags from rulingTendencies */}
+            {judge.rulingTendencies && judge.rulingTendencies.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mt-auto pt-4 border-t border-gray-50">
+                {judge.rulingTendencies.slice(0, 3).map(t => (
+                  <span key={t.category} className="px-2 py-1 bg-gray-50 rounded-lg text-[9px] font-bold text-gray-500 uppercase tracking-wide border border-gray-100">
+                    {t.category}
+                  </span>
+                ))}
+                {judge.rulingTendencies.length > 3 && (
+                  <span className="px-2 py-1 bg-gray-50 rounded-lg text-[9px] font-bold text-gray-400 border border-gray-100">+{judge.rulingTendencies.length - 3}</span>
+                )}
               </div>
-              <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-primary group-hover:translate-x-1 transition-all" />
-            </div>
+            )}
+
+            <ArrowRight className="absolute bottom-5 right-5 w-4 h-4 text-gray-200 group-hover:text-primary group-hover:translate-x-1 transition-all" />
           </motion.div>
         )) : (
           <div className="col-span-full py-32 text-center bg-white border border-dashed border-gray-200 rounded-2xl">
@@ -457,77 +525,95 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
         {[
-          { label: 'Total Benches', value: '42', detail: '+4 New divisions', color: 'text-gray-900', icon: Scale },
-          { label: 'Matter Volume', value: '1.2M', detail: '8% Annual growth', color: 'text-gray-900', icon: FileText },
-          { label: 'Avg. Lead Time', value: '14m', detail: '-15% Efficiency gain', color: 'text-emerald-600', icon: Clock },
-          { label: 'Clearance Rate', value: '94%', detail: 'Gold Standard', color: 'text-primary', icon: CheckCircle2 },
+          { label: 'Total Benches', value: '42', detail: '+4 New divisions', color: 'text-gray-900', icon: Scale, accent: 'border-l-blue-500' },
+          { label: 'Matter Volume', value: '1.2M', detail: '8% Annual growth', color: 'text-gray-900', icon: FileText, accent: 'border-l-purple-500' },
+          { label: 'Avg. Lead Time', value: '14m', detail: '-15% Efficiency gain', color: 'text-emerald-600', icon: Clock, accent: 'border-l-emerald-500' },
+          { label: 'Clearance Rate', value: '94%', detail: 'Gold Standard', color: 'text-primary', icon: CheckCircle2, accent: 'border-l-primary' },
         ].map((stat, i) => (
-          <div key={i} className="bg-white border border-gray-100 rounded-2xl p-8 shadow-md hover:-translate-y-1 hover:shadow-md transition-all">
-            <div className="flex justify-between items-start mb-4">
-              <div className="p-2 bg-gray-50 rounded-lg"><stat.icon className="w-4 h-4 text-gray-400" /></div>
+          <div key={i} className={`bg-white border border-gray-100 border-l-4 ${stat.accent} rounded-2xl p-8 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all min-h-[140px] flex flex-col justify-between`}>
+            <div className="flex justify-between items-start">
+              <div className="p-2.5 bg-gray-50 rounded-xl"><stat.icon className="w-4 h-4 text-gray-400" /></div>
               <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest">{stat.label}</span>
             </div>
-            <p className={`text-3xl font-bold tracking-tight ${stat.color}`}>{stat.value}</p>
-            <p className="text-[10px] text-gray-400 font-bold mt-2 uppercase tracking-wide">{stat.detail}</p>
+            <div>
+              <p className={`text-3xl font-bold tracking-tight leading-none mb-1 ${stat.color}`}>{stat.value}</p>
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wide">{stat.detail}</p>
+            </div>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-white border border-gray-100 rounded-3xl p-10 shadow-sm">
-          <h3 className="text-lg font-bold text-gray-900 mb-8 flex items-center gap-2">
+        {/* Recharts BarChart: Court Favorability */}
+        <div className="bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
+          <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-primary" /> Court Favorability Comparison
           </h3>
-          <div className="space-y-8">
-            {[
-              { name: 'Commercial High Court', value: 72, color: 'bg-emerald-500' },
-              { name: 'Environment & Land Court', value: 58, color: 'bg-primary' },
-              { name: 'Employment Court', value: 84, color: 'bg-amber-500' },
-              { name: 'Constitutional Division', value: 45, color: 'bg-purple-500' },
-            ].map((court) => (
-              <div key={court.name} className="group">
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-sm font-bold text-gray-700 group-hover:text-gray-900 transition-colors">{court.name}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl font-bold text-gray-900">{court.value}%</span>
-                    <span className="text-[8px] font-bold text-gray-300 uppercase tracking-widest">Favorability</span>
-                  </div>
-                </div>
-                <div className="h-3 w-full bg-gray-50 rounded-full overflow-hidden border border-gray-100">
-                  <motion.div 
-                    initial={{ width: 0 }}
-                    animate={{ width: `${court.value}%` }}
-                    className={`h-full ${court.color} rounded-full`}
-                  />
-                </div>
-              </div>
-            ))}
+          <div className="h-[260px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={[
+                  { name: 'Commercial HC', value: 72 },
+                  { name: 'Land Court', value: 58 },
+                  { name: 'Employment', value: 84 },
+                  { name: 'Constitutional', value: 45 },
+                ]}
+                margin={{ top: 5, right: 10, left: -20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fontWeight: 700, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} unit="%" domain={[0, 100]} />
+                <Tooltip
+                  formatter={(v) => [`${v}%`, 'Favorability']}
+                  contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '12px', fontSize: 12 }}
+                />
+                <Bar dataKey="value" radius={[6, 6, 0, 0]}>
+                  {[72, 58, 84, 45].map((val, i) => (
+                    <Cell key={i} fill={val >= 70 ? '#10b981' : val >= 55 ? '#ef4444' : '#f59e0b'} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
-        <div className="bg-white border border-gray-100 rounded-3xl p-10 shadow-sm">
-          <h3 className="text-lg font-bold text-gray-900 mb-2">Procedural Efficiency</h3>
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-10">Days from filing to first hearing</p>
-          
-          <div className="relative h-64 flex items-end justify-between px-2">
-            {[45, 120, 30, 90, 60, 150].map((val, i) => (
-              <div key={i} className="flex flex-col items-center gap-4 w-full">
-                <div className="relative w-full px-2 flex flex-col items-center">
-                   <motion.div 
-                    initial={{ height: 0 }}
-                    animate={{ height: `${val}%` }}
-                    className={`w-full max-w-[40px] rounded-t-lg shadow-sm ${val > 100 ? 'bg-primary/20' : 'bg-primary'}`}
-                   />
-                   <span className="text-[10px] font-bold text-gray-900 mt-2">{val}d</span>
-                </div>
-                <span className="text-[8px] font-bold text-gray-300 uppercase tracking-widest">DIV-{i+1}</span>
-              </div>
-            ))}
-            <div className="absolute inset-x-0 bottom-0 h-px bg-gray-100"></div>
+        {/* Recharts AreaChart: Procedural Efficiency */}
+        <div className="bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
+          <h3 className="text-lg font-bold text-gray-900 mb-1">Procedural Efficiency</h3>
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-6">Days from filing to first hearing</p>
+          <div className="h-[260px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart
+                data={[
+                  { div: 'DIV-1', days: 45 },
+                  { div: 'DIV-2', days: 120 },
+                  { div: 'DIV-3', days: 30 },
+                  { div: 'DIV-4', days: 90 },
+                  { div: 'DIV-5', days: 60 },
+                  { div: 'DIV-6', days: 150 },
+                ]}
+                margin={{ top: 5, right: 10, left: -20, bottom: 5 }}
+              >
+                <defs>
+                  <linearGradient id="effGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.15} />
+                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
+                <XAxis dataKey="div" tick={{ fontSize: 11, fontWeight: 700, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} unit="d" />
+                <Tooltip
+                  formatter={(v) => [`${v} days`, 'Lead Time']}
+                  contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '12px', fontSize: 12 }}
+                />
+                <Area type="monotone" dataKey="days" stroke="#ef4444" strokeWidth={2.5} fill="url(#effGrad)" dot={{ r: 4, fill: '#ef4444', strokeWidth: 0 }} />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
-          <div className="mt-8 pt-6 border-t border-gray-50 flex justify-between items-center">
+          <div className="mt-4 pt-4 border-t border-gray-50 flex justify-between items-center">
             <p className="text-[10px] text-blue-900 font-bold">Data based on last 5,000 filings</p>
             <button className="text-[9px] font-bold text-primary uppercase tracking-widest border-b border-primary/20 hover:border-primary transition-all pb-0.5">Full Audit Log</button>
           </div>
