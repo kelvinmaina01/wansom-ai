@@ -1,3 +1,4 @@
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence, useInView } from 'motion/react';
 import TermsModal from './TermsModal';
 import SupportSidebar from './SupportSidebar';
