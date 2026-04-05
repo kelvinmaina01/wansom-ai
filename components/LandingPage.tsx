@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence, useInView } from 'motion/react';
 import TermsModal from './TermsModal';
+import SupportSidebar from './SupportSidebar';
 import {
   Scale,
   ShieldCheck,
@@ -34,19 +34,13 @@ import {
 
 const PARTNER_LOGOS = [
   "https://i.ibb.co/WN9rdRNn/TANZII.png",
-  "https://i.ibb.co/xqqt8cyp/download-3.png",
-  "https://i.ibb.co/KcyYxZtp/download-2.png",
-  "https://i.ibb.co/QvBNrR0g/download-1.png",
   "https://i.ibb.co/wNKwkrm6/ng.png",
-  "https://i.ibb.co/XkjyKGjQ/lawcompany.jpg",
   "https://i.ibb.co/20fzVNZc/omwanzaaaa.avif",
   "https://i.ibb.co/KcYRFmMv/imggelogoooo.avif",
   "https://i.ibb.co/1fP2sT2x/loooooooogo.avif",
   "https://i.ibb.co/0RN9c7Gm/logoimge3.avif",
   "https://i.ibb.co/svBJMHnc/ogoimage-3.avif",
-  "https://i.ibb.co/NdH6MP8y/logoimage3.avif",
-  "https://i.ibb.co/1YNYSdCr/logoimage2222222222222.avif",
-  "https://i.ibb.co/fJFd7Ft/download.jpg"
+  "https://i.ibb.co/1YNYSdCr/logoimage2222222222222.avif"
 ];
 
 const FAQ_CATEGORIES = [
@@ -160,6 +154,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
             <button onClick={onPricingClick} className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Pricing</button>
             <a href="#capabilities" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Capabilities</a>
             <a href="#security" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Security</a>
+            
+            <button 
+              onClick={() => setIsKelvinOpen(true)}
+              className="flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-white transition-colors border-l border-white/10 pl-8"
+            >
+              <HelpCircle className="w-4 h-4" />
+              <span>Support</span>
+            </button>
           </div>
           <button
             onClick={onEnterApp}
@@ -210,9 +212,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
             <div className="relative bg-[#0a0a0a] rounded-[2.5rem] border border-white/10 shadow-2xl overflow-hidden aspect-[16/10] group">
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50"></div>
               <img
-                src="https://picsum.photos/seed/legal-dashboard/1920/1200"
-                alt="Lawlify Dashboard Preview"
-                className="w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-1000"
+                src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=2070&auto=format&fit=crop"
+                alt="Lawlify Professional Dashboard"
+                className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-1000"
                 referrerPolicy="no-referrer"
               />
               <div className="absolute inset-0 flex items-center justify-center">
@@ -238,31 +240,33 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
         </div>
       </section>
 
-      {/* Adopted By Section */}
-      <section className="py-12 border-y border-white/5 bg-black/20 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 mb-8">
-          <p className="text-center text-sm font-bold tracking-[0.2em] uppercase text-gray-500">
+      {/* Adopted By Section - Enhanced for Visibility */}
+      <section className="py-16 border-y border-white/5 bg-black/40 overflow-hidden relative z-20">
+        <div className="max-w-7xl mx-auto px-6 mb-10">
+          <p className="text-center text-xs font-black tracking-[0.3em] uppercase text-gray-500 opacity-60">
             Trusted by leading legal minds across Africa
           </p>
         </div>
-        <div className="relative flex overflow-x-hidden group">
-          <div className="flex animate-marquee whitespace-nowrap items-center py-6">
+        <div className="relative flex overflow-x-hidden">
+          <div className="flex animate-marquee whitespace-nowrap items-center py-4 min-w-max">
             {PARTNER_LOGOS_RANDOMIZED.map((logo, index) => (
-              <div key={index} className="flex items-center mx-10 transition-all duration-500 hover:scale-110">
+              <div key={index} className="flex items-center mx-12 transition-all duration-300 hover:scale-110 shrink-0">
                 <img 
                   src={logo} 
                   alt="Partner Logo" 
-                  className="h-10 md:h-14 w-auto object-contain brightness-0 invert opacity-80 hover:opacity-100 transition-opacity" 
+                  className="h-12 md:h-16 w-auto object-contain pointer-events-none" 
+                  loading="eager"
                 />
               </div>
             ))}
             {/* Duplicate for seamless loop */}
             {PARTNER_LOGOS_RANDOMIZED.map((logo, index) => (
-              <div key={`dup-${index}`} className="flex items-center mx-10 transition-all duration-500 hover:scale-110">
+              <div key={`dup-${index}`} className="flex items-center mx-12 transition-all duration-300 hover:scale-110 shrink-0">
                 <img 
                   src={logo} 
                   alt="Partner Logo" 
-                  className="h-10 md:h-14 w-auto object-contain brightness-0 invert opacity-80 hover:opacity-100 transition-opacity" 
+                  className="h-12 md:h-16 w-auto object-contain pointer-events-none" 
+                  loading="eager"
                 />
               </div>
             ))}
@@ -663,38 +667,27 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
             <div className="mt-32 pt-16 border-t border-white/10 flex flex-col md:flex-row items-center justify-center gap-12 md:gap-32">
               <h3 className="text-3xl md:text-5xl font-serif text-center md:text-left leading-tight">
                 Still stuck?<br />
-                <span className="text-gray-400">Let <span className="text-white">Kelvin</span> assist you.</span>
+                <span className="text-gray-400">Let <span className="text-white">us</span> assist you.</span>
               </h3>
 
-              <div className="flex flex-col items-center gap-2">
+               <div className="flex flex-col items-center gap-4">
                 <motion.button
                   onClick={() => setIsKelvinOpen(true)}
-                  animate={{ y: [0, -10, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                  className="relative group outline-none"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center gap-4 px-10 py-5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-primary/50 rounded-3xl transition-all group"
                 >
-                  <img
-                    src="/kelvin-bot.png"
-                    alt="Kelvin AI Assistant"
-                    className="w-48 h-48 md:w-56 md:h-56 object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]"
-                  />
-                  {/* Floating speech bubble */}
-                  <motion.div
-                    animate={{ scale: [0, 1], opacity: [0, 1] }}
-                    transition={{ delay: 1, duration: 0.5 }}
-                    className="absolute -top-2 -right-2 bg-white text-black px-3 py-1.5 rounded-2xl rounded-bl-none text-[10px] font-bold shadow-2xl shadow-white/10"
-                  >
-                    Ask me anything! ⚖️
-                  </motion.div>
+                  <div className="p-3 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-colors">
+                    <HelpCircle className="w-8 h-8 text-primary" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-xs font-black uppercase tracking-[0.2em] text-primary mb-1">Lawlify Support</div>
+                    <div className="text-xl font-bold text-white">Open Support Hub</div>
+                  </div>
+                  <ArrowRight className="w-6 h-6 text-gray-500 group-hover:translate-x-1 transition-all ml-4" />
                 </motion.button>
-
-                <button
-                  onClick={() => setIsKelvinOpen(true)}
-                  className="mt-0 w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center hover:bg-primary-hover hover:scale-110 active:scale-95 transition-all shadow-[0_0_30px_rgba(239,68,68,0.4)] group overflow-hidden"
-                  title="Get responses from Kelvin"
-                >
-                  <ArrowRight className="w-8 h-8 group-hover:translate-x-1 transition-transform" />
-                </button>
+                
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Typical response time: &lt; 2 minutes</p>
               </div>
             </div>
           </div>
@@ -881,76 +874,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
         )}
       </AnimatePresence>
 
-      {/* Kelvin Sidebar */}
-      <AnimatePresence>
-        {isKelvinOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsKelvinOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60]"
-            />
-            <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', bounce: 0, duration: 0.4 }}
-              className="fixed right-0 top-0 bottom-0 w-full md:w-[450px] bg-[#0A0A0A] border-l border-white/10 z-[70] flex flex-col shadow-2xl shadow-black"
-            >
-              {/* Header */}
-              <div className="p-6 border-b border-white/10 flex items-center justify-between bg-black/50">
-                <div className="flex items-center gap-4">
-                  <div className="relative">
-                    <img src="/kelvin-bot.png" alt="Kelvin" className="w-12 h-12 object-contain" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg">Kelvin Assistant</h3>
-                    <p className="text-xs text-primary flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                      Online and ready to help
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setIsKelvinOpen(false)}
-                  className="p-2 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white"
-                >
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
+      <SupportSidebar 
+        isOpen={isKelvinOpen} 
+        onClose={() => setIsKelvinOpen(false)} 
+        userName="Guest" 
+      />
 
-              {/* Chat Area */}
-              <div className="flex-1 p-6 overflow-y-auto space-y-6">
-                <div className="bg-white/5 border border-white/10 p-4 rounded-2xl rounded-tl-sm w-[85%] relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-16 h-16 bg-primary/10 blur-xl rounded-full"></div>
-                  <p className="text-sm leading-relaxed relative z-10">
-                    Hello! I'm Kelvin, your Lawlify customer assistant. How can I help you today? Do you need help exploring the platform, understanding our security, or picking a plan?
-                  </p>
-                  <div className="text-[10px] text-gray-500 mt-3 font-medium uppercase tracking-widest relative z-10">Just now</div>
-                </div>
-              </div>
-
-              {/* Input Area */}
-              <div className="p-6 border-t border-white/10 bg-black/50">
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Ask Kelvin anything..."
-                    className="w-full bg-white/5 border border-white/10 rounded-full py-4 pl-6 pr-14 text-sm focus:outline-none focus:border-primary/50 transition-colors"
-                  />
-                  <button className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white hover:bg-primary-hover transition-colors shadow-lg shadow-primary/20 hover:scale-105 active:scale-95">
-                    <ArrowRight className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-
-      {/* Terms Modal */}
       <TermsModal
         isOpen={termsModalOpen}
         onClose={() => setTermsModalOpen(false)}

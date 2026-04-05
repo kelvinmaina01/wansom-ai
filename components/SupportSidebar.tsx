@@ -30,10 +30,10 @@ const SupportSidebar: React.FC<SupportSidebarProps> = ({ isOpen, onClose, userNa
   const [isSuccess, setIsSuccess] = useState(false);
 
   const resources = [
-    { title: 'Visit our Help Center', icon: BookOpen, emoji: '📚', color: 'text-blue-500' },
-    { title: 'Join our Community!', icon: Globe, emoji: '🌍', color: 'text-green-500' },
-    { title: 'Reporting a Vulnerability', icon: ShieldAlert, emoji: '🛡️', color: 'text-red-500' },
-    { title: 'Lawlify UI Trust Center', icon: ShieldCheck, emoji: '🏛️', color: 'text-primary' },
+    { title: 'Visit our Help Center', icon: BookOpen, emoji: '📚', color: 'text-blue-500', href: 'https://help.lawlify.ai' },
+    { title: 'Join our Community!', icon: Globe, emoji: '🌍', color: 'text-green-500', href: 'https://community.lawlify.ai' },
+    { title: 'Reporting a Vulnerability', icon: ShieldAlert, emoji: '🛡️', color: 'text-red-500', href: '/security/reporting' },
+    { title: 'Lawlify UI Trust Center', icon: ShieldCheck, emoji: '🏛️', color: 'text-primary', href: '/security/trust-center' },
   ];
 
   return (
@@ -93,7 +93,9 @@ const SupportSidebar: React.FC<SupportSidebarProps> = ({ isOpen, onClose, userNa
                     {resources.map((res, i) => (
                       <motion.a
                         key={res.title}
-                        href="#"
+                        href={res.href}
+                        target={res.href.startsWith('http') ? '_blank' : '_self'}
+                        rel={res.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.05 }}
