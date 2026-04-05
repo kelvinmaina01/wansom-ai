@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Scale, ShieldCheck, Building2 } from 'lucide-react';
+import { Scale, ShieldCheck, Building2, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '../lib/supabase';
 import TermsModal from './TermsModal';
@@ -264,18 +264,40 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin }) => {
             Continue with SSO
           </button>
 
-          <div className="flex items-center justify-center gap-8 mt-12 pb-4">
-            <div className="flex flex-col items-center gap-3">
-              <div className="h-24 w-24 bg-white border border-gray-100 rounded-2xl flex items-center justify-center p-3 shadow-sm">
-                <img src="/badges/gdpr-compliant.png" alt="GDPR Compliant" className="h-full w-full object-contain hover:scale-105 transition-transform" />
+          <div className="mt-8 pt-8 border-t border-gray-100">
+            <div className="flex flex-wrap items-center justify-center gap-10">
+              <div className="flex items-center gap-4 group">
+                <div className="w-16 h-16 bg-gradient-to-br from-gray-50 to-transparent rounded-full flex flex-col items-center justify-center border-2 border-yellow-500/20 group-hover:border-yellow-500/50 transition-all duration-500 relative">
+                  <div className="absolute inset-1 border border-dashed border-yellow-500/20 rounded-full animate-[spin_40s_linear_infinite]" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-between py-1.5">
+                    <div className="flex gap-1.5 opacity-60">
+                      <Star className="w-2 h-2 text-yellow-500 fill-yellow-500" />
+                      <Star className="w-2.5 h-2.5 text-yellow-500 fill-yellow-500" />
+                      <Star className="w-2 h-2 text-yellow-500 fill-yellow-500" />
+                    </div>
+                  </div>
+                  <span className="text-black text-xs font-black leading-tight relative z-10">SOC 2</span>
+                  <span className="text-yellow-600 text-[8px] font-black uppercase tracking-[0.1em] relative z-10 mt-0.5">Type II</span>
+                </div>
+                <div className="flex flex-col max-w-[120px]">
+                  <span className="text-black font-bold text-sm">SOC 2 Type II</span>
+                  <span className="text-[10px] text-gray-400 font-medium leading-tight">Audited controls protect every case</span>
+                </div>
               </div>
-              <span className="text-[10px] text-orange-500 font-bold text-center leading-tight max-w-[90px] uppercase tracking-wider">Your data, always your property</span>
-            </div>
-            <div className="flex flex-col items-center gap-3">
-              <div className="h-24 w-24 bg-white border border-gray-100 rounded-2xl flex items-center justify-center p-3 shadow-sm">
-                <img src="/badges/aicpa-soc.png" alt="AICPA SOC" className="h-full w-full object-contain hover:scale-105 transition-transform" />
+
+              <div className="flex items-center gap-4 group">
+                <div className="w-16 h-16 bg-gradient-to-br from-gray-50 to-transparent rounded-full flex flex-col items-center justify-center border-2 border-blue-500/20 group-hover:border-blue-500/50 transition-all duration-500 relative">
+                  <div className="absolute inset-1 border border-dashed border-blue-500/20 rounded-full animate-[spin_40s_linear_infinite_reverse]" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-black text-xs font-black leading-tight relative z-10">GDPR</span>
+                    <span className="text-blue-600 text-[8px] font-black uppercase tracking-[0.1em] relative z-10 mt-0.5">Compliant</span>
+                  </div>
+                </div>
+                <div className="flex flex-col max-w-[120px]">
+                  <span className="text-black font-bold text-sm">GDPR Compliant</span>
+                  <span className="text-[10px] text-gray-400 font-medium leading-tight">Your data, always your property</span>
+                </div>
               </div>
-              <span className="text-[10px] text-orange-500 font-bold text-center leading-tight max-w-[90px] uppercase tracking-wider">Audited controls protect every case</span>
             </div>
           </div>
 
