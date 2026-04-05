@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useInView } from 'motion/react';
 import TermsModal from './TermsModal';
 import SupportSidebar from './SupportSidebar';
@@ -123,7 +123,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
     return [...PARTNER_LOGOS].sort(() => Math.random() - 0.5);
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleScroll = () => {
       setShowBackToTop(window.scrollY > 400);
     };
@@ -929,7 +929,7 @@ const CapabilityItem = ({ text }: { text: string }) => (
 
 const AnimatedStatCard = ({ value, label }: { value: string, label: string }) => {
   const [count, setCount] = useState(0);
-  const ref = React.useRef(null);
+  const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
   
   const match = value.match(/^([\d,]+)(.*)$/);
