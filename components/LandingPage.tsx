@@ -30,7 +30,8 @@ import {
   Star,
   Shield,
   Activity,
-  UserCheck
+  UserCheck,
+  HelpCircle
 } from 'lucide-react';
 
 const PARTNER_LOGOS = [
