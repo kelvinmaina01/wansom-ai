@@ -110,7 +110,7 @@ const OneDriveIcon = () => (
 // --- Sub-Components ---
 
 const StatCard = ({ label, value, subtext, icon: Icon, colorClass, gradient }: any) => (
-  <div className={`bg-white border border-slate-100 rounded-[2rem] p-10 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 group flex flex-col justify-between overflow-hidden relative`}>
+  <div className={`bg-slate-50 border border-slate-200 rounded-xl p-10 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 group flex flex-col justify-between overflow-hidden relative`}>
     <div className={`absolute top-0 right-0 w-32 h-32 opacity-5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700 ${gradient}`}></div>
     <div className="flex justify-between items-start mb-6 relative z-10">
       <div className={`p-4 rounded-2xl bg-slate-50 group-hover:bg-white group-hover:shadow-lg transition-all duration-500`}>
@@ -139,7 +139,7 @@ const OutcomePredictor = ({ judge }: { judge: JudgeProfile }) => {
 
   return (
     <div className="space-y-6 w-full">
-      <div className="bg-white border border-slate-100 rounded-[2.5rem] p-12 shadow-sm relative overflow-hidden">
+      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-12 shadow-sm relative overflow-hidden">
         <div className="relative z-10">
           <h3 className="text-2xl font-bold text-slate-900 mb-2">Predict outcome for your case type</h3>
           <p className="text-[11px] text-slate-400 font-black uppercase tracking-[0.2em] mb-10">Select a matter category to see historical favorability</p>
@@ -165,7 +165,7 @@ const OutcomePredictor = ({ judge }: { judge: JudgeProfile }) => {
                 exit={{ opacity: 0, scale: 0.98 }}
                 className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center text-left"
               >
-                <div className="bg-slate-50 rounded-[2.5rem] p-12 border border-slate-100 flex flex-col items-center justify-center relative overflow-hidden group">
+                <div className="bg-white rounded-xl p-12 border border-slate-200 flex flex-col items-center justify-center relative overflow-hidden group">
                    <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                   <div className="relative w-48 h-48 flex items-center justify-center mb-8 bg-white rounded-full shadow-inner border border-slate-100">
                      <svg className="w-full h-full -rotate-90 p-2">
@@ -192,7 +192,7 @@ const OutcomePredictor = ({ judge }: { judge: JudgeProfile }) => {
                 </div>
 
                 <div className="grid grid-cols-1 gap-6">
-                   <div className="bg-white rounded-[1.5rem] p-8 border border-slate-100 shadow-sm flex gap-6 items-start hover:shadow-md transition-all">
+                   <div className="bg-white rounded-xl p-8 border border-slate-200 shadow-sm flex gap-6 items-start hover:shadow-md transition-all">
                       <div className="p-4 bg-primary/5 rounded-2xl">
                         <TrendingUp className="w-6 h-6 text-primary" />
                       </div>
@@ -203,7 +203,7 @@ const OutcomePredictor = ({ judge }: { judge: JudgeProfile }) => {
                         </p>
                       </div>
                    </div>
-                   <div className="bg-white rounded-[1.5rem] p-8 border border-slate-100 shadow-sm flex gap-6 items-start hover:shadow-md transition-all">
+                   <div className="bg-white rounded-xl p-8 border border-slate-200 shadow-sm flex gap-6 items-start hover:shadow-md transition-all">
                       <div className="p-4 bg-amber-50 rounded-2xl">
                         <Gavel className="w-6 h-6 text-amber-500" />
                       </div>
@@ -223,7 +223,7 @@ const OutcomePredictor = ({ judge }: { judge: JudgeProfile }) => {
         </div>
       </div>
 
-      <div className="bg-slate-900 text-white rounded-[2.5rem] p-12 relative overflow-hidden group shadow-2xl">
+      <div className="bg-slate-900 text-white rounded-2xl p-12 relative overflow-hidden group shadow-2xl">
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-3xl rounded-full -mr-32 -mt-32"></div>
         <div className="relative z-10 flex gap-10 items-start">
           <div className="p-4 bg-white/10 rounded-2xl border border-white/10 backdrop-blur-md">
@@ -356,7 +356,7 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
         {/* Skeleton stat cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-white border border-slate-100 rounded-2xl p-8 animate-pulse min-h-[140px]">
+            <div key={i} className="bg-slate-50 border border-slate-200 rounded-xl p-8 animate-pulse min-h-[140px]">
               <div className="h-4 w-20 bg-slate-100 rounded-full mb-6" />
               <div className="h-8 w-16 bg-gray-200 rounded-lg mb-2" />
               <div className="h-3 w-24 bg-slate-100 rounded-full" />
@@ -366,7 +366,7 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
         {/* Skeleton judge cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-white border border-slate-100 rounded-2xl p-6 animate-pulse">
+            <div key={i} className="bg-slate-50 border border-slate-200 rounded-xl p-6 animate-pulse">
               <div className="flex items-center gap-4 mb-5">
                 <div className="w-14 h-14 bg-gray-200 rounded-full shrink-0" />
                 <div className="space-y-2 flex-1">
@@ -447,7 +447,7 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
             <input 
               type="text"
               placeholder="Search by judge name or court..."
-              className="pl-14 pr-6 py-4 bg-white border border-slate-200 rounded-[1.5rem] text-sm focus:outline-none focus:border-primary/20 focus:ring-4 focus:ring-primary/5 w-full font-bold shadow-sm transition-all text-slate-900 placeholder:text-slate-300"
+              className="pl-14 pr-6 py-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-primary/20 focus:ring-4 focus:ring-primary/5 w-full font-bold shadow-sm transition-all text-slate-900 placeholder:text-slate-300"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -464,7 +464,7 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.05 }}
             onClick={() => setSelectedJudge(judge)}
-            className="group bg-white border border-slate-100 rounded-[2.5rem] p-10 cursor-pointer hover:-translate-y-2 hover:shadow-2xl hover:border-primary/20 transition-all duration-500 relative overflow-hidden flex flex-col"
+            className="group bg-slate-50 border border-slate-200 rounded-2xl p-10 cursor-pointer hover:-translate-y-2 hover:shadow-2xl hover:border-primary/20 transition-all duration-500 relative overflow-hidden flex flex-col"
           >
             {/* Top row: avatar + name */}
             <div className="flex items-start gap-6 mb-8">
@@ -564,7 +564,7 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
           { label: 'Avg. Lead Time', value: '14m', detail: '-15% Efficiency gain', color: 'text-emerald-600', icon: Clock, accent: 'border-l-emerald-500' },
           { label: 'Clearance Rate', value: '94%', detail: 'Gold Standard', color: 'text-primary', icon: CheckCircle2, accent: 'border-l-primary' },
         ].map((stat, i) => (
-          <div key={i} className={`bg-white border border-slate-100 border-l-4 ${stat.accent} rounded-2xl p-8 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all min-h-[140px] flex flex-col justify-between`}>
+          <div key={i} className={`bg-slate-50 border border-slate-200 rounded-xl p-8 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all min-h-[140px] flex flex-col justify-between`}>
             <div className="flex justify-between items-start">
               <div className="p-2.5 bg-slate-50 rounded-xl"><stat.icon className="w-4 h-4 text-slate-400" /></div>
               <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">{stat.label}</span>
@@ -579,7 +579,7 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Recharts BarChart: Court Favorability */}
-        <div className="bg-white border border-slate-100 rounded-3xl p-8 shadow-sm">
+        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-8 shadow-sm">
           <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-primary" /> Court Favorability Comparison
           </h3>
@@ -612,7 +612,7 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
         </div>
 
         {/* Recharts AreaChart: Procedural Efficiency */}
-        <div className="bg-white border border-slate-100 rounded-3xl p-8 shadow-sm">
+        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-8 shadow-sm">
           <h3 className="text-lg font-bold text-slate-900 mb-1">Procedural Efficiency</h3>
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-6">Days from filing to first hearing</p>
           <div className="h-[260px]">
@@ -676,7 +676,7 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
         </div>
       </div>
 
-      <div className="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm">
+      <div className="bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
         <div className="p-6 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Hash className="w-4 h-4 text-slate-400" />

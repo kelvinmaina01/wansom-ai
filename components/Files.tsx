@@ -402,7 +402,7 @@ const Files: React.FC = () => {
           {/* Overview Cards - Clean solid design, no glassmorphism */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {/* Storage Card */}
-            <div className="bg-white border border-blue-100 border-l-4 border-l-blue-500 rounded-2xl p-6 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all group min-h-[140px] flex flex-col justify-between">
+            <div className="bg-slate-50 border border-blue-100 rounded-xl p-6 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all group min-h-[140px] flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <h3 className="text-gray-500 text-xs font-bold uppercase tracking-widest">Storage Used</h3>
                 <div className="p-2.5 bg-blue-50 rounded-xl">
@@ -419,7 +419,7 @@ const Files: React.FC = () => {
             </div>
 
             {/* Total Files Card */}
-            <div className="bg-white border border-purple-100 border-l-4 border-l-purple-500 rounded-2xl p-6 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all group min-h-[140px] flex flex-col justify-between">
+            <div className="bg-slate-50 border border-purple-100 rounded-xl p-6 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all group min-h-[140px] flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <h3 className="text-gray-500 text-xs font-bold uppercase tracking-widest">Total Files</h3>
                 <div className="p-2.5 bg-purple-50 rounded-xl">
@@ -433,7 +433,7 @@ const Files: React.FC = () => {
             </div>
 
             {/* Folders Card */}
-            <div className="bg-white border border-orange-100 border-l-4 border-l-orange-500 rounded-2xl p-6 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all group min-h-[140px] flex flex-col justify-between">
+            <div className="bg-slate-50 border border-orange-100 rounded-xl p-6 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all group min-h-[140px] flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <h3 className="text-gray-500 text-xs font-bold uppercase tracking-widest">Folders</h3>
                 <div className="p-2.5 bg-orange-50 rounded-xl">
@@ -447,7 +447,7 @@ const Files: React.FC = () => {
             </div>
 
             {/* Types Card */}
-            <div className="bg-white border border-emerald-100 border-l-4 border-l-emerald-500 rounded-2xl p-6 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all group min-h-[140px] flex flex-col justify-between">
+            <div className="bg-slate-50 border border-emerald-100 rounded-xl p-6 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all group min-h-[140px] flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <h3 className="text-gray-500 text-xs font-bold uppercase tracking-widest">File Types</h3>
                 <div className="p-2.5 bg-emerald-50 rounded-xl">
@@ -466,7 +466,7 @@ const Files: React.FC = () => {
         </div>
 
         {/* Upload Area */}
-        <div className="bg-white rounded-[15px] p-8 shadow-xl shadow-black/5 border border-gray-100">
+        <div className="bg-white rounded-xl p-8 shadow-xl shadow-black/5 border border-gray-100">
           <div className="mb-6">
             <div className="flex items-center gap-3 mb-2">
               <Upload className="w-6 h-6 text-blue-600" />
@@ -485,7 +485,7 @@ const Files: React.FC = () => {
                 { type: 'pdf', label: 'PDF' },
                 { type: 'docx', label: 'Word' }
               ].map((badge) => (
-                <div key={badge.type} className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-[15px] border border-gray-100">
+                <div key={badge.type} className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl border border-gray-100">
                   <img src={FILE_ICONS[badge.type]} alt={badge.label} className="w-5 h-5 object-contain" referrerPolicy="no-referrer" />
                   <span className="text-xs font-bold text-gray-600">{badge.label}</span>
                 </div>
@@ -494,7 +494,7 @@ const Files: React.FC = () => {
           </div>
 
           <div
-            className={`relative border-2 border-dashed rounded-[15px] p-16 text-center transition-all cursor-pointer group ${isDragging
+            className={`relative border-2 border-dashed rounded-xl p-16 text-center transition-all cursor-pointer group ${isDragging
               ? 'border-blue-500 bg-[#ffe4c2]'
               : 'border-gray-200 bg-[#fffbf0] hover:border-blue-400'
               }`}
@@ -513,7 +513,7 @@ const Files: React.FC = () => {
             />
 
             <div className="flex flex-col items-center justify-center gap-6">
-              <div className="p-4 bg-white rounded-[15px] shadow-sm border border-gray-100 group-hover:scale-110 transition-transform duration-300">
+              <div className="p-4 bg-white rounded-xl shadow-sm border border-gray-100 group-hover:scale-110 transition-transform duration-300">
                 <Upload className="w-6 h-6 text-gray-400" />
               </div>
 
@@ -546,7 +546,7 @@ const Files: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setCurrentFolderId(null)}
-                    className="p-2 hover:bg-gray-100 rounded-[15px] transition-colors"
+                    className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
                   >
                     <ArrowLeft className="w-5 h-5 text-black" />
                   </button>
@@ -563,7 +563,7 @@ const Files: React.FC = () => {
             <div className="flex gap-3">
               <button
                 onClick={() => setShowStarredOnly(!showStarredOnly)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-[15px] text-xs font-bold transition-all ${showStarredOnly
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${showStarredOnly
                   ? 'bg-yellow-50 text-yellow-600 border border-yellow-200'
                   : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
                   }`}
@@ -575,7 +575,7 @@ const Files: React.FC = () => {
               {!currentFolderId && (
                 <button
                   onClick={() => setIsFolderModalOpen(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-[15px] text-xs font-bold hover:bg-gray-800 transition-all"
+                  className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-xl text-xs font-bold hover:bg-gray-800 transition-all"
                 >
                   <FolderPlus className="w-4 h-4" />
                   New Folder
@@ -588,7 +588,7 @@ const Files: React.FC = () => {
                   placeholder="Search..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-[15px] text-sm font-medium focus:outline-none focus:ring-2 focus:ring-black/5"
+                  className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-black/5"
                 />
               </div>
             </div>
@@ -597,7 +597,7 @@ const Files: React.FC = () => {
           {/* Top Banner Removed - Replaced with ActionSidePanel at the end */}
 
           {/* Content Grid/List */}
-          <div className="bg-white border border-gray-100 rounded-[15px] overflow-hidden shadow-sm min-h-[600px] mb-20 p-2">
+          <div className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm min-h-[600px] mb-20 p-2">
 
             {/* Branch 1: Skeleton while loading */}
             {isFilesLoading ? (
@@ -659,9 +659,9 @@ const Files: React.FC = () => {
                       <button
                         key={folder.id}
                         onClick={() => setCurrentFolderId(folder.id)}
-                        className="p-4 bg-gray-50 hover:bg-blue-50 border border-transparent hover:border-blue-100 rounded-[15px] flex flex-col items-center gap-3 transition-all group text-center"
+                        className="p-4 bg-gray-50 hover:bg-blue-50 border border-transparent hover:border-blue-100 rounded-xl flex flex-col items-center gap-3 transition-all group text-center"
                       >
-                        <div className="w-12 h-12 bg-white rounded-[15px] flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                        <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
                           <FolderIcon className="w-6 h-6 text-yellow-500 fill-yellow-500" />
                         </div>
                         <span className="text-xs font-bold text-gray-700 group-hover:text-blue-700 truncate w-full">{folder.name}</span>
@@ -782,7 +782,7 @@ const Files: React.FC = () => {
                                     initial={{ opacity: 0, scale: 0.95, y: 10 }}
                                     animate={{ opacity: 1, scale: 1, y: 0 }}
                                     exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                                    className="absolute right-0 top-full mt-2 w-48 bg-white rounded-[15px] shadow-xl border border-gray-100 z-50 overflow-hidden"
+                                    className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden"
                                   >
                                     <div className="p-1" onClick={(e) => e.stopPropagation()}>
                                       <button onClick={(e) => { e.stopPropagation(); navigate(`/app/insights/${file.id}?mode=savre`); }}

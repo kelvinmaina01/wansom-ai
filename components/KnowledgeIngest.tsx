@@ -93,7 +93,7 @@ const CookingMonitor: React.FC<{ docId: string; docTitle: string; onDone: () => 
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-slate-900/60 border border-slate-700 rounded-[2rem] p-8 space-y-6"
+      className="bg-slate-900/60 border border-slate-700 rounded-xl p-8 space-y-6"
     >
       <div className="flex items-center justify-between">
         <div>
@@ -126,7 +126,7 @@ const CookingMonitor: React.FC<{ docId: string; docTitle: string; onDone: () => 
               key={step.id}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              className={`flex items-center gap-4 p-4 rounded-2xl border transition-all ${
+              className={`flex items-center gap-4 p-4 rounded-xl border transition-all ${
                 s.status === 'running' ? 'bg-blue-500/10 border-blue-500/40' :
                 s.status === 'done'    ? 'bg-emerald-500/10 border-emerald-500/30' :
                 s.status === 'error'   ? 'bg-red-500/10 border-red-500/30' :
@@ -244,7 +244,7 @@ const DocumentQueue: React.FC = () => {
         const isCooking = doc.status === 'cooking';
         return (
           <motion.div key={doc.id} layout
-            className="bg-white/[0.03] border border-white/10 rounded-2xl p-5 flex items-center gap-4 hover:border-white/20 transition-all group"
+            className="bg-white/[0.03] border border-white/10 rounded-xl p-5 flex items-center gap-4 hover:border-white/20 transition-all group"
           >
             <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 shrink-0">
               <Database className="w-6 h-6" />
@@ -391,7 +391,7 @@ export const KnowledgeIngest: React.FC = () => {
           </motion.div>
         ) : (
           <motion.div key="form" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-            <div className="bg-slate-900/40 border border-slate-800 rounded-[2.5rem] overflow-hidden shadow-2xl">
+            <div className="bg-slate-900/40 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
               {/* Header Banner */}
               <div className="p-10 border-b border-slate-800 bg-gradient-to-r from-blue-500/10 to-purple-500/10">
                 <div className="flex items-center gap-4 mb-4">
@@ -429,7 +429,7 @@ export const KnowledgeIngest: React.FC = () => {
                         <label className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 block">Document Title</label>
                         <input type="text" value={title} onChange={e => setTitle(e.target.value)}
                           placeholder="e.g. Kenya Finance Act 2024"
-                          className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl px-5 py-4 text-white focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all"
+                          className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-5 py-4 text-white focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all"
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-4">
@@ -443,7 +443,7 @@ export const KnowledgeIngest: React.FC = () => {
                         <div>
                           <label className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 block">Document Type</label>
                           <select value={category} onChange={e => setCategory(e.target.value)}
-                            className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl px-5 py-4 text-white focus:border-blue-500 focus:outline-none transition-all appearance-none cursor-pointer">
+                            className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-5 py-4 text-white focus:border-blue-500 focus:outline-none transition-all appearance-none cursor-pointer">
                             {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                           </select>
                         </div>
@@ -451,7 +451,7 @@ export const KnowledgeIngest: React.FC = () => {
                       <div>
                         <label className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 block">Legislation Year</label>
                         <input type="number" value={year} onChange={e => setYear(e.target.value)}
-                          className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl px-5 py-4 text-white focus:border-blue-500 focus:outline-none transition-all"
+                          className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-5 py-4 text-white focus:border-blue-500 focus:outline-none transition-all"
                         />
                       </div>
                     </div>
@@ -461,7 +461,7 @@ export const KnowledgeIngest: React.FC = () => {
                         <input type="file" accept="application/pdf" onChange={e => e.target.files?.[0] && setFile(e.target.files[0])}
                           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                         />
-                        <div className={`h-full border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center p-8 transition-all duration-300 ${
+                        <div className={`h-full border-2 border-dashed rounded-xl flex flex-col items-center justify-center p-8 transition-all duration-300 ${
                           file ? 'bg-emerald-500/5 border-emerald-500/30' : 'bg-slate-800/30 border-slate-700 group-hover:border-blue-500/50 group-hover:bg-blue-500/5'
                         }`}>
                           {file ? (
@@ -493,7 +493,7 @@ export const KnowledgeIngest: React.FC = () => {
                       const isActive = idx === activeStepIndex;
                       return (
                         <motion.div key={step.id} layout
-                          className={`flex items-center gap-4 p-4 rounded-2xl border transition-all ${
+                          className={`flex items-center gap-4 p-4 rounded-xl border transition-all ${
                             s.status === 'running' || isActive ? 'bg-blue-500/10 border-blue-500/40' :
                             s.status === 'done'    ? 'bg-emerald-500/10 border-emerald-500/30' :
                             s.status === 'error'   ? 'bg-red-500/10 border-red-500/30' :
@@ -552,7 +552,7 @@ export const KnowledgeIngest: React.FC = () => {
                 {/* Error */}
                 {errorMessage && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                    className="bg-rose-500/10 border border-rose-500/20 text-rose-400 p-4 rounded-2xl flex items-center gap-3"
+                    className="bg-rose-500/10 border border-rose-500/20 text-rose-400 p-4 rounded-xl flex items-center gap-3"
                   >
                     <AlertCircle className="w-5 h-5 shrink-0" />
                     <p className="text-sm font-medium">{errorMessage}</p>
@@ -562,7 +562,7 @@ export const KnowledgeIngest: React.FC = () => {
                 {/* Success */}
                 {isDone && (
                   <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-                    className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-6 rounded-2xl flex items-center gap-4"
+                    className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-6 rounded-xl flex items-center gap-4"
                   >
                     <Zap className="w-7 h-7 shrink-0" />
                     <div>
@@ -575,14 +575,14 @@ export const KnowledgeIngest: React.FC = () => {
                 {/* Action button */}
                 {!isRunning && !isDone && (
                   <button onClick={handleIngest} disabled={!file || !title}
-                    className="w-full py-5 rounded-[1.5rem] font-black text-lg uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-500 text-white shadow-2xl shadow-blue-600/30 hover:scale-[1.01] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
+                    className="w-full py-5 rounded-xl font-black text-lg uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-500 text-white shadow-2xl shadow-blue-600/30 hover:scale-[1.01] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
                   >
                     <ArrowRight className="w-6 h-6" /> Confirm Ingestion
                   </button>
                 )}
                 {isDone && (
                   <button onClick={() => setView('queue')}
-                    className="w-full py-5 rounded-[1.5rem] font-black text-lg uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 bg-emerald-600 hover:bg-emerald-500 text-white">
+                    className="w-full py-5 rounded-xl font-black text-lg uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 bg-emerald-600 hover:bg-emerald-500 text-white">
                     <Eye className="w-6 h-6" /> View Queue
                   </button>
                 )}

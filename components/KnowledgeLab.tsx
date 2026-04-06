@@ -114,7 +114,7 @@ export const KnowledgeLab: React.FC = () => {
           { label: 'Pending Cook', value: stats.pending, icon: Clock, color: 'text-amber-500' },
           { label: 'Failed Checks', value: stats.failed, icon: AlertCircle, color: 'text-rose-500' },
         ].map((stat, i) => (
-          <div key={i} className="bg-slate-900/40 border border-slate-800 p-4 rounded-2xl relative overflow-hidden group">
+          <div key={i} className="bg-slate-900/40 border border-slate-800 p-4 rounded-xl relative overflow-hidden group">
              <div className="flex items-center justify-between relative z-10">
                 <div>
                   <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">{stat.label}</p>
@@ -150,7 +150,7 @@ export const KnowledgeLab: React.FC = () => {
       </div>
 
       {/* Document Table */}
-      <div className="bg-slate-900/40 border border-slate-800 rounded-2xl overflow-hidden">
+      <div className="bg-slate-900/40 border border-slate-800 rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>

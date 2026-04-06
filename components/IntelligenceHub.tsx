@@ -543,8 +543,8 @@ const IntelligenceHub: React.FC = () => {
                       <div 
                         key={session.id}
                         onClick={() => navigate(`/intelligence/${session.file_id || 'vault'}`)} // Actually we should ideally support loading by sessionId
-                        className={`p-4 rounded-2xl border transition-all cursor-pointer group ${
-                          sessionId === session.id ? 'border-primary bg-primary/5 shadow-sm' : 'border-gray-50 hover:border-gray-200 bg-white'
+                        className={`p-4 rounded-xl border transition-all cursor-pointer group ${
+                          sessionId === session.id ? 'border-primary bg-primary/5 shadow-sm' : 'border-gray-50 hover:border-gray-200 bg-gray-50'
                         }`}
                       >
                          <h4 className="text-xs font-bold text-gray-900 mb-1 line-clamp-1 group-hover:text-primary transition-colors">{session.name}</h4>
@@ -588,7 +588,7 @@ const IntelligenceHub: React.FC = () => {
                        ))}
                     </div>
 
-                    <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-center gap-4 group cursor-pointer hover:bg-primary/10 transition-all">
+                    <div className="p-4 bg-primary/5 rounded-xl border border-primary/10 flex items-center gap-4 group cursor-pointer hover:bg-primary/10 transition-all">
                        <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                           <Crown className="w-5 h-5" />
                        </div>
@@ -602,7 +602,7 @@ const IntelligenceHub: React.FC = () => {
                   <div className="space-y-4">
                     {messages.map((msg, i) => (
                       <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[90%] p-3.5 rounded-2xl text-[13px] leading-relaxed shadow-sm ${
+                        <div className={`max-w-[90%] p-3.5 rounded-xl text-[13px] leading-relaxed shadow-sm ${
                           msg.role === 'user' 
                           ? 'bg-primary text-white shadow-primary/10' 
                           : 'bg-white border border-gray-100 text-gray-700'
@@ -617,7 +617,7 @@ const IntelligenceHub: React.FC = () => {
 
               {/* Chat Input Zone */}
               <div className="p-6 border-t border-gray-100 bg-white">
-                <div className="relative group shadow-sm rounded-2xl overflow-hidden">
+                <div className="relative group shadow-sm rounded-xl overflow-hidden">
                   <textarea 
                     placeholder="Ask assistant to find or explain..."
                     className="w-full bg-gray-50/50 border-none px-5 py-4 text-sm focus:ring-1 focus:ring-primary/20 transition-all min-h-[120px] resize-none pr-14 text-gray-900 placeholder:text-gray-400"
@@ -656,8 +656,8 @@ const IntelligenceHub: React.FC = () => {
                          if (seg.location) setCurrentPage(seg.location.page);
                          setActiveSegmentId(seg.id);
                       }}
-                      className={`p-5 rounded-2xl border transition-all duration-300 cursor-pointer ${
-                        activeSegmentId === seg.id ? 'border-primary/30 bg-primary/5 shadow-md -translate-y-1' : 'border-gray-50 bg-white hover:border-gray-200'
+                      className={`p-5 rounded-xl border transition-all duration-300 cursor-pointer ${
+                        activeSegmentId === seg.id ? 'border-primary/30 bg-primary/5 shadow-md -translate-y-1' : 'border-gray-50 bg-gray-50 hover:border-gray-200'
                       }`}
                     >
                       <div className="flex items-center gap-2 mb-2">

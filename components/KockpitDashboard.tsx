@@ -202,7 +202,7 @@ const derivedLeads = [
 
 // Skeleton loader for stat cards
 const SkeletonCard = () => (
-  <div className="bg-white/5 border border-white/10 rounded-2xl p-6 animate-pulse">
+  <div className="bg-white/5 border border-white/10 rounded-xl p-6 animate-pulse">
     <div className="flex items-center gap-4 mb-5">
       <div className="w-11 h-11 bg-white/10 rounded-xl" />
       <div className="h-3 w-28 bg-white/10 rounded-full" />
@@ -223,7 +223,7 @@ const SkeletonChartCard = ({ height = 'h-[320px]' }: { height?: string }) => (
 );
 
 const StatCard = ({ title, value, change, icon: Icon, trend, colorClass = 'text-primary', accentColor = 'border-l-primary' }: any) => (
-  <div className={`bg-white/5 border border-white/10 border-l-4 ${accentColor} rounded-2xl p-6 relative overflow-hidden group hover:bg-white/[0.07] transition-all min-h-[140px] flex flex-col justify-between`}>
+  <div className={`bg-white/5 border border-white/10 rounded-xl p-6 relative overflow-hidden group hover:bg-white/[0.07] transition-all min-h-[140px] flex flex-col justify-between`}>
     <div className="flex items-center justify-between mb-4">
       <h3 className="text-gray-400 text-sm font-semibold">{title}</h3>
       <div className={`p-2.5 rounded-xl bg-white/5 ${colorClass}`}>
@@ -295,7 +295,7 @@ const DynamicChart = ({ data, type, xKey, yKey1, yKey2, title, icon: Icon, color
   };
 
   return (
-    <div className="bg-white/5 border border-white/10 rounded-3xl p-6 hover:bg-white/[0.07] transition-all flex flex-col h-full">
+    <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/[0.07] transition-all flex flex-col h-full">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <Icon className="w-5 h-5 text-gray-400" />
@@ -313,7 +313,7 @@ const DynamicChart = ({ data, type, xKey, yKey1, yKey2, title, icon: Icon, color
 };
 
 const CustomPieChart = ({ data, title, icon: Icon, valueSuffix = '%' }: any) => (
-  <div className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col hover:bg-white/[0.07] transition-all">
+  <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col hover:bg-white/[0.07] transition-all">
     <div className="flex items-center gap-3 mb-4">
       <Icon className="w-5 h-5 text-gray-400" />
       <h2 className="text-base font-bold">{title}</h2>
@@ -509,7 +509,7 @@ const ResponsesManager = () => {
         </button>
       </div>
 
-      <div className="bg-white/5 border border-white/10 rounded-[2rem] overflow-hidden">
+      <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
         <table className="w-full text-left">
           <thead className="bg-white/5 text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-white/10">
             <tr>
@@ -625,7 +625,7 @@ const DemoBookingsManager = () => {
       </div>
 
       {/* Table */}
-      <div className="bg-white/5 border border-white/10 rounded-[2rem] overflow-hidden">
+      <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
         <table className="w-full text-left">
           <thead className="bg-white/5 text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-white/10">
             <tr>
@@ -737,7 +737,7 @@ const SupportManager = () => {
 
       <div className="grid grid-cols-1 gap-4">
         {messages.map((msg) => (
-          <div key={msg.id} className="bg-white/5 border border-white/10 rounded-3xl p-6 hover:border-pink-500/30 transition-all group">
+          <div key={msg.id} className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-pink-500/30 transition-all group">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-2xl bg-pink-500/10 flex items-center justify-center text-pink-500 font-bold border border-pink-500/20">
