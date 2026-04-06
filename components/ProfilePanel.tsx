@@ -81,6 +81,7 @@ const ACTIVITY_STATS = [
   { label: 'Research Sessions', value: '247', icon: Scale, color: 'text-red-500', bg: 'bg-red-50' },
   { label: 'Documents Drafted', value: '89', icon: FileText, color: 'text-blue-500', bg: 'bg-blue-50' },
   { label: 'AI Conversations', value: '412', icon: MessageSquare, color: 'text-red-500', bg: 'bg-red-50' },
+  
   { label: 'Cases Analyzed', value: '56', icon: Gavel, color: 'text-amber-500', bg: 'bg-amber-50' },
 ];
 

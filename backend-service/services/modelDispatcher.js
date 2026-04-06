@@ -187,9 +187,19 @@ export class ModelDispatcher {
       : messagesInput;
 
     try {
+      // Dynamic System Prompt via Skill Engine
+      const lastMsg = typeof messagesInput === 'string' 
+        ? messagesInput 
+        : messagesInput[messagesInput.length - 1].content;
+      
+      const dynamicPrompt = skillEngine.buildPrompt(
+        lastMsg, 
+        options.context?.extraSkillIds || null
+      );
+
       const model = this.genAI.getGenerativeModel({ 
         model: targetModel,
-        systemInstruction: LEGAL_SYSTEM_PROMPT
+        systemInstruction: dynamicPrompt
       });
 
       // Convert messages to Gemini format
@@ -206,7 +216,6 @@ export class ModelDispatcher {
         },
       });
 
-      const lastMsg = typeof messages === 'string' ? messages : messages[messages.length - 1].content;
       const result = await chat.sendMessageStream(lastMsg);
       
       return (async function* () {
@@ -226,9 +235,15 @@ export class ModelDispatcher {
     const temperature = options.temperature || 0.7;
 
     try {
+      // Dynamic System Prompt via Skill Engine
+      const dynamicPrompt = skillEngine.buildPrompt(
+        message, 
+        options.context?.extraSkillIds || null
+      );
+
       const model = this.genAI.getGenerativeModel({ 
         model: targetModel,
-        systemInstruction: LEGAL_SYSTEM_PROMPT
+        systemInstruction: dynamicPrompt
       });
 
       const result = await model.generateContent(message);
