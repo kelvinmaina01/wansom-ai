@@ -48,13 +48,17 @@ const CONTRIBUTION_LABELS = [
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
+interface RawActivity {
+  date: Date;
+  points: number;
+}
+
 const ProfilePage: React.FC<ProfilePageProps> = ({ onClose, onOpenSettings, user }) => {
   const [profileData, setProfileData] = useState<any>(null);
   const [statsData, setStatsData] = useState<any>(null);
   const [recentActivities, setRecentActivities] = useState<any[]>([]);
-  const [contributions, setContributions] = useState<number[][]>(() => 
-    Array.from({ length: 52 }, () => Array(7).fill(0))
-  );
+  const [rawActivities, setRawActivities] = useState<RawActivity[]>([]);
+  const [selectedMonth, setSelectedMonth] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -85,48 +89,21 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose, onOpenSettings, user
           setRecentActivities(await actRes.json());
         }
 
-        // Fetch Heatmap Data
+        // Fetch Heatmap Data - compounding events (1 point per chat interaction, 5 points per case prepared)
         const oneYearAgo = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString();
-        const { data: chats } = await supabase
-          .from('chat_histories')
-          .select('timestamp')
-          .eq('user_id', authUser.id)
-          .gte('timestamp', oneYearAgo);
+        const [chatRes, caseRes] = await Promise.all([
+          supabase.from('chat_histories').select('timestamp').eq('user_id', authUser.id).gte('timestamp', oneYearAgo),
+          supabase.from('cases').select('created_at').eq('user_id', authUser.id).gte('created_at', oneYearAgo)
+        ]);
 
-        if (chats && chats.length > 0) {
-          const weeks = 52;
-          const days = 7;
-          const mapData = Array.from({ length: weeks }, () => Array(days).fill(0));
-          const now = new Date();
-          
-          chats.forEach(chat => {
-            const chatDate = new Date(chat.timestamp);
-            const diffTime = Math.abs(now.getTime() - chatDate.getTime());
-            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-            
-            if (diffDays < 364) {
-              const weekIndex = 51 - Math.floor(diffDays / 7);
-              const dayIndex = chatDate.getDay();
-              
-              if (weekIndex >= 0 && weekIndex < 52) {
-                mapData[weekIndex][dayIndex] += 1;
-              }
-            }
-          });
-
-          // Normalize values
-          for (let w = 0; w < weeks; w++) {
-            for (let d = 0; d < days; d++) {
-              if (mapData[w][d] > 0) {
-                if (mapData[w][d] <= 2) mapData[w][d] = 1;
-                else if (mapData[w][d] <= 5) mapData[w][d] = 2;
-                else if (mapData[w][d] <= 10) mapData[w][d] = 3;
-                else mapData[w][d] = 4;
-              }
-            }
-          }
-          setContributions(mapData);
+        const rawEvents: RawActivity[] = [];
+        if (chatRes.data) {
+          chatRes.data.forEach(c => rawEvents.push({ date: new Date(c.timestamp), points: 1 }));
         }
+        if (caseRes.data) {
+          caseRes.data.forEach(c => rawEvents.push({ date: new Date(c.created_at), points: 5 }));
+        }
+        setRawActivities(rawEvents);
 
       } catch (err) {
         console.error('Error fetching profile settings:', err);
@@ -142,32 +119,121 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose, onOpenSettings, user
     window.location.href = '/';
   };
 
-  const totalContributions = useMemo(() => {
-    return contributions.flat().filter(v => v > 0).length;
-  }, [contributions]);
-
-  const currentStreak = useMemo(() => {
-    const flat = contributions.flat().reverse();
-    let streak = 0;
-    for (const v of flat) {
-      if (v > 0) streak++;
-      else break;
-    }
-    return streak;
-  }, [contributions]);
-
-  const monthLabels = useMemo(() => {
-    const labels: { label: string; col: number }[] = [];
+  const availableMonths = useMemo(() => {
+    const months = [{ value: 'all', label: 'Last 12 Months' }];
     const now = new Date();
-    for (let w = 0; w < 52; w++) {
-      const weekDate = new Date(now);
-      weekDate.setDate(weekDate.getDate() - (51 - w) * 7);
-      if (weekDate.getDate() <= 7) {
-        labels.push({ label: MONTHS[weekDate.getMonth()], col: w });
-      }
+    for (let i = 0; i < 12; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push({
+        value: `${d.getFullYear()}-${d.getMonth()}`,
+        label: d.toLocaleString('default', { month: 'short', year: 'numeric' })
+      });
     }
-    return labels;
+    return months;
   }, []);
+
+  const heatmapState = useMemo(() => {
+    if (selectedMonth === 'all') {
+      const weeksCount = 52;
+      const mapData = Array.from({ length: weeksCount }, () => Array(7).fill(0));
+      const now = new Date();
+      let total = 0;
+      
+      rawActivities.forEach(item => {
+        const diffTime = Math.abs(now.getTime() - item.date.getTime());
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays < 364) {
+          const weekIndex = 51 - Math.floor(diffDays / 7);
+          const dayIndex = item.date.getDay();
+          if (weekIndex >= 0 && weekIndex < weeksCount) {
+            mapData[weekIndex][dayIndex] += item.points;
+            total += item.points;
+          }
+        }
+      });
+      
+      let streak = 0;
+      const flat = [...mapData].flat().reverse();
+      for (const v of flat) {
+        if (v > 0) streak++;
+        else break;
+      }
+
+      for (let w = 0; w < weeksCount; w++) {
+        for (let d = 0; d < 7; d++) {
+          if (mapData[w][d] > 0) {
+            if (mapData[w][d] <= 3) mapData[w][d] = 1;
+            else if (mapData[w][d] <= 8) mapData[w][d] = 2;
+            else if (mapData[w][d] <= 15) mapData[w][d] = 3;
+            else mapData[w][d] = 4;
+          }
+        }
+      }
+      
+      const labels: { label: string; col: number }[] = [];
+      for (let w = 0; w < weeksCount; w++) {
+        const weekDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (51 - w) * 7);
+        if (weekDate.getDate() <= 7) {
+          labels.push({ label: MONTHS[weekDate.getMonth()], col: w });
+        }
+      }
+
+      return { mapData, total, streak, monthLabels: labels, weeksCount };
+    } else {
+      // Month-specific view filtering
+      const [year, month] = selectedMonth.split('-').map(Number);
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const numDays = lastDay.getDate();
+      const startDay = firstDay.getDay(); 
+      const totalWeeks = Math.ceil((numDays + startDay) / 7);
+      
+      const mapData = Array.from({ length: totalWeeks }, () => Array(7).fill(-1));
+      
+      for (let i = 1; i <= numDays; i++) {
+        const d = new Date(year, month, i);
+        const wIdx = Math.floor((i + startDay - 1) / 7);
+        mapData[wIdx][d.getDay()] = 0;
+      }
+      
+      let total = 0;
+      rawActivities.forEach(item => {
+        if (item.date.getFullYear() === year && item.date.getMonth() === month) {
+          const wIdx = Math.floor((item.date.getDate() + startDay - 1) / 7);
+          if (mapData[wIdx] && mapData[wIdx][item.date.getDay()] !== -1) {
+             mapData[wIdx][item.date.getDay()] += item.points;
+             total += item.points;
+          }
+        }
+      });
+      
+      let streak = 0;
+      const flat = [...mapData].flat().filter(v => v !== -1).reverse();
+      for (const v of flat) {
+        if (v > 0) streak++;
+        else break;
+      }
+
+      for (let w = 0; w < totalWeeks; w++) {
+        for (let d = 0; d < 7; d++) {
+          if (mapData[w][d] > 0) {
+            if (mapData[w][d] <= 3) mapData[w][d] = 1;
+            else if (mapData[w][d] <= 8) mapData[w][d] = 2;
+            else if (mapData[w][d] <= 15) mapData[w][d] = 3;
+            else mapData[w][d] = 4;
+          }
+        }
+      }
+
+      return { 
+        mapData, 
+        total, 
+        streak, 
+        monthLabels: [{ label: MONTHS[month], col: 0 }], 
+        weeksCount: totalWeeks 
+      };
+    }
+  }, [rawActivities, selectedMonth]);
 
   return (
     <div className="flex-1 overflow-y-auto bg-white bg-dots p-8 h-full">
@@ -240,7 +306,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose, onOpenSettings, user
               </div>
             </div>
             <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Industry</p>
-            <p className="text-sm font-bold text-black">Legal Services</p>
+            <p className="text-sm font-bold text-black" title="Hardcoded as user_settings currently does not track Industry natively">Legal Services</p>
           </div>
           <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
             <div className="flex items-center gap-3 mb-3">
@@ -286,25 +352,37 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose, onOpenSettings, user
             <div>
               <h3 className="text-lg font-bold text-black tracking-tight">Legal Activity</h3>
               <p className="text-xs text-gray-400 font-medium mt-0.5">
-                {totalContributions} actions in the last year · {currentStreak} day streak 🔥
+                {heatmapState.total} points {selectedMonth === 'all' ? 'in the last year' : 'in selected month'} · {heatmapState.streak} day streak 🔥
               </p>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-[9px] text-gray-400 font-semibold mr-1">Less</span>
-              {CONTRIBUTION_COLORS.map((color, i) => (
-                <div key={i} className={`w-3 h-3 ${color} rounded-[3px]`} title={CONTRIBUTION_LABELS[i]} />
-              ))}
-              <span className="text-[9px] text-gray-400 font-semibold ml-1">More</span>
+            <div className="flex items-center gap-4">
+              <select
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="bg-gray-50 border border-gray-200 text-xs font-bold text-gray-700 px-3 py-1.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer"
+              >
+                {availableMonths.map((m) => (
+                  <option key={m.value} value={m.value}>{m.label}</option>
+                ))}
+              </select>
+
+              <div className="flex items-center gap-1.5 border-l border-gray-200 pl-4">
+                <span className="text-[9px] text-gray-400 font-semibold mr-1">Less</span>
+                {CONTRIBUTION_COLORS.map((color, i) => (
+                  <div key={i} className={`w-3 h-3 ${color} rounded-[3px]`} title={CONTRIBUTION_LABELS[i]} />
+                ))}
+                <span className="text-[9px] text-gray-400 font-semibold ml-1">More</span>
+              </div>
             </div>
           </div>
 
           {/* Month labels */}
           <div className="relative ml-8 mb-1.5 h-4">
-            {monthLabels.map(m => (
+            {heatmapState.monthLabels.map((m: any) => (
               <span
                 key={`${m.label}-${m.col}`}
                 className="absolute text-[9px] text-gray-400 font-semibold"
-                style={{ left: `${(m.col / 52) * 100}%` }}
+                style={{ left: `${(m.col / heatmapState.weeksCount) * 100}%` }}
               >
                 {m.label}
               </span>
@@ -312,7 +390,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose, onOpenSettings, user
           </div>
 
           {/* Grid */}
-          <div className="flex gap-[3px] overflow-hidden">
+          <div className={`flex gap-[3px] overflow-x-auto overflow-y-hidden pb-1 custom-scrollbar ${selectedMonth !== 'all' ? 'pr-4' : ''}`}>
             {/* Day labels */}
             <div className="flex flex-col gap-[3px] pr-1.5 shrink-0">
               {['', 'Mon', '', 'Wed', '', 'Fri', ''].map((day, i) => (
@@ -322,13 +400,13 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose, onOpenSettings, user
               ))}
             </div>
             {/* Contribution cells */}
-            {contributions.map((week, wi) => (
+            {heatmapState.mapData.map((week: number[], wi: number) => (
               <div key={wi} className="flex flex-col gap-[3px]">
-                {week.map((level, di) => (
+                {week.map((level: number, di: number) => (
                   <div
                     key={`${wi}-${di}`}
-                    className={`w-[12px] h-[12px] ${CONTRIBUTION_COLORS[level]} rounded-[3px] transition-all hover:ring-2 hover:ring-red-300 cursor-pointer`}
-                    title={CONTRIBUTION_LABELS[level]}
+                    className={`w-[12px] h-[12px] ${level === -1 ? 'bg-transparent' : CONTRIBUTION_COLORS[level]} rounded-[3px] transition-all hover:ring-2 hover:ring-red-300 cursor-pointer`}
+                    title={level === -1 ? '' : CONTRIBUTION_LABELS[level]}
                   />
                 ))}
               </div>
