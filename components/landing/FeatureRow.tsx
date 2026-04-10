@@ -36,10 +36,10 @@ const FeatureRow: React.FC<FeatureRowProps> = ({ number, title, description, bul
   return (
     <div
       ref={ref}
-      className={`grid grid-cols-1 lg:grid-cols-2 gap-10 max-w-[1240px] mx-auto px-12 py-16 items-center min-h-[580px] border-t border-white/5 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-7'}`}
+      className={`flex flex-col lg:flex-row gap-10 max-w-[1340px] mx-auto px-6 py-16 items-center min-h-[580px] border-t border-white/5 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-7'}`}
     >
       {/* Text */}
-      <div className={`${reverse ? 'lg:order-2 lg:pl-9' : 'lg:pr-9'}`}>
+      <div className={`w-full lg:w-[38%] ${reverse ? 'lg:order-2 lg:pl-10' : 'lg:pr-10'}`}>
         <div className="flex items-center gap-3 mb-4">
           <span className="w-6 h-px bg-primary block" />
           <span className="text-[10px] font-black tracking-[.15em] uppercase text-primary font-[Inter]">{number}</span>
@@ -67,7 +67,7 @@ const FeatureRow: React.FC<FeatureRowProps> = ({ number, title, description, bul
       </div>
 
       {/* Screen */}
-      <div className={`relative h-[500px] ${reverse ? 'lg:order-1' : ''}`}>
+      <div className={`relative w-full lg:w-[62%] h-[540px] ${reverse ? 'lg:order-1' : ''}`}>
         <div className="absolute inset-0 bg-white border border-gray-200/80 rounded-[14px] overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.09),0_0_0_1px_rgba(0,0,0,0.03)]">
           {children}
         </div>

@@ -27,8 +27,73 @@ This Agreement shall continue for 3 years. Confidentiality obligations survive e
 4. GOVERNING LAW
 This Agreement is governed by the laws of Kenya. Disputes shall be referred to NCIA Nairobi.`;
 
+const ProfessionalDocContent = () => (
+  <div className="font-['Inter'] text-[9px] text-gray-700 p-2 fade-in" style={{ animation: 'feat-slideU .4s ease' }}>
+    <div className="border-b-2 border-primary pb-3 mb-3 flex justify-between items-center">
+      <div>
+        <div className="text-primary font-black tracking-[0.1em] text-[11px] uppercase">TechBridge Limited</div>
+        <div className="text-gray-400 text-[8px] tracking-wide">Nairobi, Kenya • Legal Dept</div>
+      </div>
+      <div className="text-right">
+        <div className="font-bold text-[10px] text-gray-800 uppercase tracking-wide">Mutual Non-Disclosure Agreement</div>
+        <div className="text-gray-400 text-[8px]">Ref: TB-NDA-2026-04</div>
+      </div>
+    </div>
+    
+    <div className="mb-4 leading-relaxed bg-primary/5 border border-primary/10 rounded-lg p-2.5 text-[10px]">
+      This Mutual Non-Disclosure Agreement ("Agreement") is entered into on <strong className="text-primary">10 April 2026</strong> between the following parties:
+    </div>
+
+    <div className="rounded-lg border border-gray-100 overflow-hidden mb-5 shadow-sm">
+      <table className="w-full border-collapse">
+        <thead>
+          <tr className="bg-gray-50 text-gray-600 text-left text-[8px] uppercase tracking-wider">
+            <th className="p-2 font-black border-b border-gray-100">Party</th>
+            <th className="p-2 font-black border-b border-gray-100">Jurisdiction</th>
+            <th className="p-2 font-black border-b border-gray-100">Role</th>
+          </tr>
+        </thead>
+        <tbody className="text-[9px]">
+          <tr>
+            <td className="p-2 font-bold text-gray-900 border-b border-gray-50">TechBridge Limited</td>
+            <td className="p-2 text-gray-600 border-b border-gray-50">Kenya (Companies Act 2015)</td>
+            <td className="p-2 text-primary font-semibold border-b border-gray-50 bg-primary/5">Disclosing & Receiving</td>
+          </tr>
+          <tr>
+            <td className="p-2 font-bold text-gray-900">DataVault Uganda Ltd</td>
+            <td className="p-2 text-gray-600">Uganda (Companies Act 2012)</td>
+            <td className="p-2 text-primary font-semibold bg-primary/5">Disclosing & Receiving</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div className="space-y-4">
+      <div className="bg-white border border-gray-100 rounded-lg p-3 shadow-sm hover:border-primary/20 transition-all">
+        <h3 className="font-black text-[10px] uppercase tracking-wide text-gray-900 border-l-2 border-primary pl-2.5 mb-2">1. DEFINITIONS</h3>
+        <p className="pl-3 text-gray-500 leading-relaxed">"Confidential Information" means any information disclosed by one party (the "Disclosing Party") to the other (the "Receiving Party") that is designated as confidential or that reasonably should be understood to be confidential given the nature of the information and the circumstances of disclosure.</p>
+      </div>
+      <div className="bg-white border border-gray-100 rounded-lg p-3 shadow-sm hover:border-primary/20 transition-all">
+        <h3 className="font-black text-[10px] uppercase tracking-wide text-gray-900 border-l-2 border-primary pl-2.5 mb-2">2. MUTUAL OBLIGATIONS</h3>
+        <p className="pl-3 text-gray-500 leading-relaxed">Each party shall keep all Confidential Information strictly secret, use it solely for the Purpose, and protect it with at least the same degree of care used for its own confidential information, but no less than reasonable care.</p>
+      </div>
+      <div className="flex gap-4">
+        <div className="flex-1 bg-white border border-gray-100 rounded-lg p-3 shadow-sm hover:border-primary/20 transition-all">
+          <h3 className="font-black text-[10px] uppercase tracking-wide text-gray-900 border-l-2 border-primary pl-2.5 mb-2">3. TERM</h3>
+          <p className="pl-3 text-gray-500 leading-relaxed">This Agreement shall continue for <strong className="text-gray-800">3 years</strong>. Confidentiality obligations survive expiry.</p>
+        </div>
+        <div className="flex-1 bg-white border border-gray-100 rounded-lg p-3 shadow-sm hover:border-primary/20 transition-all">
+          <h3 className="font-black text-[10px] uppercase tracking-wide text-gray-900 border-l-2 border-primary pl-2.5 mb-2">4. GOVERNING LAW</h3>
+          <p className="pl-3 text-gray-500 leading-relaxed">This Agreement is governed by the laws of <strong className="text-gray-800">Kenya</strong>. Disputes shall be referred to NCIA Nairobi.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 const DocDraftScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'preview' | 'code' | 'editor'>('preview');
+  const [docFormat, setDocFormat] = useState<'minimalist' | 'professional'>('minimalist');
   const [messages, setMessages] = useState<Array<{ role: 'user' | 'ai'; content: string; state?: string }>>([]);
   const [inputText, setInputText] = useState('Assign a task to Legal Documents Prep Agent...');
   const [docContent, setDocContent] = useState('');
@@ -63,6 +128,7 @@ const DocDraftScreen: React.FC = () => {
         setDocContent('');
         setWordCount(0);
         setActiveTab('preview');
+        setDocFormat('minimalist');
         setSaveMenuOpen(false);
         setInputText('Assign a task to Legal Documents Prep Agent...');
         setEditorBold(false);
@@ -109,16 +175,22 @@ const DocDraftScreen: React.FC = () => {
         setWordCount(NDA_TEXT.split(/\s+/).length);
 
         setMessages(prev => [...prev, { role: 'ai', content: 'Your Mutual NDA is ready. Review the preview, edit in canvas, or save to Drive.' }]);
-        await sleep(1200);
+        await sleep(1500);
+
+        // Click Professional format
+        click(330, 48); await sleep(400); setDocFormat('professional'); await sleep(3000);
+
+        // Click Minimalist format
+        click(280, 48); await sleep(350); setDocFormat('minimalist'); await sleep(1500);
 
         // Click Code tab
-        click(262, 48); await sleep(400); setActiveTab('code'); await sleep(1400);
+        click(205, 48); await sleep(400); setActiveTab('code'); await sleep(1400);
 
         // Click Preview tab
-        click(218, 48); await sleep(300); setActiveTab('preview'); await sleep(1000);
+        click(165, 48); await sleep(300); setActiveTab('preview'); await sleep(1000);
 
         // Click Editor tab
-        click(306, 48); await sleep(350); setActiveTab('editor'); await sleep(800);
+        click(245, 48); await sleep(350); setActiveTab('editor'); await sleep(800);
 
         // Bold
         click(100, 72); await sleep(300); setEditorBold(true); await sleep(500);
@@ -130,12 +202,15 @@ const DocDraftScreen: React.FC = () => {
         click(230, 72); await sleep(300); setEditorFontFamily("'Times New Roman', serif"); await sleep(500);
 
         // Back to preview
-        click(218, 48); await sleep(350); setActiveTab('preview'); await sleep(800);
+        click(165, 48); await sleep(350); setActiveTab('preview'); await sleep(800);
+
+        // Click Professional format again before saving
+        click(330, 48); await sleep(350); setDocFormat('professional'); await sleep(1000);
 
         // Download
-        click(345, 48); await sleep(300); setSaveMenuOpen(true); await sleep(600);
+        click(415, 48); await sleep(300); setSaveMenuOpen(true); await sleep(600);
         // Click Drive
-        click(345, 80); await sleep(400); setSaveMenuOpen(false);
+        click(415, 80); await sleep(400); setSaveMenuOpen(false);
         showToast('Saved to Google Drive');
 
         await sleep(5000);
@@ -224,19 +299,29 @@ const DocDraftScreen: React.FC = () => {
             <FileText size={11} className="text-primary" />
             <span className="text-[10px] font-black text-gray-800 font-[Inter]">LEGAL CANVAS</span>
             <span className="text-[9px] text-gray-300 font-medium font-[Inter]">DOCUMENT · {wordCount} WORDS</span>
-            <div className="flex gap-0.5 ml-auto">
+            <div className="flex gap-0.5 ml-8 mr-auto">
               {(['preview', 'code', 'editor'] as const).map(t => (
                 <button
                   key={t}
-                  className={`flex items-center gap-1 px-2 py-1 rounded text-[9px] font-bold font-[Inter] transition-all ${activeTab === t ? 'bg-primary/10 text-primary' : 'text-gray-400 hover:text-gray-700'}`}
+                  className={`flex items-center gap-1 px-1.5 py-1 rounded text-[9px] font-bold font-[Inter] transition-all ${activeTab === t ? 'bg-primary/10 text-primary' : 'text-gray-400 hover:text-gray-700'} capitalize`}
                 >
                   {t === 'preview' && <Eye size={9} />}
                   {t === 'code' && <Code2 size={9} />}
                   {t === 'editor' && <Edit3 size={9} />}
-                  {t.charAt(0).toUpperCase() + t.slice(1)}
+                  {t}
                 </button>
               ))}
             </div>
+            
+            <div className="flex bg-gray-100 p-0.5 rounded-md mr-2">
+              <button className={`px-2 py-0.5 rounded transition-all text-[8px] font-bold font-[Inter] ${docFormat === 'minimalist' ? 'bg-white shadow-sm text-gray-800' : 'text-gray-400 hover:text-gray-600'}`}>
+                Classic
+              </button>
+              <button className={`px-2 py-0.5 rounded transition-all text-[8px] font-bold font-[Inter] flex items-center gap-1 ${docFormat === 'professional' ? 'bg-white shadow-sm text-primary' : 'text-gray-400 hover:text-gray-600'}`}>
+                Professional <span className="w-1 h-1 rounded-full bg-primary/40 block ml-0.5" />
+              </button>
+            </div>
+
             <div className="relative">
               <button className="flex items-center gap-1 px-2 py-1 bg-gray-900 text-white text-[9px] font-bold rounded ml-1 font-[Inter]">
                 <Download size={9} /> Download PDF
@@ -288,8 +373,14 @@ const DocDraftScreen: React.FC = () => {
             {activeTab === 'preview' && (
               <div className="p-4 h-full overflow-hidden bg-[#f8f7f4]">
                 {docContent ? (
-                  <div className="bg-white rounded-md shadow-sm p-5 h-full overflow-hidden" style={{ fontFamily: 'Georgia, serif', fontSize: 9, color: '#333', lineHeight: 1.75 }}>
-                    <pre className="whitespace-pre-wrap" style={{ fontFamily: 'Georgia, serif', fontSize: 9 }}>{docContent}</pre>
+                  <div className="bg-white rounded-[10px] shadow-sm p-5 h-full overflow-hidden border border-gray-200/60 relative">
+                    {docFormat === 'minimalist' ? (
+                      <div style={{ fontFamily: 'Georgia, serif', fontSize: 9, color: '#333', lineHeight: 1.75, animation: 'feat-slideU .3s ease' }}>
+                        <pre className="whitespace-pre-wrap" style={{ fontFamily: 'Georgia, serif', fontSize: 9 }}>{docContent}</pre>
+                      </div>
+                    ) : (
+                      <ProfessionalDocContent />
+                    )}
                   </div>
                 ) : (
                   <div className="text-[9px] text-gray-300 p-3 font-mono">// Legal Canvas — waiting for document...</div>
