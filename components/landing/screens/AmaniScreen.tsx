@@ -156,10 +156,8 @@ const AmaniScreen: React.FC = () => {
           </div>
 
           {/* User */}
-          <div className={`rounded-xl overflow-hidden relative bg-[#111] border flex flex-col items-center justify-center transition-all ${speaker === 'user' ? 'border-green-500/50 shadow-[0_0_0_2px_rgba(34,197,94,0.2)]' : 'border-[#2a2a2a]'}`}>
-            <img src="/founder.png" className="absolute inset-0 w-full h-full object-cover opacity-60" alt="Founder" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-            <div className={`z-10 w-12 h-12 rounded-full overflow-hidden mb-2 border-2 transition-all ${speaker === 'user' ? 'border-green-500' : 'border-transparent'}`}>
+          <div className={`rounded-xl overflow-hidden relative border flex flex-col items-center justify-center transition-all ${speaker === 'user' ? 'bg-primary/10 border-primary/50 shadow-[0_0_0_2px_rgba(239,68,68,0.2)]' : 'bg-[#111] border-[#2a2a2a]'}`}>
+            <div className={`z-10 w-12 h-12 rounded-full overflow-hidden mb-2 border-2 transition-all ${speaker === 'user' ? 'border-primary' : 'border-transparent'}`}>
               <img src="/founder.png" className="w-full h-full object-cover" alt="Kelvin" />
             </div>
             <div className="text-[10px] font-bold text-gray-300 font-[Inter]">Kelvin Gichinga</div>
@@ -239,7 +237,7 @@ const AmaniScreen: React.FC = () => {
         {/* LinkedIn Share Overlay */}
         {showShare && (
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-4 z-[40]" style={{ animation: 'feat-fadeIn .3s ease' }}>
-            <div className="bg-white rounded-xl w-full max-w-sm overflow-hidden shadow-2xl" style={{ animation: 'feat-slideU .4s ease' }}>
+            <div className="bg-white rounded-xl w-full max-w-[420px] overflow-hidden shadow-2xl" style={{ animation: 'feat-slideU .4s ease' }}>
               <div className="bg-[#f3f2ef] px-4 py-3 border-b border-gray-200 flex items-center gap-2">
                 <LinkedInLogo className="w-5 h-5 text-[#0a66c2]" />
                 <span className="text-sm font-bold text-gray-800 font-[Inter]">Create a post</span>

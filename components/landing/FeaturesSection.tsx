@@ -26,7 +26,7 @@ const FeaturesSection: React.FC = () => {
           className="text-[clamp(32px,5vw,52px)] font-extrabold text-white leading-tight mb-4 tracking-tight"
           style={{ fontFamily: 'Poppins, sans-serif' }}
         >
-          Everything your firm needs,<br /><span className="text-primary">built for East Africa</span>
+          Everything your firm needs,<br /><span className="text-primary">built for East Africa and Africa at large.</span>
         </h2>
         <p className="text-base text-gray-400 max-w-lg mx-auto leading-relaxed font-[Inter]">
           Six complete features in action — every animation shows the exact user flow.
