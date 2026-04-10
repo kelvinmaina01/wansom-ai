@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useInView } from 'motion/react';
 import TermsModal from './TermsModal';
 import SupportSidebar from './SupportSidebar';
+import LandingFeatures from './LandingFeatures';
 import {
   Scale,
   ShieldCheck,
@@ -277,67 +278,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
       </section>
 
       {/* Features Grid - Redesigned to Fly.io Style (Single Card) */}
-      <section id="features" className="py-32 px-6 bg-ai-studio relative overflow-hidden">
-        <div className="max-w-7xl mx-auto">
-          <div className="relative p-10 md:p-16 rounded-[2.5rem] bg-gradient-to-br from-purple-50/10 to-blue-50/5 border border-white/10 overflow-visible group">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 blur-[120px] rounded-full pointer-events-none group-hover:bg-primary/20 transition-all duration-700"></div>
-            
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
-              {/* Left Side: Text Content */}
-              <div className="flex-1 w-full max-w-xl z-20">
-                <h2 className="text-4xl md:text-6xl font-bold tracking-tighter mb-8 leading-[1.1]">
-                  Features That <br /><span className="text-primary">Make Sense</span>
-                </h2>
-                <p className="text-xl text-gray-400 font-medium leading-relaxed mb-12">
-                  Want to feel special? Join Lawlify AI and take home these wonderful features (and more) designed for the modern African advocate.
-                </p>
-                <button
-                  onClick={onEnterApp}
-                  className="px-12 py-5 bg-primary text-white text-xl font-bold rounded-2xl hover:bg-primary-hover transition-all shadow-xl shadow-primary/20 active:scale-95 flex items-center gap-3 group/btn w-fit"
-                >
-                  Start Now
-                  <ChevronRight className="w-6 h-6 group-hover/btn:translate-x-1 transition-transform" />
-                </button>
-              </div>
-
-              {/* Right Side: Overlapping Notebook Paper (Refined) */}
-              <div className="flex-1 w-full max-w-lg lg:absolute lg:-right-4 lg:top-[48%] lg:-translate-y-1/2 z-30">
-                <div className="bg-[#fffdf5] rounded-[2rem] border border-[#e8e4d1] relative overflow-hidden transform lg:rotate-3 text-neutral-900">
-                  {/* Red Margin Line */}
-                  <div className="absolute left-12 top-0 bottom-0 w-[2px] bg-red-200/60" />
-                  
-                  {/* Rules */}
-                  <div className="absolute inset-0 pointer-events-none opacity-50" 
-                    style={{ 
-                      backgroundImage: 'linear-gradient(to bottom, #d1d5db 1px, transparent 1px)',
-                      backgroundSize: '100% 48px',
-                      backgroundPosition: '0 40px'
-                    }} 
-                  />
-
-                  {/* Content */}
-                  <div className="relative z-10 py-8 pl-20 pr-10 space-y-4">
-                    {PRECISION_FEATURES.map((feature, idx) => (
-                      <div key={idx} className="flex gap-4 group/item">
-                        <div className="mt-1 shrink-0">
-                          <Check className="w-6 h-6 text-emerald-500 stroke-[3px]" />
-                        </div>
-                        <div>
-                          <h4 className="text-lg font-black text-gray-900 leading-tight mb-1">{feature.title}</h4>
-                          <p className="text-sm font-medium text-gray-500 leading-snug">{feature.description}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Decorative paper stack effect */}
-                <div className="absolute inset-0 bg-white/10 -z-10 rounded-[2rem] translate-x-4 translate-y-1 border border-white/5 lg:rotate-3"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <LandingFeatures />
 
       {/* Solutions Section */}
       <section id="solutions" className="py-32 px-6 bg-white/5 border-y border-white/5">
