@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useInView } from 'motion/react';
 import TermsModal from './TermsModal';
 import SupportSidebar from './SupportSidebar';
+import FeaturesSection from './landing/FeaturesSection';
 import {
   Scale,
   ShieldCheck,
@@ -358,6 +359,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
           </div>
         </div>
       </section>
+
+      {/* Interactive Features Platform Section */}
+      <FeaturesSection />
 
       {/* Capabilities / Stats */}
       <section id="capabilities" className="py-32 px-6 border-b border-white/5">
