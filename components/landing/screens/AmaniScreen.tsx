@@ -76,7 +76,7 @@ const AmaniScreen: React.FC = () => {
           setSpeaker(d.who);
           if (d.who === 'judge') { setJudgeBubble(d.text); setUserBubble(''); }
           else { setUserBubble(d.text); setJudgeBubble(''); }
-          setTranscript(prev => [...prev, { who: d.who === 'judge' ? 'Justice Kamau' : 'Kelvin', text: d.text }]);
+          setTranscript(prev => [...prev, { who: d.who === 'judge' ? 'Hon. Justice Achode' : 'Kelvin', text: d.text }]);
           await sleep(d.dur);
         }
 
@@ -134,17 +134,17 @@ const AmaniScreen: React.FC = () => {
         <div className="flex-1 grid grid-cols-2 gap-2 p-2.5 overflow-hidden">
           {/* Judge */}
           <div className={`rounded-xl overflow-hidden relative bg-[#111] border flex flex-col items-center justify-center transition-all ${speaker === 'judge' ? 'border-green-500/50 shadow-[0_0_0_2px_rgba(34,197,94,0.2)]' : 'border-[#2a2a2a]'}`}>
-            <img src="https://images.unsplash.com/photo-1589391886645-d51941baf7fb?w=200&h=200&fit=crop" className="absolute inset-0 w-full h-full object-cover opacity-60" alt="Judge" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Martha_Koome.jpg/500px-Martha_Koome.jpg" className="absolute inset-0 w-full h-full object-cover opacity-60" alt="Judge" />
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
             <div className="absolute top-2 right-2 w-2.5 h-2.5 z-10">
               <span className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-50" />
               <span className="relative block w-2.5 h-2.5 rounded-full bg-green-500" />
             </div>
             <div className={`z-10 w-12 h-12 rounded-full overflow-hidden mb-2 border-2 transition-all ${speaker === 'judge' ? 'border-green-500' : 'border-transparent'}`}>
-              <img src="https://images.unsplash.com/photo-1589391886645-d51941baf7fb?w=200&h=200&fit=crop" className="w-full h-full object-cover" alt="Judge face" />
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Martha_Koome.jpg/500px-Martha_Koome.jpg" className="w-full h-full object-cover" alt="Judge face" />
             </div>
-            <div className="text-[10px] font-bold text-gray-300 font-[Inter]">Justice Kamau</div>
-            <div className="text-[8px] text-gray-600 uppercase tracking-wider font-[Inter]">Mock Judge · Amani AI</div>
+            <div className="text-[10px] font-bold text-gray-300 font-[Inter] z-10">Hon. Justice Achode</div>
+            <div className="text-[8px] text-gray-400 uppercase tracking-wider font-[Inter] z-10">Mock Judge · Amani AI</div>
             <div className="flex gap-[2px] items-center h-4 mt-2">
               {[0,1,2,3,4,5,6].map(i => <WaveBar key={i} speaking={speaker === 'judge'} i={i} />)}
             </div>
