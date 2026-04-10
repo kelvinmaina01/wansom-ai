@@ -4,3 +4,4 @@ export { default as OneDriveLogo } from './OneDriveLogo';
 export { default as SlackLogo } from './SlackLogo';
 export { default as GmailLogo } from './GmailLogo';
 export { default as MicrosoftTeamsLogo } from './MicrosoftTeamsLogo';
+export { default as LinkedInLogo } from './LinkedInLogo';

@@ -1,19 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Mic, Video, MessageSquare, PhoneOff, Check, ArrowRight, Users, Scale } from 'lucide-react';
+import { Mic, Video, MessageSquare, PhoneOff, Check, ArrowRight, Scale, Share2 } from 'lucide-react';
 import ScreenChrome from '../ScreenChrome';
+import { LinkedInLogo } from '../logos';
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
 interface Dialogue { who: 'judge' | 'user'; text: string; dur: number }
 
 const DIALOGUE: Dialogue[] = [
-  { who: 'judge', text: 'Mock Judge Session active. You are appearing for an injunction in TechBridge v Beta Ltd. Please begin.', dur: 3500 },
-  { who: 'user', text: 'My Lord, the applicant seeks an interlocutory injunction to restrain the respondent from disposing of assets pending the hearing of this suit.', dur: 3200 },
-  { who: 'judge', text: 'What is the locus classicus for the test for an interlocutory injunction in Kenya, Counsel?', dur: 2800 },
-  { who: 'user', text: 'The test is from Giella v Cassman Brown — prima facie case, balance of convenience, and irreparable harm, My Lord.', dur: 3000 },
-  { who: 'judge', text: 'Correct. Has the applicant established that damages would not be an adequate remedy?', dur: 3200 },
-  { who: 'user', text: 'My Lord, the assets are being actively dissipated. Monetary compensation post-judgment would be inadequate as the respondent may be insolvent by then.', dur: 3500 },
-  { who: 'judge', text: 'I see. Thank you, Counsel. I will consider the matter.', dur: 2500 },
+  { who: 'judge', text: 'You are appearing for an injunction. Please begin.', dur: 1200 },
+  { who: 'user', text: 'My Lord, the applicant seeks to restrain the respondent from disposing assets.', dur: 1400 },
+  { who: 'judge', text: 'What is the locus classicus for the test for this injunction in Kenya?', dur: 1300 },
+  { who: 'user', text: 'Giella v Cassman Brown — prima facie case, balance of convenience, and irreparable harm.', dur: 1600 },
+  { who: 'judge', text: 'Correct. Has the applicant established inadequate damages?', dur: 1400 },
 ];
 
 const FEEDBACK = [
@@ -41,8 +40,17 @@ const AmaniScreen: React.FC = () => {
   const [showScore, setShowScore] = useState(false);
   const [score, setScore] = useState(0);
   const [followupNote, setFollowupNote] = useState('');
+  const [showShare, setShowShare] = useState(false);
+  const [cursorPos, setCursorPos] = useState({ x: 200, y: 200 });
+  const [ripple, setRipple] = useState<{ x: number; y: number; key: number } | null>(null);
+  
   const running = useRef(false);
   const cancelled = useRef(false);
+
+  const click = (x: number, y: number) => {
+    setCursorPos({ x, y });
+    setTimeout(() => setRipple({ x, y, key: Date.now() }), 220);
+  };
 
   useEffect(() => {
     if (running.current) return;
@@ -59,6 +67,7 @@ const AmaniScreen: React.FC = () => {
         setShowScore(false);
         setScore(0);
         setFollowupNote('');
+        setShowShare(false);
         await sleep(600);
 
         // Play dialogue
@@ -71,18 +80,22 @@ const AmaniScreen: React.FC = () => {
           await sleep(d.dur);
         }
 
+        // Move cursor to End Session and click
+        click(330, 480);
+        await sleep(350);
+
         // End session
         setSpeaker(null);
         setJudgeBubble('');
         setUserBubble('');
-        await sleep(600);
+        await sleep(400);
 
         // Show score
         setShowScore(true);
         // Animate counter
         const target = 78;
         const start = performance.now();
-        const animDur = 1200;
+        const animDur = 1000;
         const animate = () => {
           const elapsed = performance.now() - start;
           const progress = Math.min(elapsed / animDur, 1);
@@ -92,10 +105,16 @@ const AmaniScreen: React.FC = () => {
         };
         requestAnimationFrame(animate);
 
-        await sleep(2000);
-        // Auto-click a follow-up
-        setFollowupNote('Balance of convenience requires you to weigh harm to both sides. If the injunction is granted and the applicant loses — what is the harm to the respondent? That is what you need to address.');
-        await sleep(6000);
+        await sleep(1500);
+        setFollowupNote('Balance of convenience requires you to weigh harm to both sides. Address this next time.');
+        await sleep(1500);
+        
+        // Move cursor to "Share on LinkedIn" and click
+        click(320, 240);
+        await sleep(350);
+        
+        setShowShare(true);
+        await sleep(5000);
       }
     };
     run();
@@ -104,17 +123,25 @@ const AmaniScreen: React.FC = () => {
 
   return (
     <ScreenChrome title="Amani — Mock Judge Session" dark>
+      {/* Cursor */}
+      <div className="absolute z-[60] pointer-events-none" style={{ left: cursorPos.x, top: cursorPos.y, transform: 'translate(-50%,-50%)', transition: 'all 420ms cubic-bezier(.16,1,.3,1)' }}>
+        <div className="w-3 h-3 rounded-full border-2 border-primary bg-primary/20" />
+      </div>
+      {ripple && <div key={ripple.key} className="absolute z-[59] pointer-events-none rounded-full bg-primary/30" style={{ left: ripple.x, top: ripple.y, width: 14, height: 14, transform: 'translate(-50%,-50%)', animation: 'feat-ripple .4s ease both' }} />}
+
       <div className="flex flex-col h-full bg-[#0d0d14] relative">
         {/* Video grid */}
         <div className="flex-1 grid grid-cols-2 gap-2 p-2.5 overflow-hidden">
           {/* Judge */}
           <div className={`rounded-xl overflow-hidden relative bg-[#111] border flex flex-col items-center justify-center transition-all ${speaker === 'judge' ? 'border-green-500/50 shadow-[0_0_0_2px_rgba(34,197,94,0.2)]' : 'border-[#2a2a2a]'}`}>
-            <div className="absolute top-2 right-2 w-2.5 h-2.5 relative">
+            <img src="https://images.unsplash.com/photo-1589391886645-d51941baf7fb?w=200&h=200&fit=crop" className="absolute inset-0 w-full h-full object-cover opacity-60" alt="Judge" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+            <div className="absolute top-2 right-2 w-2.5 h-2.5 z-10">
               <span className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-50" />
               <span className="relative block w-2.5 h-2.5 rounded-full bg-green-500" />
             </div>
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl mb-2 border-2 transition-all ${speaker === 'judge' ? 'border-green-500' : 'border-transparent'}`}>
-              <Scale size={24} className="text-blue-400" />
+            <div className={`z-10 w-12 h-12 rounded-full overflow-hidden mb-2 border-2 transition-all ${speaker === 'judge' ? 'border-green-500' : 'border-transparent'}`}>
+              <img src="https://images.unsplash.com/photo-1589391886645-d51941baf7fb?w=200&h=200&fit=crop" className="w-full h-full object-cover" alt="Judge face" />
             </div>
             <div className="text-[10px] font-bold text-gray-300 font-[Inter]">Justice Kamau</div>
             <div className="text-[8px] text-gray-600 uppercase tracking-wider font-[Inter]">Mock Judge · Amani AI</div>
@@ -130,8 +157,10 @@ const AmaniScreen: React.FC = () => {
 
           {/* User */}
           <div className={`rounded-xl overflow-hidden relative bg-[#111] border flex flex-col items-center justify-center transition-all ${speaker === 'user' ? 'border-green-500/50 shadow-[0_0_0_2px_rgba(34,197,94,0.2)]' : 'border-[#2a2a2a]'}`}>
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl mb-2 border-2 transition-all bg-primary/10 ${speaker === 'user' ? 'border-green-500' : 'border-transparent'}`}>
-              <Users size={24} className="text-primary" />
+            <img src="/founder.png" className="absolute inset-0 w-full h-full object-cover opacity-60" alt="Founder" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+            <div className={`z-10 w-12 h-12 rounded-full overflow-hidden mb-2 border-2 transition-all ${speaker === 'user' ? 'border-green-500' : 'border-transparent'}`}>
+              <img src="/founder.png" className="w-full h-full object-cover" alt="Kelvin" />
             </div>
             <div className="text-[10px] font-bold text-gray-300 font-[Inter]">Kelvin Gichinga</div>
             <div className="text-[8px] text-gray-600 uppercase tracking-wider font-[Inter]">Advocate · Practitioner</div>
@@ -170,10 +199,22 @@ const AmaniScreen: React.FC = () => {
 
         {/* Score overlay */}
         {showScore && (
-          <div className="absolute inset-0 bg-[#0d0d14] flex flex-col items-center justify-center p-4 z-10" style={{ animation: 'feat-fadeIn .5s ease' }}>
-            <div className="text-[11px] font-black uppercase tracking-wider text-gray-600 mb-3 font-[Inter]">Session Complete</div>
-            <div className="text-5xl font-extrabold text-green-500 leading-none mb-1">{score}</div>
-            <div className="text-[10px] text-gray-600 mb-4 font-[Inter]">out of 100 · Mock Judge Assessment</div>
+          <div className="absolute inset-0 bg-[#0d0d14] flex flex-col items-center justify-center p-4 z-20" style={{ animation: 'feat-fadeIn .5s ease' }}>
+            <div className="flex items-center justify-between w-full mb-3">
+              <div>
+                <div className="text-[11px] font-black uppercase tracking-wider text-gray-400 font-[Inter]">Session Complete</div>
+                <div className="text-[10px] text-gray-600 font-[Inter]">Mock Judge Assessment</div>
+              </div>
+              <button className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0a66c2]/10 border border-[#0a66c2]/30 rounded-lg text-[#0a66c2] text-[9px] font-bold font-[Inter] hover:bg-[#0a66c2]/20 transition-all">
+                <LinkedInLogo className="w-3.5 h-3.5" /> Share
+              </button>
+            </div>
+            
+            <div className="flex items-end gap-2 mb-4 w-full">
+              <div className="text-5xl font-extrabold text-green-500 leading-none">{score}</div>
+              <div className="text-[14px] text-gray-600 font-[Inter] mb-1 font-bold">/ 100</div>
+            </div>
+
             <div className="bg-[#111] border border-[#2a2a2a] rounded-xl p-3 w-full mb-3">
               {FEEDBACK.map((f, i) => (
                 <div key={i} className="flex items-start gap-1.5 mb-1.5 last:mb-0 text-[9px] text-gray-500 font-[Inter] leading-relaxed">
@@ -189,9 +230,42 @@ const AmaniScreen: React.FC = () => {
               </div>
             )}
             <div className="flex gap-1.5 flex-wrap w-full">
-              <button className="px-2.5 py-1 bg-[#1a1a1a] border border-[#2a2a2a] rounded-md text-[9px] text-gray-400 font-[Inter] hover:border-primary/30 hover:text-primary transition-all">Explain balance of convenience</button>
-              <button className="px-2.5 py-1 bg-[#1a1a1a] border border-[#2a2a2a] rounded-md text-[9px] text-gray-400 font-[Inter] hover:border-primary/30 hover:text-primary transition-all">Tell me about Pacis Credit</button>
+              <button className="px-2.5 py-1 bg-[#1a1a1a] border border-[#2a2a2a] rounded-md text-[9px] text-gray-400 font-[Inter] hover:border-primary/30 hover:text-primary transition-all">Improve argument</button>
               <button className="px-2.5 py-1 bg-[#1a1a1a] border border-[#2a2a2a] rounded-md text-[9px] text-gray-400 font-[Inter] hover:border-primary/30 hover:text-primary transition-all flex items-center gap-1">Practice again <ArrowRight size={8} /></button>
+            </div>
+          </div>
+        )}
+
+        {/* LinkedIn Share Overlay */}
+        {showShare && (
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-4 z-[40]" style={{ animation: 'feat-fadeIn .3s ease' }}>
+            <div className="bg-white rounded-xl w-full max-w-sm overflow-hidden shadow-2xl" style={{ animation: 'feat-slideU .4s ease' }}>
+              <div className="bg-[#f3f2ef] px-4 py-3 border-b border-gray-200 flex items-center gap-2">
+                <LinkedInLogo className="w-5 h-5 text-[#0a66c2]" />
+                <span className="text-sm font-bold text-gray-800 font-[Inter]">Create a post</span>
+              </div>
+              <div className="p-4 bg-white">
+                <div className="flex items-center gap-3 mb-3">
+                  <img src="/founder.png" className="w-10 h-10 rounded-full object-cover" alt="Kelvin" />
+                  <div>
+                    <div className="text-sm font-bold text-gray-900 font-[Inter]">Kelvin Gichinga</div>
+                    <div className="text-[10px] text-gray-500 font-[Inter]">Advocate • Practitioner</div>
+                  </div>
+                </div>
+                <div className="text-[11px] text-gray-800 font-[Inter] mb-3 leading-relaxed">
+                  Just completed a mock judge session on Interlocutory Injunctions with Amani AI on Lawlify. Scored a solid 78/100 and got excellent feedback on citing Giella v Cassman Brown. Excited for the future of legal prep! ⚖️🤖 #LegalTech #EastAfrica #Lawlify
+                </div>
+                <div className="rounded border border-gray-200 overflow-hidden">
+                  <div className="bg-[#0a0a12] p-4 text-center border-b border-gray-200 relative">
+                    <div className="absolute top-2 left-2 text-[8px] font-black tracking-wider text-white bg-green-500 px-2 py-0.5 rounded uppercase font-[Inter]">Amani AI Mock Judge</div>
+                    <div className="text-5xl font-extrabold text-green-500 mb-1 mt-4">{score} / 100</div>
+                    <div className="text-[9px] text-gray-400 font-[Inter] uppercase tracking-wider">Interlocutory Injunctions</div>
+                  </div>
+                </div>
+              </div>
+              <div className="px-4 py-3 bg-white border-t border-gray-100 flex justify-end">
+                <button className="bg-[#0a66c2] text-white px-5 py-1.5 rounded-full text-xs font-bold font-[Inter]">Post</button>
+              </div>
             </div>
           </div>
         )}
