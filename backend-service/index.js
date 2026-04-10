@@ -36,6 +36,7 @@ import intelligenceRoutes from './routes/intelligence.js';
 import { modelDispatcher } from './services/modelDispatcher.js';
 import dashboardRoutes from './routes/dashboard.js';
 import skillsRoutes from './routes/skills.js';
+import analyticsRoutes from './routes/analytics.js';
 
 // Simple password verification (supports both plain text and bcrypt)
 async function verifyPassword(plainPassword, hashedPassword) {
@@ -123,6 +124,7 @@ app.use('/api/workspaces', authenticate, workspaceRoutes);
 app.use('/api/intelligence', authenticate, intelligenceRoutes);
 app.use('/api/dashboard', authenticate, dashboardRoutes);
 app.use('/api/skills', skillsRoutes); // Skills are public (no auth needed for composer)
+app.use('/api/analytics', analyticsRoutes); 
 
 // Request Logging
 app.use((req, res, next) => {

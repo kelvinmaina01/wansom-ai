@@ -1,0 +1,29 @@
+[
+    {
+        "full_name": "Justice Alfred Mabeya",
+        "title": "Presiding Judge",
+        "court": "High Court of Kenya",
+        "division": "Commercial",
+        "jurisdiction": "kenya",
+        "image": "https://api.dicebear.com/7.x/initials/svg?seed=AM",
+        "known_for": "Strict adherence to procedural timelines in commercial matters."
+    },
+    {
+        "full_name": "Justice Mumbi Ngugi",
+        "title": "Judge of Appeal",
+        "court": "Court of Appeal of Kenya",
+        "division": "Civil",
+        "jurisdiction": "kenya",
+        "image": "https://api.dicebear.com/7.x/initials/svg?seed=MN",
+        "known_for": "Progressive rulings on socio-economic rights and human rights."
+    },
+    {
+        "full_name": "Justice George Odunga",
+        "title": "Judge of Appeal",
+        "court": "Court of Appeal of Kenya",
+        "division": "Civil",
+        "jurisdiction": "kenya",
+        "image": "https://api.dicebear.com/7.x/initials/svg?seed=GO",
+        "known_for": "Exemplary efficiency and thoroughness on administrative justice."
+    }
+]

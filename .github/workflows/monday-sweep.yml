@@ -1,0 +1,16 @@
+name: Monday Autonomous Sweep
+
+on:
+  schedule:
+    # Run every Monday at 08:00 UTC (11:00 AM EAT)
+    - cron: '0 8 * * 1'
+  workflow_dispatch: # Allows manual triggering from the Actions tab
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Lawlify Autonomous Sweep
+        run: |
+          curl -X GET "https://lawlify-ai.railway.app/api/analytics/sweep" \
+               -H "x-cron-secret: ${{ secrets.CRON_SECRET }}"

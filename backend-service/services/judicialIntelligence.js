@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { modelDispatcher } from './modelDispatcher.js';
 import logger from '../utils/logger.js';
+import fs from 'fs/promises';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -44,38 +45,15 @@ function extractJSON(text) {
 export class JudicialIntelligence {
     
     /**
-     * Seeds the initial list of prominent East African judges.
+     * Seeds the initial list of prominent East African judges from the data registry.
      */
     async seedJudges() {
-        const primaryJudges = [
-            {
-                full_name: 'Justice Alfred Mabeya',
-                title: 'Presiding Judge',
-                court: 'High Court of Kenya',
-                division: 'Commercial',
-                jurisdiction: 'kenya',
-                image: 'https://api.dicebear.com/7.x/initials/svg?seed=AM',
-                known_for: 'Strict adherence to procedural timelines in commercial matters.'
-            },
-            {
-                full_name: 'Justice Mumbi Ngugi',
-                title: 'Judge of Appeal',
-                court: 'Court of Appeal of Kenya',
-                division: 'Civil',
-                jurisdiction: 'kenya',
-                image: 'https://api.dicebear.com/7.x/initials/svg?seed=MN',
-                known_for: 'Progressive rulings on socio-economic rights and human rights.'
-            },
-            {
-                full_name: 'Justice George Odunga',
-                title: 'Judge of Appeal',
-                court: 'Court of Appeal of Kenya',
-                division: 'Civil',
-                jurisdiction: 'kenya',
-                image: 'https://api.dicebear.com/7.x/initials/svg?seed=GO',
-                known_for: 'Exemplary efficiency and thoroughness on administrative justice.'
-            }
-        ];
+        try {
+            const dataPath = path.resolve(__dirname, '../data/judges.json');
+            const fileData = await fs.readFile(dataPath, 'utf-8');
+            const primaryJudges = JSON.parse(fileData);
+
+            logger.info(`Seeding ${primaryJudges.length} judges from registry...`);
 
         for (const judge of primaryJudges) {
             const { error } = await supabase

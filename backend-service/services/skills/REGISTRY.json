@@ -138,5 +138,12 @@
       ],
       "auto_load_with_docs": true
     }
+    {
+      "id": "intelligence-judicial",
+      "path": "public/intelligence/judicial-intelligence/SKILL.md",
+      "triggers": [
+        "judge report", "judicial analytics", "judicial intelligence", "litigation strategy", "know your judge", "generate report", "ask insight ai", "judge's philosophy", "how does this judge", "bias", "tendencies", "ruling pattern"
+      ]
+    }
   ]
 }
