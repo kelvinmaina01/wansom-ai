@@ -15,6 +15,7 @@ import {
   LogOut
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { apiClient } from '../lib/apiClient';
 
 interface ProfilePageProps {
   isOpen: boolean;
@@ -27,37 +28,7 @@ interface ProfilePageProps {
   };
 }
 
-// Generate deterministic mock contribution data for the past 52 weeks
-const generateContributions = () => {
-  const weeks = 52;
-  const days = 7;
-  const data: number[][] = [];
-  let seed = 42;
-  const random = () => {
-    seed = (seed * 16807 + 0) % 2147483647;
-    return seed / 2147483647;
-  };
 
-  for (let w = 0; w < weeks; w++) {
-    const week: number[] = [];
-    for (let d = 0; d < days; d++) {
-      const r = random();
-      const isWeekday = d >= 1 && d <= 5;
-      const baseChance = isWeekday ? 0.7 : 0.25;
-      if (r < baseChance) {
-        const intensity = random();
-        if (intensity < 0.4) week.push(1);
-        else if (intensity < 0.7) week.push(2);
-        else if (intensity < 0.9) week.push(3);
-        else week.push(4);
-      } else {
-        week.push(0);
-      }
-    }
-    data.push(week);
-  }
-  return data;
-};
 
 const CONTRIBUTION_COLORS = [
   'bg-gray-100',       // 0: no activity
@@ -77,16 +48,13 @@ const CONTRIBUTION_LABELS = [
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-const ACTIVITY_STATS = [
-  { label: 'Research Sessions', value: '247', icon: Scale, color: 'text-red-500', bg: 'bg-red-50' },
-  { label: 'Documents Drafted', value: '89', icon: FileText, color: 'text-blue-500', bg: 'bg-blue-50' },
-  { label: 'AI Conversations', value: '412', icon: MessageSquare, color: 'text-red-500', bg: 'bg-red-50' },
-  
-  { label: 'Cases Analyzed', value: '56', icon: Gavel, color: 'text-amber-500', bg: 'bg-amber-50' },
-];
-
 const ProfilePage: React.FC<ProfilePageProps> = ({ onClose, onOpenSettings, user }) => {
   const [profileData, setProfileData] = useState<any>(null);
+  const [statsData, setStatsData] = useState<any>(null);
+  const [recentActivities, setRecentActivities] = useState<any[]>([]);
+  const [contributions, setContributions] = useState<number[][]>(() => 
+    Array.from({ length: 52 }, () => Array(7).fill(0))
+  );
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -104,6 +72,62 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose, onOpenSettings, user
 
         if (error) throw error;
         setProfileData(data);
+
+        // Fetch Stats
+        const statsRes = await apiClient.get('/api/dashboard/stats');
+        if (statsRes.ok) {
+          setStatsData(await statsRes.json());
+        }
+
+        // Fetch Recent Activity
+        const actRes = await apiClient.get('/api/dashboard/activity');
+        if (actRes.ok) {
+          setRecentActivities(await actRes.json());
+        }
+
+        // Fetch Heatmap Data
+        const oneYearAgo = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString();
+        const { data: chats } = await supabase
+          .from('chat_histories')
+          .select('timestamp')
+          .eq('user_id', authUser.id)
+          .gte('timestamp', oneYearAgo);
+
+        if (chats && chats.length > 0) {
+          const weeks = 52;
+          const days = 7;
+          const mapData = Array.from({ length: weeks }, () => Array(days).fill(0));
+          const now = new Date();
+          
+          chats.forEach(chat => {
+            const chatDate = new Date(chat.timestamp);
+            const diffTime = Math.abs(now.getTime() - chatDate.getTime());
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays < 364) {
+              const weekIndex = 51 - Math.floor(diffDays / 7);
+              const dayIndex = chatDate.getDay();
+              
+              if (weekIndex >= 0 && weekIndex < 52) {
+                mapData[weekIndex][dayIndex] += 1;
+              }
+            }
+          });
+
+          // Normalize values
+          for (let w = 0; w < weeks; w++) {
+            for (let d = 0; d < days; d++) {
+              if (mapData[w][d] > 0) {
+                if (mapData[w][d] <= 2) mapData[w][d] = 1;
+                else if (mapData[w][d] <= 5) mapData[w][d] = 2;
+                else if (mapData[w][d] <= 10) mapData[w][d] = 3;
+                else mapData[w][d] = 4;
+              }
+            }
+          }
+          setContributions(mapData);
+        }
+
       } catch (err) {
         console.error('Error fetching profile settings:', err);
       } finally {
@@ -117,7 +141,6 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose, onOpenSettings, user
     await supabase.auth.signOut();
     window.location.href = '/';
   };
-  const contributions = useMemo(() => generateContributions(), []);
 
   const totalContributions = useMemo(() => {
     return contributions.flat().filter(v => v > 0).length;
@@ -200,7 +223,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose, onOpenSettings, user
         </div>
 
         {/* Quick Info Grid */}
-        <div className="grid grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 gap-4 mb-8">
           <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center">
@@ -240,8 +263,13 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose, onOpenSettings, user
         </div>
 
         {/* Activity Stats */}
-        <div className="grid grid-cols-4 gap-4 mb-8">
-          {ACTIVITY_STATS.map(stat => (
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          {[
+            { label: 'Research Sessions', value: statsData?.total_queries?.toString() || '0', icon: Scale, color: 'text-red-500', bg: 'bg-red-50' },
+            { label: 'Documents Drafted', value: statsData?.drafts_created?.toString() || '0', icon: FileText, color: 'text-blue-500', bg: 'bg-blue-50' },
+            { label: 'AI Conversations', value: statsData?.total_queries?.toString() || '0', icon: MessageSquare, color: 'text-red-500', bg: 'bg-red-50' },
+            { label: 'Cases Analyzed', value: statsData?.active_projects?.toString() || '0', icon: Gavel, color: 'text-amber-500', bg: 'bg-amber-50' }
+          ].map(stat => (
             <div key={stat.label} className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all group">
               <div className={`w-10 h-10 ${stat.bg} rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
                 <stat.icon className={`w-5 h-5 ${stat.color}`} />
@@ -312,23 +340,39 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose, onOpenSettings, user
         <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
           <h3 className="text-lg font-bold text-black tracking-tight mb-4">Recent Activity</h3>
           <div className="space-y-4">
-            {[
-              { action: 'Drafted a contract review memo', time: '2 hours ago', icon: FileText, color: 'text-blue-500', bg: 'bg-blue-50' },
-              { action: 'Research on Land Act amendments', time: '5 hours ago', icon: Scale, color: 'text-red-500', bg: 'bg-red-50' },
-              { action: 'Consulted Compliance Agent on KYC', time: '1 day ago', icon: Users, color: 'text-amber-500', bg: 'bg-amber-50' },
-              { action: 'Analyzed 3 High Court rulings', time: '2 days ago', icon: Gavel, color: 'text-red-500', bg: 'bg-red-50' },
-              { action: 'Generated tax compliance report', time: '3 days ago', icon: MessageSquare, color: 'text-emerald-500', bg: 'bg-emerald-50' },
-            ].map((item, i) => (
-              <div key={i} className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors">
-                <div className={`w-9 h-9 ${item.bg} rounded-lg flex items-center justify-center shrink-0`}>
-                  <item.icon className={`w-4 h-4 ${item.color}`} />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-black">{item.action}</p>
-                  <p className="text-[10px] text-gray-400 font-medium">{item.time}</p>
-                </div>
+            {recentActivities && recentActivities.length > 0 ? (
+              recentActivities.slice(0, 5).map((item, i) => {
+                let displayDate = 'Just now';
+                try {
+                  const dateObj = new Date(item.created_at);
+                  const diffMinutes = Math.floor((Date.now() - dateObj.getTime()) / 60000);
+                  if (diffMinutes < 60) displayDate = `${diffMinutes} minutes ago`;
+                  else if (diffMinutes < 1440) displayDate = `${Math.floor(diffMinutes/60)} hours ago`;
+                  else displayDate = `${Math.floor(diffMinutes/1440)} days ago`;
+                } catch(e) {}
+                const colors = ['text-blue-500 bg-blue-50', 'text-red-500 bg-red-50', 'text-amber-500 bg-amber-50', 'text-emerald-500 bg-emerald-50'];
+                const colorSet = colors[i % colors.length] || colors[0];
+                const [color, bg] = colorSet.split(' ');
+                
+                return (
+                  <div key={i} className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors">
+                    <div className={`w-9 h-9 ${bg} rounded-lg flex items-center justify-center shrink-0`}>
+                      <FileText className={`w-4 h-4 ${color}`} />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-black">
+                        You {item.action} <span className="font-medium">{item.target}</span>
+                      </p>
+                      <p className="text-[10px] text-gray-400 font-medium">{displayDate}</p>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="text-center py-6 text-sm text-gray-400 font-medium">
+                No recent activities found.
               </div>
-            ))}
+            )}
           </div>
         </div>
 
