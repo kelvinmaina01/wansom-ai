@@ -8,7 +8,7 @@ import logger from '../utils/logger.js';
 export class AfricanLIIService {
     constructor() {
         this.token = process.env.LAWS_AFRICA_API_KEY;
-        this.baseUrl = 'https://api.africanlii.org/v1'; // Based on blueprint
+        this.baseUrl = 'https://api.laws.africa/v3';
     }
 
     /**
