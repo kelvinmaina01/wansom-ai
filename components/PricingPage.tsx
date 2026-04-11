@@ -88,10 +88,8 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary/20">
               <Zap className="w-4 h-4 text-white fill-white" />
             </div>
-            <span className="text-xl font-black tracking-tighter">Lawlify<span className="text-primary">.</span>AI</span>
           </div>
           <div className="flex items-center gap-4">
-             <button onClick={onGetStarted} className="px-5 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest border border-white/10 hover:bg-white/5 transition-all">Sign In</button>
              <button onClick={onGetStarted} className="px-5 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest bg-primary text-white hover:bg-primary-hover transition-all">Start Free →</button>
           </div>
         </div>
@@ -112,10 +110,9 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-5xl md:text-7xl font-black tracking-tighter mb-6 leading-[0.9] text-white"
+          className="text-5xl md:text-7xl font-black tracking-tighter mb-6 leading-tight text-white"
         >
-          Simple, transparent pricing.<br />
-          <span className="text-primary">Start free. Scale as you grow.</span>
+          Simple, transparent pricing.
         </motion.h1>
 
         <motion.p 
@@ -393,7 +390,6 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
               </div>
               <div className="text-left">
                 <h3 className="text-lg font-black text-white uppercase tracking-widest mb-1">How credits work</h3>
-                <p className="text-xs text-primary font-black uppercase tracking-widest">Start free. Scale as you grow.</p>
               </div>
             </div>
             <div className="px-6 py-3 bg-black border border-white/10 rounded-full text-xs font-black tracking-widest text-gray-400 uppercase shadow-inner">
