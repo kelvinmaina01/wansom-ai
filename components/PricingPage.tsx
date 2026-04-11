@@ -99,7 +99,6 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
 
       {/* HERO SECTION */}
       <div className="pt-40 pb-16 text-center px-4 relative">
-        <div className="absolute inset-0 bg-dots opacity-20 pointer-events-none" />
         
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
@@ -135,7 +134,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
           transition={{ delay: 0.3 }}
           className="flex items-center justify-center gap-4 mb-16"
         >
-          <div className="bg-white/5 border border-white/10 p-1.5 rounded-2xl flex items-center relative backdrop-blur-sm shadow-xl">
+          <div className="bg-[#0a0a0a] border border-white/5 p-1.5 rounded-2xl flex items-center relative backdrop-blur-sm shadow-xl">
             <button 
               onClick={() => setIsAnnual(false)}
               className={`px-8 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all z-10 ${!isAnnual ? 'text-white' : 'text-gray-500 hover:text-white'}`}
@@ -150,7 +149,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
             </button>
             <motion.div 
               layout
-              className={`absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-white/10 border border-white/10 rounded-xl shadow-lg transition-all duration-300 ${isAnnual ? 'left-[calc(50%+3px)]' : 'left-1.5'}`}
+              className={`absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-zinc-900 border border-white/10 rounded-xl shadow-lg transition-all duration-300 ${isAnnual ? 'left-[calc(50%+3px)]' : 'left-1.5'}`}
             />
           </div>
           <div className="flex flex-col items-start translate-y-1">
@@ -165,7 +164,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="max-w-4xl mx-auto mb-20 bg-white/[0.02] border border-white/10 rounded-[2.5rem] p-10 relative overflow-hidden group hover:border-primary/30 transition-all duration-500"
+          className="max-w-4xl mx-auto mb-20 bg-[#0a0a0a] border border-white/5 rounded-[2.5rem] p-10 relative overflow-hidden group hover:border-primary/20 transition-all duration-500"
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px] pointer-events-none group-hover:bg-primary/10 transition-all" />
           
@@ -179,7 +178,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
                 <p className="text-[11px] text-gray-500 font-bold uppercase tracking-widest mt-0.5">Transparent usage across Lawlify Intelligence</p>
               </div>
             </div>
-            <div className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[11px] font-black tracking-widest text-gray-400 uppercase">
+            <div className="px-4 py-2 bg-black border border-white/5 rounded-full text-[11px] font-black tracking-widest text-gray-400 uppercase">
                1 action = 1–3 credits
             </div>
           </div>
@@ -191,7 +190,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
               { label: 'Document Draft', val: '3', unit: 'credits' },
               { label: 'Integration Query', val: '1', unit: 'credit' }
             ].map((item, i) => (
-              <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center hover:bg-white/10 transition-all group/item">
+              <div key={i} className="bg-black border border-white/5 rounded-2xl p-6 text-center hover:bg-zinc-900 transition-all group/item">
                 <div className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-3 leading-tight min-h-[30px]">{item.label}</div>
                 <div className="text-3xl font-black text-white mb-1 group-hover/item:text-primary transition-colors">{item.val}</div>
                 <div className="text-[9px] font-black text-gray-500 uppercase tracking-widest">{item.unit}</div>
@@ -218,7 +217,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
       {/* PRICING GRID */}
       <div className="max-w-7xl mx-auto px-6 pb-24 grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
         {/* FREE */}
-        <div className="bg-white/[0.02] border border-white/10 rounded-[2.5rem] p-8 hover:border-white/20 transition-all flex flex-col min-h-full">
+        <div className="bg-[#0a0a0a] border border-white/5 rounded-[2.5rem] p-8 hover:border-white/10 transition-all flex flex-col min-h-full">
           <div className="mb-6">
             <h3 className="text-xl font-black text-white mb-1">Free</h3>
             <p className="text-xs text-gray-500 font-medium leading-relaxed">For individuals exploring AI-powered legal work</p>
@@ -231,7 +230,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
             <div className="h-4 mt-1">&nbsp;</div>
           </div>
 
-          <div className="bg-white/5 border border-white/10 rounded-[1.5rem] p-6 mb-8 relative overflow-hidden group/cr">
+          <div className="bg-black border border-white/5 rounded-[1.5rem] p-6 mb-8 relative overflow-hidden group/cr">
              <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl group-hover/cr:bg-blue-500/10 transition-all" />
              <div className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-4">Daily Credits — Midnight Reset</div>
              <div className="flex items-baseline gap-2 mb-3">
@@ -244,7 +243,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
              </div>
           </div>
 
-          <button onClick={onGetStarted} className="w-full py-4 rounded-2xl border border-white/10 text-white font-black uppercase tracking-widest text-[11px] hover:bg-white/5 transition-all mb-10">
+          <button onClick={onGetStarted} className="w-full py-4 rounded-2xl border border-white/5 text-white font-black uppercase tracking-widest text-[11px] hover:bg-white/5 transition-all mb-10">
             Get Started Free
           </button>
           
@@ -269,7 +268,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
         </div>
 
         {/* PERSONAL */}
-        <div className="bg-white/[0.04] border-2 border-primary rounded-[2.5rem] p-8 shadow-2xl shadow-primary/5 flex flex-col min-h-full relative overflow-hidden">
+        <div className="bg-[#0a0a0a] border-2 border-primary rounded-[2.5rem] p-8 shadow-2xl shadow-primary/5 flex flex-col min-h-full relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
           <div className="self-center bg-primary text-white text-[9px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-full mb-8 absolute -top-3 shadow-lg shadow-primary/20">
             Most Popular
@@ -328,7 +327,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
         </div>
 
         {/* TEAMS */}
-        <div className="bg-white/[0.02] border border-white/10 rounded-[2.5rem] p-8 hover:border-white/20 transition-all flex flex-col min-h-full">
+        <div className="bg-[#0a0a0a] border border-white/5 rounded-[2.5rem] p-8 hover:border-white/10 transition-all flex flex-col min-h-full">
           <div className="mb-6">
             <h3 className="text-xl font-black text-white mb-1">Teams</h3>
             <p className="text-xs text-gray-500 font-medium leading-relaxed">Collaborate on client matters with your whole firm</p>
@@ -343,7 +342,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
             </div>
           </div>
 
-          <div className="bg-white/5 border border-white/10 rounded-[1.5rem] p-6 mb-8 relative overflow-hidden group/cr">
+          <div className="bg-black border border-white/5 rounded-[1.5rem] p-6 mb-8 relative overflow-hidden group/cr">
              <div className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-4">Per-Seat Credits — Pooled</div>
              <div className="flex items-baseline gap-2 mb-3">
                <span className="text-3xl font-black text-white">800</span>
@@ -381,7 +380,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
         </div>
 
         {/* ENTERPRISE */}
-        <div className="bg-white/[0.02] border border-white/10 rounded-[2.5rem] p-8 hover:border-white/20 transition-all flex flex-col min-h-full">
+        <div className="bg-[#0a0a0a] border border-white/5 rounded-[2.5rem] p-8 hover:border-white/10 transition-all flex flex-col min-h-full">
           <div className="mb-6">
             <h3 className="text-xl font-black text-white mb-1">Enterprise</h3>
             <p className="text-xs text-gray-500 font-medium leading-relaxed">For the most demanding legal teams</p>
@@ -395,7 +394,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
             </div>
           </div>
 
-          <div className="bg-white/5 border border-white/10 rounded-[1.5rem] p-6 mb-8 relative overflow-hidden group/cr">
+          <div className="bg-black border border-white/5 rounded-[1.5rem] p-6 mb-8 relative overflow-hidden group/cr">
              <div className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-4">Credits</div>
              <div className="flex items-baseline gap-2 mb-3">
                <span className="text-3xl font-black text-white tracking-widest uppercase">Unlimited</span>
@@ -406,7 +405,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
              </div>
           </div>
 
-          <button onClick={() => navigate('/book-enterprise-demo')} className="w-full py-4 rounded-2xl border border-white/10 text-white font-black uppercase tracking-widest text-[11px] hover:bg-white/5 transition-all mb-10">
+          <button onClick={() => navigate('/book-enterprise-demo')} className="w-full py-4 rounded-2xl border border-white/5 text-white font-black uppercase tracking-widest text-[11px] hover:bg-white/5 transition-all mb-10">
             Contact Sales
           </button>
           
@@ -438,7 +437,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
           <p className="text-[13px] text-gray-500 font-medium">Works on any plan. Top-up credits are consumed first and never expire.</p>
         </div>
         
-        <div className="bg-amber-400/[0.03] border border-amber-400/20 rounded-2xl p-6 mb-10 flex items-center gap-4">
+        <div className="bg-amber-400/[0.02] border border-amber-400/10 rounded-2xl p-6 mb-10 flex items-center gap-4">
            <div className="w-10 h-10 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center shrink-0">
              <Info className="w-5 h-5 text-amber-500" />
            </div>
@@ -454,7 +453,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
             { amt: 500, price: 14, per: '0.028' },
             { amt: 1000, price: 25, per: '0.025' }
           ].map((item, i) => (
-            <div key={i} className={`bg-white/[0.02] border rounded-[2rem] p-8 text-center relative group hover:scale-[1.03] transition-all duration-300 ${item.best ? 'border-amber-400/40 shadow-xl shadow-amber-400/5' : 'border-white/10 hover:border-primary/40'}`}>
+            <div key={i} className={`bg-black border rounded-[2rem] p-8 text-center relative group hover:scale-[1.03] transition-all duration-300 ${item.best ? 'border-amber-400/40 shadow-xl shadow-amber-400/5' : 'border-white/5 hover:border-primary/40'}`}>
               {item.best && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-400 text-black text-[9px] font-black uppercase tracking-widest px-4 py-1 rounded-full shadow-lg h-6 flex items-center">
                   Best Value
@@ -494,7 +493,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
             {/* Left: Discounts List */}
             <div className="flex-1 p-12 lg:p-16 space-y-12">
                <div className="flex gap-8 group">
-                  <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-xl group-hover:shadow-primary/20">
+                  <div className="w-14 h-14 rounded-2xl bg-black border border-white/5 flex items-center justify-center shrink-0 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-xl group-hover:shadow-primary/20">
                     <GraduationCap className="w-7 h-7" />
                   </div>
                   <div>
@@ -504,7 +503,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
                </div>
 
                <div className="flex gap-8 group">
-                  <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all duration-500 shadow-xl group-hover:shadow-blue-500/20">
+                  <div className="w-14 h-14 rounded-2xl bg-black border border-white/5 flex items-center justify-center shrink-0 text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all duration-500 shadow-xl group-hover:shadow-blue-500/20">
                     <School className="w-7 h-7" />
                   </div>
                   <div>
@@ -514,7 +513,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
                </div>
 
                <div className="flex gap-8 group">
-                  <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-green-500 group-hover:bg-green-500 group-hover:text-white transition-all duration-500 shadow-xl group-hover:shadow-green-500/20">
+                  <div className="w-14 h-14 rounded-2xl bg-black border border-white/5 flex items-center justify-center shrink-0 text-green-500 group-hover:bg-green-500 group-hover:text-white transition-all duration-500 shadow-xl group-hover:shadow-green-500/20">
                     <Building2 className="w-7 h-7" />
                   </div>
                   <div>
@@ -525,7 +524,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
             </div>
 
             {/* Right: Verification Card */}
-            <div className="lg:w-[440px] bg-white/[0.03] p-12 lg:p-16 flex flex-col justify-center border-l border-white/5 relative">
+            <div className="lg:w-[440px] bg-black p-12 lg:p-16 flex flex-col justify-center border-l border-white/5 relative">
               <div className="absolute top-0 right-0 w-48 h-48 bg-primary/20 blur-[60px] rounded-full pointer-events-none" />
               
               <div className="mb-8">
@@ -570,10 +569,10 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
           <p className="text-gray-500 font-medium">Everything you need to make the right decision for your firm.</p>
         </div>
 
-        <div className="overflow-x-auto rounded-[2rem] border border-white/10 bg-white/[0.02] shadow-3xl">
+        <div className="overflow-x-auto rounded-[2rem] border border-white/10 bg-[#0a0a0a] shadow-3xl">
           <table className="w-full border-collapse min-w-[900px]">
             <thead>
-              <tr className="bg-white/5 border-b border-white/10">
+              <tr className="bg-black border-b border-white/5">
                 <th className="p-8 text-left text-[11px] font-black uppercase tracking-widest text-gray-500">Features</th>
                 <th className="p-8 text-center text-[13px] font-black text-white">Free</th>
                 <th className="p-8 text-center text-[13px] font-black text-primary bg-primary/5 border-x border-white/5 relative">
@@ -586,7 +585,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
             </thead>
             <tbody className="text-[13px] font-medium text-gray-400">
               {/* CATEGORY: PRICING */}
-              <tr className="bg-white/[0.04]"><td colSpan={5} className="px-8 py-3 text-[10px] font-black uppercase tracking-[0.15em] text-gray-500">Pricing & Billing</td></tr>
+              <tr className="bg-black/40"><td colSpan={5} className="px-8 py-3 text-[10px] font-black uppercase tracking-[0.15em] text-gray-500">Pricing & Billing</td></tr>
               <tr className="border-b border-white/5">
                 <td className="p-6 ps-8 text-white font-black">Monthly price</td>
                 <td className="p-6 text-center text-white font-bold">$0</td>
@@ -610,7 +609,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
               </tr>
 
               {/* CATEGORY: CREDITS */}
-              <tr className="bg-white/[0.04]"><td colSpan={5} className="px-8 py-3 text-[10px] font-black uppercase tracking-[0.15em] text-gray-500">Credits & Usage</td></tr>
+              <tr className="bg-black/40"><td colSpan={5} className="px-8 py-3 text-[10px] font-black uppercase tracking-[0.15em] text-gray-500">Credits & Usage</td></tr>
               <tr className="border-b border-white/5">
                 <td className="p-6 ps-8 text-white font-black">Credit allocation</td>
                 <td className="p-6 text-center">5 / day</td>
@@ -641,7 +640,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
               </tr>
 
               {/* CATEGORY: STORAGE */}
-              <tr className="bg-white/[0.04]"><td colSpan={5} className="px-8 py-3 text-[10px] font-black uppercase tracking-[0.15em] text-gray-500">Workspace & Storage</td></tr>
+              <tr className="bg-black/40"><td colSpan={5} className="px-8 py-3 text-[10px] font-black uppercase tracking-[0.15em] text-gray-500">Workspace & Storage</td></tr>
               <tr className="border-b border-white/5">
                 <td className="p-6 ps-8 text-white font-black">Matter workspaces</td>
                 <td className="p-6 text-center">2 Active</td>
@@ -658,7 +657,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
               </tr>
 
                {/* CATEGORY: SECURITY */}
-               <tr className="bg-white/[0.04]"><td colSpan={5} className="px-8 py-3 text-[10px] font-black uppercase tracking-[0.15em] text-gray-500">Integrations & Security</td></tr>
+               <tr className="bg-black/40"><td colSpan={5} className="px-8 py-3 text-[10px] font-black uppercase tracking-[0.15em] text-gray-500">Integrations & Security</td></tr>
                <tr className="border-b border-white/5">
                 <td className="p-6 ps-8 text-white font-black">Google Cal & Email</td>
                 <td className="p-6 text-center">—</td>
@@ -682,12 +681,12 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
               </tr>
             </tbody>
             <tfoot>
-              <tr className="bg-white/5">
+              <tr className="bg-black/50">
                 <td></td>
-                <td className="p-8"><button onClick={onGetStarted} className="w-full py-3 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/5 transition-all">Get Started</button></td>
+                <td className="p-8"><button onClick={onGetStarted} className="w-full py-3 rounded-xl border border-white/5 text-[10px] font-black uppercase tracking-widest text-white hover:bg-zinc-900 transition-all">Get Started</button></td>
                 <td className="p-8 bg-primary/5"><button onClick={onGetStarted} className="w-full py-3 rounded-xl bg-primary text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all">Upgrade Now</button></td>
                 <td className="p-8"><button onClick={onGetStarted} className="w-full py-3 rounded-xl bg-white text-black text-[10px] font-black uppercase tracking-widest hover:bg-gray-200 transition-all">Join Teams</button></td>
-                <td className="p-8"><button onClick={() => navigate('/book-enterprise-demo')} className="w-full py-3 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/5 transition-all">Contact us</button></td>
+                <td className="p-8"><button onClick={() => navigate('/book-enterprise-demo')} className="w-full py-3 rounded-xl border border-white/5 text-[10px] font-black uppercase tracking-widest text-white hover:bg-zinc-900 transition-all">Contact us</button></td>
               </tr>
             </tfoot>
           </table>
@@ -722,12 +721,12 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
                     <p className="text-sm text-gray-400 font-medium">Choose an option to continue without interruption</p>
                   </div>
                 </div>
-                <button onClick={() => setModalOpen(false)} className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors">
+                <button onClick={() => setModalOpen(false)} className="w-10 h-10 rounded-full bg-black hover:bg-zinc-950 flex items-center justify-center transition-colors">
                   <X className="w-5 h-5 text-gray-400" />
                 </button>
               </div>
 
-              <div className="px-8 py-5 bg-white/[0.02] border-b border-white/5 flex items-center justify-between">
+              <div className="px-8 py-5 bg-[#0a0a0a] border-b border-white/5 flex items-center justify-between">
                 <div className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Current Balance</div>
                 <div className="text-2xl font-black text-white">0 <span className="text-xs text-gray-500 font-bold uppercase tracking-widest ml-1">credits remaining</span></div>
               </div>
@@ -745,7 +744,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
                       <div 
                         key={i} 
                         onClick={() => {setSelAmt(item.amt); setSelPrice(item.price);}}
-                        className={`flex items-center justify-between p-5 rounded-2xl border cursor-pointer transition-all ${selAmt === item.amt ? 'border-primary bg-primary/10 shadow-lg shadow-primary/5' : 'border-white/5 bg-white/5 hover:border-white/20'}`}
+                        className={`flex items-center justify-between p-5 rounded-2xl border cursor-pointer transition-all ${selAmt === item.amt ? 'border-primary bg-primary/10 shadow-lg shadow-primary/5' : 'border-white/5 bg-black hover:border-white/20'}`}
                       >
                         <div className="flex items-center gap-4">
                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selAmt === item.amt ? 'border-primary bg-primary' : 'border-white/10'}`}>
@@ -770,7 +769,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
                   </button>
                 </div>
 
-                <div className="flex-1 p-8 bg-white/[0.01]">
+                <div className="flex-1 p-8 bg-black/50">
                   <div className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-6">Or Upgrade Your Plan</div>
                   <div className="space-y-4 mb-10">
                     <div 
@@ -788,7 +787,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
 
                     <div 
                       onClick={() => handleSelectUpgrade('Teams', 15, 800)}
-                      className="p-5 rounded-2xl border border-white/10 bg-white/5 hover:border-white/30 cursor-pointer group transition-all"
+                      className="p-5 rounded-2xl border border-white/5 bg-black hover:border-white/20 cursor-pointer group transition-all"
                     >
                       <div className="flex items-center justify-between mb-1">
                         <div className="text-lg font-black text-white">Teams</div>
@@ -800,7 +799,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
 
                     <div 
                       onClick={() => handleSelectUpgrade('Student', 1.5, 500)}
-                      className="p-5 rounded-2xl border border-white/5 bg-white/5 hover:border-white/30 cursor-pointer group transition-all"
+                      className="p-5 rounded-2xl border border-white/5 bg-black hover:border-white/20 cursor-pointer group transition-all"
                     >
                       <div className="flex items-center justify-between mb-1">
                         <div className="text-lg font-black text-white">Student</div>
