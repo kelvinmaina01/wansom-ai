@@ -68,7 +68,7 @@ h1,h2,h3,h4,h5,h6 { font-family: var(--font); color: inherit; }
 }
 
 .bg-ai-studio {
-  background: radial-gradient(circle at top center, #1a1a1a 0%, #000000 100%);
+  background: radial-gradient(circle at top center, #ffffff 0%, #f1f5f9 100%);
   background-attachment: fixed;
 }
 
