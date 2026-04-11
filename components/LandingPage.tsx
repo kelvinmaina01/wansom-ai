@@ -153,14 +153,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
             <span className="text-xl font-bold tracking-tighter">Lawlify AI</span>
           </div>
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Features</a>
-            <button onClick={onPricingClick} className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Pricing</button>
-            <a href="#capabilities" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Capabilities</a>
-            <a href="#security" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Security</a>
+            <a href="#features" className="text-sm font-medium text-slate-600 hover:text-primary transition-colors">Features</a>
+            <button onClick={onPricingClick} className="text-sm font-medium text-slate-600 hover:text-primary transition-colors">Pricing</button>
+            <a href="#capabilities" className="text-sm font-medium text-slate-600 hover:text-primary transition-colors">Capabilities</a>
+            <a href="#security" className="text-sm font-medium text-slate-600 hover:text-primary transition-colors">Security</a>
             
             <button 
               onClick={() => setIsKelvinOpen(true)}
-              className="flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-white transition-colors border-l border-white/10 pl-8"
+              className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-primary transition-colors border-l border-slate-200 pl-8"
             >
               <HelpCircle className="w-4 h-4" />
               <span>Support</span>
@@ -168,39 +168,38 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
           </div>
           <button
             onClick={onEnterApp}
-            className="px-6 py-2.5 bg-primary text-white border border-white/20 rounded-full text-sm font-bold hover:bg-primary-hover transition-all active:scale-95 shadow-lg shadow-primary/20"
+            className="px-6 py-2.5 bg-primary text-white border border-primary/20 rounded-full text-sm font-bold hover:bg-primary-hover transition-all active:scale-95 shadow-lg shadow-primary/20"
           >
             Launch app
           </button>
         </div>
       </nav>
 
-      {/* Hero Section */}
+       {/* Hero Section */}
       <section className="relative pt-40 pb-20 px-6 overflow-hidden">
-        <div className="absolute inset-x-0 top-0 h-full bg-gradient-to-b from-black/40 to-transparent pointer-events-none z-0"></div>
         <div className="max-w-7xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold tracking-widest uppercase text-primary mb-8 animate-fade-in">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/20 text-[10px] font-bold tracking-widest uppercase text-primary mb-8 animate-fade-in">
             <Scale className="w-3 h-3" />
             Next-Gen Legal Intelligence for East Africa
           </div>
-          <h1 className="text-6xl md:text-8xl font-semibold tracking-tight mb-8 leading-[0.9] max-w-5xl mx-auto">
+          <h1 className="text-6xl md:text-8xl font-black tracking-tight mb-8 leading-[0.9] max-w-5xl mx-auto text-slate-900">
             The future of <span className="text-primary font-bold">legal work</span> is here.
           </h1>
-          <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12 font-medium leading-relaxed">
+          <p className="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto mb-12 font-medium leading-relaxed">
             Lawlify empowers legal professionals across East Africa with AI-driven research,
             document analysis, and case intelligence. Built for the modern advocate.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button
+             <button
               onClick={onEnterApp}
-              className="w-full sm:w-auto px-10 py-3 bg-primary text-white border border-white/10 rounded-2xl text-lg font-bold hover:bg-primary-hover transition-all active:scale-95 shadow-lg shadow-primary/10 flex items-center justify-center gap-3 group"
+              className="w-full sm:w-auto px-10 py-3 bg-primary text-white border border-primary/20 rounded-2xl text-lg font-bold hover:bg-primary-hover transition-all active:scale-95 shadow-lg shadow-primary/20 flex items-center justify-center gap-3 group"
             >
               Get started for free
               <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
             </button>
             <button 
               onClick={() => window.location.href = '/book-demo'}
-              className="w-full sm:w-auto px-10 py-5 bg-white font-bold text-black border border-white rounded-2xl text-lg hover:bg-gray-200 transition-all flex items-center justify-center gap-3 shadow-lg shadow-white/10 active:scale-95"
+              className="w-full sm:w-auto px-10 py-5 bg-slate-50 font-bold text-slate-900 border border-slate-200 rounded-2xl text-lg hover:bg-slate-100 transition-all flex items-center justify-center gap-3 shadow-xl shadow-slate-200/50 active:scale-95"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -212,8 +211,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
           {/* Dashboard Preview Mockup */}
           <div className="mt-24 relative max-w-6xl mx-auto">
             <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/20 blur-[120px] rounded-full pointer-events-none"></div>
-            <div className="relative bg-[#0a0a0a] rounded-[2.5rem] border border-white/10 shadow-2xl overflow-hidden aspect-[16/10] group">
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50"></div>
+            <div className="relative bg-white rounded-[2.5rem] border border-slate-200 shadow-2xl overflow-hidden aspect-[16/10] group">
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-200/20 pointer-events-none"></div>
               <img
                 src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=2070&auto=format&fit=crop"
                 alt="Lawlify Professional Dashboard"
@@ -221,20 +220,20 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                 referrerPolicy="no-referrer"
               />
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="bg-black/80 backdrop-blur-xl p-8 rounded-3xl border border-white/10 max-w-md text-left">
+                <div className="bg-white/90 backdrop-blur-xl p-8 rounded-3xl border border-slate-200 max-w-md text-left shadow-2xl">
                   <div className="flex items-center gap-4 mb-6">
-                    <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center">
+                    <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
                       <MessageSquare className="w-6 h-6 text-primary" />
                     </div>
                     <div>
-                      <h4 className="font-bold">AI Legal Assistant</h4>
-                      <p className="text-xs text-gray-500">Processing Kenyan Statutes...</p>
+                      <h4 className="font-bold text-slate-900">AI Legal Assistant</h4>
+                      <p className="text-xs text-slate-400 font-medium tracking-tight">Processing Kenyan Statutes...</p>
                     </div>
                   </div>
                   <div className="space-y-3">
-                    <div className="h-2 bg-white/10 rounded-full w-full"></div>
-                    <div className="h-2 bg-white/10 rounded-full w-5/6"></div>
-                    <div className="h-2 bg-white/10 rounded-full w-4/6"></div>
+                    <div className="h-2 bg-slate-100 rounded-full w-full"></div>
+                    <div className="h-2 bg-slate-100 rounded-full w-5/6"></div>
+                    <div className="h-2 bg-slate-100 rounded-full w-4/6"></div>
                   </div>
                 </div>
               </div>
@@ -244,9 +243,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
       </section>
 
       {/* Adopted By Section - Enhanced for Visibility */}
-      <section className="py-16 border-y border-white/5 bg-black/40 overflow-hidden relative z-20">
+      <section className="py-16 border-y border-slate-200 bg-slate-50 overflow-hidden relative z-20">
         <div className="max-w-7xl mx-auto px-6 mb-10">
-          <p className="text-center text-xs font-black tracking-[0.3em] uppercase text-gray-500 opacity-60">
+          <p className="text-center text-xs font-black tracking-[0.3em] uppercase text-slate-400 opacity-80">
             Trusted by leading legal minds across Africa
           </p>
         </div>
@@ -257,7 +256,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                 <img 
                   src={logo} 
                   alt="Partner Logo" 
-                  className="h-12 md:h-16 w-auto object-contain pointer-events-none" 
+                  className="h-12 md:h-16 w-auto object-contain pointer-events-none grayscale hover:grayscale-0 transition-all opacity-60 hover:opacity-100" 
                   loading="eager"
                 />
               </div>
@@ -268,7 +267,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                 <img 
                   src={logo} 
                   alt="Partner Logo" 
-                  className="h-12 md:h-16 w-auto object-contain pointer-events-none" 
+                  className="h-12 md:h-16 w-auto object-contain pointer-events-none grayscale hover:grayscale-0 transition-all opacity-60 hover:opacity-100" 
                   loading="eager"
                 />
               </div>
@@ -280,16 +279,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
       {/* Features Grid - Redesigned to Fly.io Style (Single Card) */}
       <section id="features" className="py-32 px-6 bg-ai-studio relative overflow-hidden">
         <div className="max-w-7xl mx-auto">
-          <div className="relative p-10 md:p-16 rounded-[2.5rem] bg-gradient-to-br from-purple-50/10 to-blue-50/5 border border-white/10 overflow-visible group">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 blur-[120px] rounded-full pointer-events-none group-hover:bg-primary/20 transition-all duration-700"></div>
+          <div className="relative p-10 md:p-16 rounded-[2.5rem] bg-slate-50 border border-slate-200 overflow-visible group shadow-xl">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 blur-[120px] rounded-full pointer-events-none group-hover:bg-primary/10 transition-all duration-700"></div>
             
             <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
               {/* Left Side: Text Content */}
               <div className="flex-1 w-full max-w-xl z-20">
-                <h2 className="text-4xl md:text-6xl font-bold tracking-tighter mb-8 leading-[1.1]">
+                <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-8 leading-[1.1] text-slate-900">
                   Features That <br /><span className="text-primary">Make Sense</span>
                 </h2>
-                <p className="text-xl text-gray-400 font-medium leading-relaxed mb-12">
+                <p className="text-xl text-slate-500 font-medium leading-relaxed mb-12">
                   Want to feel special? Join Lawlify AI and take home these wonderful features (and more) designed for the modern African advocate.
                 </p>
                 <button
@@ -341,11 +340,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
       </section>
 
       {/* Solutions Section */}
-      <section id="solutions" className="py-32 px-6 bg-white/5 border-y border-white/5">
+      {/* Solutions Section */}
+      <section id="solutions" className="py-32 px-6 bg-slate-50/50 border-y border-slate-200">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-6">Solutions for every practice.</h2>
-            <p className="text-gray-400 max-w-2xl mx-auto font-medium">
+            <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-6 text-slate-900">Solutions for every practice.</h2>
+            <p className="text-slate-500 max-w-2xl mx-auto font-medium text-lg">
               Lawlify is designed to meet the specific needs of diverse legal professionals.
             </p>
           </div>
@@ -364,10 +364,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
       <FeaturesSection />
 
       {/* Capabilities / Stats */}
-      <section id="capabilities" className="py-32 px-6 border-b border-white/5">
+      <section id="capabilities" className="py-32 px-6 border-b border-slate-200">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
           <div>
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-8 leading-tight">
+            <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-8 leading-tight text-slate-900">
               Empowering the next generation of <span className="text-primary">Legal Advocates</span>.
             </h2>
             <div className="space-y-6">
@@ -386,8 +386,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
         </div>
       </section>
 
-      {/* Security Section */}
-      <section id="security" className="py-32 px-6 bg-black/40 border-t border-white/5">
+       {/* Security Section */}
+      <section id="security" className="py-32 px-6 bg-slate-50 border-t border-slate-200">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div>
@@ -395,10 +395,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                 <ShieldCheck className="w-3 h-3" />
                 Enterprise-Grade Security
               </div>
-              <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-8 leading-tight">
+              <h2 className="text-4xl md:text-6xl font-black tracking-tight mb-8 leading-tight text-slate-900">
                 Your data is <span className="text-primary">safe</span> with us.
               </h2>
-              <p className="text-xl text-gray-400 font-medium leading-relaxed mb-12">
+              <p className="text-xl text-slate-500 font-medium leading-relaxed mb-12">
                 We understand that legal data is the most sensitive asset of any firm.
                 That's why we've built Lawlify with a security-first architecture that
                 exceeds industry standards.
@@ -427,9 +427,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
           </div>
 
           {/* Compliance Badges Row Restored & Upgraded */}
-          <div className="mt-16 pt-12 border-t border-white/5 flex flex-wrap items-center justify-start gap-12">
+          <div className="mt-16 pt-12 border-t border-slate-200 flex flex-wrap items-center justify-start gap-12">
             <div className="flex items-center gap-6 group">
-              <div className="w-24 h-24 bg-gradient-to-br from-white/10 to-transparent rounded-full flex flex-col items-center justify-center border-2 border-yellow-500/30 group-hover:border-yellow-500 group-hover:shadow-[0_0_40px_rgba(234,179,8,0.2)] group-hover:scale-[1.02] transition-all duration-500 relative">
+              <div className="w-24 h-24 bg-white rounded-full flex flex-col items-center justify-center border-2 border-yellow-500/30 group-hover:border-yellow-500 group-hover:shadow-[0_0_40px_rgba(234,179,8,0.2)] group-hover:scale-[1.02] transition-all duration-500 relative shadow-lg shadow-slate-200/50">
                 <div className="absolute inset-1 border border-dashed border-yellow-500/30 rounded-full animate-[spin_40s_linear_infinite]" />
                 <div className="absolute inset-0 flex flex-col items-center justify-between py-2">
                   <div className="flex gap-1.5 opacity-80">
@@ -442,19 +442,19 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                     <Star className="w-2 h-2 text-yellow-500 fill-yellow-500" />
                   </div>
                 </div>
-                <span className="text-white text-lg font-black leading-tight relative z-10">SOC 2</span>
+                <span className="text-slate-900 text-lg font-black leading-tight relative z-10">SOC 2</span>
                 <span className="text-yellow-500 text-[9px] font-black uppercase tracking-[0.2em] relative z-10 mt-0.5">Type II</span>
               </div>
               <div className="flex flex-col max-w-[150px]">
-                <span className="text-white font-bold text-lg mb-1">SOC 2 Type II</span>
-                <span className="text-xs text-gray-400 font-medium uppercase tracking-widest leading-relaxed">Audited controls protect every case</span>
+                <span className="text-slate-900 font-bold text-lg mb-1">SOC 2 Type II</span>
+                <span className="text-xs text-slate-400 font-medium uppercase tracking-widest leading-relaxed">Audited controls protect every case</span>
               </div>
             </div>
 
-            <div className="w-px h-16 bg-white/10 hidden md:block" />
+            <div className="w-px h-16 bg-slate-200 hidden md:block" />
 
             <div className="flex items-center gap-6 group">
-              <div className="w-24 h-24 bg-gradient-to-br from-white/10 to-transparent rounded-full flex flex-col items-center justify-center border-2 border-blue-500/30 group-hover:border-blue-500 group-hover:shadow-[0_0_40px_rgba(59,130,246,0.2)] group-hover:scale-[1.02] transition-all duration-500 relative">
+              <div className="w-24 h-24 bg-white rounded-full flex flex-col items-center justify-center border-2 border-blue-500/30 group-hover:border-blue-500 group-hover:shadow-[0_0_40px_rgba(59,130,246,0.2)] group-hover:scale-[1.02] transition-all duration-500 relative shadow-lg shadow-slate-200/50">
                 <div className="absolute inset-1 border border-dashed border-blue-500/30 rounded-full animate-[spin_40s_linear_infinite_reverse]" />
                 <div className="absolute inset-0 flex flex-col items-center justify-between py-2">
                   <div className="flex gap-1.5 opacity-80">
@@ -467,12 +467,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                     <Star className="w-2 h-2 text-blue-400 fill-blue-400" />
                   </div>
                 </div>
-                <span className="text-white text-lg font-black leading-tight relative z-10">GDPR</span>
+                <span className="text-slate-900 text-lg font-black leading-tight relative z-10">GDPR</span>
                 <span className="text-blue-400 text-[8px] font-black uppercase tracking-[0.2em] relative z-10 mt-0.5">Compliant</span>
               </div>
               <div className="flex flex-col max-w-[150px]">
-                <span className="text-white font-bold text-lg mb-1">GDPR Compliant</span>
-                <span className="text-xs text-gray-400 font-medium uppercase tracking-widest leading-relaxed">Your data, always your property</span>
+                <span className="text-slate-900 font-bold text-lg mb-1">GDPR Compliant</span>
+                <span className="text-xs text-slate-400 font-medium uppercase tracking-widest leading-relaxed">Your data, always your property</span>
               </div>
             </div>
           </div>
@@ -480,80 +480,80 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
       </section>
 
       {/* Education Support Section */}
-      <section className="relative py-24 px-6 border-t border-white/5">
+      <section className="relative py-24 px-6 border-t border-slate-200 bg-white">
         <div className="absolute inset-0 bg-primary/5 blur-[100px] pointer-events-none"></div>
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary font-bold text-[10px] uppercase tracking-widest mb-6 border border-primary/20">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/5 rounded-full text-primary font-bold text-[10px] uppercase tracking-widest mb-6 border border-primary/20">
               <Heart className="w-3 h-3" />
               <span>Supporting Education</span>
             </div>
-            <h2 className="text-4xl font-bold mb-4">We believe in empowering the next generation</h2>
-            <p className="text-gray-400 text-lg font-medium max-w-2xl mx-auto">
+            <h2 className="text-4xl font-black mb-4 text-slate-900">We believe in empowering the next generation</h2>
+            <p className="text-slate-500 text-lg font-medium max-w-2xl mx-auto">
               The future of law depends on accessible tools. That's why we offer students and academic researchers massive discounts because breakthrough legal work shouldn't be limited by budget.
             </p>
           </div>
 
-          <div className="bg-[#0a0a0a] p-2 rounded-[2.5rem] shadow-2xl shadow-primary/5 border border-white/10 flex flex-col md:flex-row overflow-hidden">
+          <div className="bg-slate-50 p-2 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-200 flex flex-col md:flex-row overflow-hidden">
             {/* Left Panel: Discounts List */}
             <div className="flex-1 p-10 space-y-8">
               <div className="flex gap-6 group">
-                <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center shrink-0 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300 shadow-sm">
                   <GraduationCap className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold mb-1 group-hover:text-primary transition-colors">90% Student Discount</h3>
-                  <p className="text-gray-400 text-sm font-medium">Full Personal features for just $1.50/month. Same powerful AI, same unlimited analysis.</p>
+                  <h3 className="text-lg font-black text-slate-900 mb-1 group-hover:text-primary transition-colors">90% Student Discount</h3>
+                  <p className="text-slate-500 text-sm font-medium">Full Personal features for just $1.50/month. Same powerful AI, same unlimited analysis.</p>
                 </div>
               </div>
 
               <div className="flex gap-6 group">
-                <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all duration-300">
+                <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center shrink-0 text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all duration-300 shadow-sm">
                   <School className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold mb-1 group-hover:text-blue-500 transition-colors">50% Academic Institution</h3>
-                  <p className="text-gray-400 text-sm font-medium">Universities, research institutions, and legal clinics qualify for institutional discounts on team plans.</p>
+                  <h3 className="text-lg font-black text-slate-900 mb-1 group-hover:text-blue-500 transition-colors">50% Academic Institution</h3>
+                  <p className="text-slate-500 text-sm font-medium">Universities, research institutions, and legal clinics qualify for institutional discounts on team plans.</p>
                 </div>
               </div>
 
               <div className="flex gap-6 group">
-                <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-green-500 group-hover:bg-green-500 group-hover:text-white transition-all duration-300">
+                <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center shrink-0 text-green-500 group-hover:bg-green-500 group-hover:text-white transition-all duration-300 shadow-sm">
                   <Building2 className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold mb-1 group-hover:text-green-500 transition-colors">Non-Profit Organizations</h3>
-                  <p className="text-gray-400 text-sm font-medium">Registered non-profits advancing justice receive 50% off all plans.</p>
+                  <h3 className="text-lg font-black text-slate-900 mb-1 group-hover:text-green-500 transition-colors">Non-Profit Organizations</h3>
+                  <p className="text-slate-500 text-sm font-medium">Registered non-profits advancing justice receive 50% off all plans.</p>
                 </div>
               </div>
             </div>
 
             {/* Right Panel: Verification Card */}
-            <div className="w-full md:w-[400px] bg-white/5 rounded-[2rem] p-10 flex flex-col justify-center border border-white/5 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 blur-[50px] rounded-full pointer-events-none"></div>
+            <div className="w-full md:w-[400px] bg-white rounded-[2rem] p-10 flex flex-col justify-center border border-slate-200 relative overflow-hidden shadow-xl">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-[50px] rounded-full pointer-events-none"></div>
 
               <div className="mb-6 relative z-10">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-gray-500 line-through text-lg font-medium">$15</span>
-                  <span className="text-5xl font-bold text-primary">$1.50</span>
-                  <span className="text-gray-400 font-medium">/mo</span>
+                  <span className="text-slate-300 line-through text-lg font-medium">$15</span>
+                  <span className="text-5xl font-black text-primary">$1.50</span>
+                  <span className="text-slate-400 font-medium">/mo</span>
                 </div>
-                <p className="text-sm text-gray-400 font-medium mt-2">Personal plan with student discount</p>
+                <p className="text-sm text-slate-500 font-medium mt-2">Personal plan with student discount</p>
               </div>
 
               <ul className="space-y-3 mb-8 relative z-10">
                 {['Full AI analysis suite', 'Unlimited workspaces', '5 GB storage', 'Priority support'].map((item, i) => (
-                  <li key={i} className="flex items-center gap-2 text-sm font-medium text-gray-300">
-                    <Check className="w-4 h-4 text-primary" />
+                  <li key={i} className="flex items-center gap-2 text-sm font-bold text-slate-600">
+                    <Check className="w-4 h-4 text-primary" strokeWidth={3} />
                     {item}
                   </li>
                 ))}
               </ul>
 
-              <button className="w-full py-4 bg-primary text-white rounded-xl font-bold hover:bg-primary-hover transition-colors shadow-lg shadow-primary/20 relative z-10">
+              <button className="w-full py-4 bg-primary text-white rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-primary-hover transition-colors shadow-lg shadow-primary/20 relative z-10">
                 Verify Student Status
               </button>
-              <p className="text-center text-xs text-gray-500 font-medium mt-4 relative z-10">
+              <p className="text-center text-[10px] text-slate-400 font-black uppercase tracking-widest mt-4 relative z-10">
                 Instant verification with .edu email
               </p>
             </div>
@@ -562,9 +562,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
       </section>
 
       {/* Enterprise Section */}
-      <section className="py-32 px-6 bg-white/5 border-y border-white/5">
+      <section className="py-32 px-6 bg-slate-50 border-y border-slate-200">
         <div className="max-w-7xl mx-auto">
-          <div className="p-12 md:p-20 rounded-[3rem] bg-[#0a0a0a] border border-white/10 relative overflow-hidden group">
+          <div className="p-12 md:p-20 rounded-[3rem] bg-slate-900 border border-white/10 relative overflow-hidden group shadow-2xl">
             <div className="absolute top-0 right-0 w-96 h-96 bg-primary/20 blur-[120px] rounded-full pointer-events-none group-hover:bg-primary/30 transition-all duration-700"></div>
             
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -573,15 +573,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                   <Building2 className="w-3 h-3" />
                   Enterprise Solutions
                 </div>
-                <h2 className="text-4xl md:text-6xl font-bold tracking-tighter mb-8 leading-tight">
+                <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-8 leading-tight text-white">
                   Need a custom <span className="text-primary font-bold">enterprise</span> solution?
                 </h2>
-                <p className="text-xl text-gray-400 font-medium leading-relaxed mb-12">
+                <p className="text-xl text-slate-400 font-medium leading-relaxed mb-12">
                   Large law firms and legal departments can get custom pricing, on-premise deployments, SSO, advanced audit logs, and dedicated account management.
                 </p>
                 <button 
                   onClick={() => window.location.href = '/book-demo'}
-                  className="px-10 py-5 bg-white text-black rounded-2xl font-bold hover:bg-gray-200 transition-all shadow-xl shadow-white/10 flex items-center justify-center gap-3 active:scale-95 group/btn"
+                  className="px-10 py-5 bg-white text-slate-900 rounded-2xl font-black uppercase tracking-widest text-[12px] hover:bg-slate-100 transition-all shadow-xl shadow-white/5 flex items-center justify-center gap-3 active:scale-95 group/btn"
                 >
                   Book a Demo here
                   <ArrowRight className="w-6 h-6 group-hover/btn:translate-x-2 transition-transform" />
