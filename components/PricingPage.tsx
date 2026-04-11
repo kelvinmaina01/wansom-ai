@@ -115,7 +115,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
           className="text-5xl md:text-7xl font-black tracking-tighter mb-6 leading-[0.9] text-white"
         >
           Simple, transparent pricing.<br />
-          <span className="text-gray-400">Start free. Scale as you grow.</span>
+          <span className="text-primary">Start free. Scale as you grow.</span>
         </motion.h1>
 
         <motion.p 
@@ -159,65 +159,13 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
           </div>
         </motion.div>
 
-        {/* CREDIT USAGE INFO (Analogy Section) */}
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="max-w-4xl mx-auto mb-20 bg-[#0a0a0a] border border-white/5 rounded-[2.5rem] p-10 relative overflow-hidden group hover:border-primary/20 transition-all duration-500"
-        >
-          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px] pointer-events-none group-hover:bg-primary/10 transition-all" />
-          
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center">
-                <Info className="w-5 h-5 text-primary" />
-              </div>
-              <div className="text-left">
-                <h3 className="text-sm font-black text-white uppercase tracking-widest">How credits work</h3>
-                <p className="text-[11px] text-gray-500 font-bold uppercase tracking-widest mt-0.5">Transparent usage across Lawlify Intelligence</p>
-              </div>
-            </div>
-            <div className="px-4 py-2 bg-black border border-white/5 rounded-full text-[11px] font-black tracking-widest text-gray-400 uppercase">
-               1 action = 1–3 credits
-            </div>
-          </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-            {[
-              { label: 'AI Chat Response', val: '1', unit: 'credit' },
-              { label: 'Document Analysis', val: '2', unit: 'credits' },
-              { label: 'Document Draft', val: '3', unit: 'credits' },
-              { label: 'Integration Query', val: '1', unit: 'credit' }
-            ].map((item, i) => (
-              <div key={i} className="bg-black border border-white/5 rounded-2xl p-6 text-center hover:bg-zinc-900 transition-all group/item">
-                <div className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-3 leading-tight min-h-[30px]">{item.label}</div>
-                <div className="text-3xl font-black text-white mb-1 group-hover/item:text-primary transition-colors">{item.val}</div>
-                <div className="text-[9px] font-black text-gray-500 uppercase tracking-widest">{item.unit}</div>
-              </div>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-             {[
-               { plan: 'Free', color: 'text-blue-400', bg: 'bg-blue-400/10', border: 'border-blue-400/20', text: '5 credits/day. Resets at midnight UTC. Each day starts fresh.' },
-               { plan: 'Personal', color: 'text-primary', bg: 'bg-primary/10', border: 'border-primary/20', text: '500 credits/month. No daily reset — use them any time.' },
-               { plan: 'Teams', color: 'text-purple-400', bg: 'bg-purple-400/10', border: 'border-purple-400/20', text: '800 credits/seat, pooled across team members.' },
-               { plan: 'Enterprise', color: 'text-green-400', bg: 'bg-green-400/10', border: 'border-green-400/20', text: 'Unlimited. No credit tracking, no caps. Custom pricing.' }
-             ].map((r, i) => (
-               <div key={i} className={`text-left rounded-2xl p-4 border ${r.bg} ${r.border}`}>
-                 <div className={`text-[10px] font-black uppercase tracking-widest mb-2 ${r.color}`}>{r.plan}</div>
-                 <p className="text-[11px] text-gray-300 leading-relaxed font-medium">{r.text}</p>
-               </div>
-             ))}
-          </div>
-        </motion.div>
       </div>
 
       {/* PRICING GRID */}
-      <div className="max-w-7xl mx-auto px-6 pb-24 grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
+      <div className="max-w-[1400px] mx-auto px-6 pb-24 grid grid-cols-1 md:grid-cols-4 gap-10 items-start">
         {/* FREE */}
-        <div className="bg-[#0a0a0a] border border-white/5 rounded-[2.5rem] p-8 hover:border-white/10 transition-all flex flex-col min-h-full">
+        <div className="bg-[#0a0a0a] border border-white/5 rounded-[2.5rem] p-12 hover:border-white/10 transition-all flex flex-col min-h-full">
           <div className="mb-6">
             <h3 className="text-xl font-black text-white mb-1">Free</h3>
             <p className="text-xs text-gray-500 font-medium leading-relaxed">For individuals exploring AI-powered legal work</p>
@@ -237,7 +185,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
                <span className="text-3xl font-black text-white">5</span>
                <span className="text-[11px] font-black text-gray-500 uppercase tracking-widest">credits / day</span>
              </div>
-             <p className="text-[10px] text-gray-400 leading-relaxed mb-6 font-medium">Unused credits do NOT carry over. Starts fresh at midnight UTC.</p>
+             <p className="text-[10px] text-gray-400 leading-relaxed mb-6 font-medium">5 credits/day. Resets at midnight UTC. Each day starts fresh.</p>
              <div className="h-1 bg-white/10 rounded-full overflow-hidden">
                <div className="h-full bg-blue-500/40 w-[5%] rounded-full shadow-[0_0_10px_rgba(59,130,246,0.3)]" />
              </div>
@@ -268,7 +216,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
         </div>
 
         {/* PERSONAL */}
-        <div className="bg-[#0a0a0a] border-2 border-primary rounded-[2.5rem] p-8 shadow-2xl shadow-primary/5 flex flex-col min-h-full relative overflow-hidden">
+        <div className="bg-[#0a0a0a] border-2 border-primary rounded-[2.5rem] p-12 shadow-2xl shadow-primary/5 flex flex-col min-h-full relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
           <div className="self-center bg-primary text-white text-[9px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-full mb-8 absolute -top-3 shadow-lg shadow-primary/20">
             Most Popular
@@ -295,7 +243,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
                <span className="text-3xl font-black text-white">500</span>
                <span className="text-[11px] font-black text-primary uppercase tracking-widest">credits / month</span>
              </div>
-             <p className="text-[10px] text-gray-300 leading-relaxed mb-6 font-medium">Use any time during billing month. Zero when done — top up or wait for renewal.</p>
+             <p className="text-[10px] text-gray-300 leading-relaxed mb-6 font-medium">500 credits/month. No daily reset — use them any time.</p>
              <div className="h-1 bg-white/10 rounded-full overflow-hidden">
                <div className="h-full bg-primary/60 w-[42%] rounded-full shadow-[0_0_10px_rgba(239,68,68,0.3)]" />
              </div>
@@ -327,7 +275,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
         </div>
 
         {/* TEAMS */}
-        <div className="bg-[#0a0a0a] border border-white/5 rounded-[2.5rem] p-8 hover:border-white/10 transition-all flex flex-col min-h-full">
+        <div className="bg-[#0a0a0a] border border-white/5 rounded-[2.5rem] p-12 hover:border-white/10 transition-all flex flex-col min-h-full">
           <div className="mb-6">
             <h3 className="text-xl font-black text-white mb-1">Teams</h3>
             <p className="text-xs text-gray-500 font-medium leading-relaxed">Collaborate on client matters with your whole firm</p>
@@ -348,7 +296,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
                <span className="text-3xl font-black text-white">800</span>
                <span className="text-[11px] font-black text-gray-500 uppercase tracking-widest">credits/seat/mo</span>
              </div>
-             <p className="text-[10px] text-gray-400 leading-relaxed mb-6 font-medium">All seats share one pool. Counts down until billing renewal.</p>
+             <p className="text-[10px] text-gray-400 leading-relaxed mb-6 font-medium">800 credits/seat, pooled across team members.</p>
              <div className="h-1 bg-white/10 rounded-full overflow-hidden">
                <div className="h-full bg-white/20 w-[65%] rounded-full" />
              </div>
@@ -380,7 +328,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
         </div>
 
         {/* ENTERPRISE */}
-        <div className="bg-[#0a0a0a] border border-white/5 rounded-[2.5rem] p-8 hover:border-white/10 transition-all flex flex-col min-h-full">
+        <div className="bg-[#0a0a0a] border border-white/5 rounded-[2.5rem] p-12 hover:border-white/10 transition-all flex flex-col min-h-full">
           <div className="mb-6">
             <h3 className="text-xl font-black text-white mb-1">Enterprise</h3>
             <p className="text-xs text-gray-500 font-medium leading-relaxed">For the most demanding legal teams</p>
@@ -399,7 +347,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
              <div className="flex items-baseline gap-2 mb-3">
                <span className="text-3xl font-black text-white tracking-widest uppercase">Unlimited</span>
              </div>
-             <p className="text-[10px] text-gray-400 leading-relaxed mb-6 font-medium">No credit caps. Custom AI model fine-tuning included.</p>
+             <p className="text-[10px] text-gray-400 leading-relaxed mb-6 font-medium">Unlimited. No credit tracking, no caps. Custom pricing.</p>
              <div className="h-1 bg-green-500/20 rounded-full overflow-hidden">
                <div className="h-full bg-green-500/60 w-full rounded-full" />
              </div>
@@ -429,6 +377,59 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
           </div>
         </div>
       </div>
+
+        {/* CREDIT USAGE INFO (Analogy Section) - MOVED BELOW PLANS */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-6xl mx-auto mb-24 bg-[#0a0a0a] border border-white/5 rounded-[3rem] p-12 lg:p-16 relative overflow-hidden group hover:border-primary/20 transition-all duration-500"
+        >
+          <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 rounded-full blur-[100px] pointer-events-none group-hover:bg-primary/10 transition-all" />
+          
+          <div className="flex flex-col md:flex-row items-start justify-between gap-8 mb-12">
+            <div className="flex items-center gap-5">
+              <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/5">
+                <Info className="w-7 h-7 text-primary" />
+              </div>
+              <div className="text-left">
+                <h3 className="text-lg font-black text-white uppercase tracking-widest mb-1">How credits work</h3>
+                <p className="text-xs text-primary font-black uppercase tracking-widest">Start free. Scale as you grow.</p>
+              </div>
+            </div>
+            <div className="px-6 py-3 bg-black border border-white/10 rounded-full text-xs font-black tracking-widest text-gray-400 uppercase shadow-inner">
+               Transparent usage: 1 action = 1–3 credits
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            {[
+              { label: 'AI Chat Response', val: '1', unit: 'credit' },
+              { label: 'Document Analysis', val: '2', unit: 'credits' },
+              { label: 'Document Draft', val: '3', unit: 'credits' },
+              { label: 'Integration Query', val: '1', unit: 'credit' }
+            ].map((item, i) => (
+              <div key={i} className="bg-black/40 border border-white/5 rounded-[2.5rem] p-8 text-center hover:bg-zinc-900/50 transition-all group/item shadow-xl">
+                <div className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-4 leading-tight min-h-[30px]">{item.label}</div>
+                <div className="text-5xl font-black text-white mb-2 group-hover/item:text-primary transition-colors tracking-tighter">{item.val}</div>
+                <div className="text-[10px] font-black text-gray-600 uppercase tracking-widest">{item.unit}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+             {[
+               { plan: 'Free', color: 'text-blue-400', bg: 'bg-blue-400/5', border: 'border-blue-400/10', text: '5 credits/day. Resets at midnight UTC. Each day starts fresh.' },
+               { plan: 'Personal', color: 'text-primary', bg: 'bg-primary/5', border: 'border-primary/10', text: '500 credits/month. No daily reset — use them any time.' },
+               { plan: 'Teams', color: 'text-purple-400', bg: 'bg-purple-400/5', border: 'border-purple-400/10', text: '800 credits/seat, pooled across team members.' },
+               { plan: 'Enterprise', color: 'text-green-400', bg: 'bg-green-400/5', border: 'border-green-400/10', text: 'Unlimited. No credit tracking, no caps. Custom pricing.' }
+             ].map((r, i) => (
+               <div key={i} className={`text-left rounded-[2rem] p-8 border ${r.bg} ${r.border} hover:scale-[1.02] transition-transform`}>
+                 <div className={`text-[12px] font-black uppercase tracking-[0.15em] mb-4 ${r.color}`}>{r.plan}</div>
+                 <p className="text-[13px] text-gray-300 leading-relaxed font-medium">{r.text}</p>
+               </div>
+             ))}
+          </div>
+        </motion.div>
 
       {/* TOP-UP SECTION */}
       <div className="max-w-4xl mx-auto px-6 pb-24">
