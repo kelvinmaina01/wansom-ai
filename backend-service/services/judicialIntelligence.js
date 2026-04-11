@@ -64,6 +64,10 @@ export class JudicialIntelligence {
         }
         
         return { success: true, message: "Base judges seeded." };
+        } catch (error) {
+            logger.error("Error seeding base judges:", error);
+            throw error;
+        }
     }
 
     /**

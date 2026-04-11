@@ -57,8 +57,7 @@ const MatterInspector: React.FC<MatterInspectorProps> = ({
         const { count: docCount } = await supabase
           .from('project_documents')
           .select('*', { count: 'exact', head: true })
-          .eq('case_id', project.id)
-          .catch(() => ({ count: null })) as any;
+          .eq('case_id', project.id) as any;
 
         setFileCount((count || 0) + (docCount || 0));
       } catch {

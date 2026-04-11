@@ -25,23 +25,25 @@ import {
   Award,
   Hash,
   Layers,
-  Zap
+  Zap,
+  PieChart as PieChartIcon,
+  BarChart as BarChartIcon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  PieChart, 
+  PieChart as RePieChart, 
   Pie, 
   Cell, 
   Tooltip, 
   ResponsiveContainer,
   Label,
-  BarChart,
+  BarChart as ReBarChart,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Legend,
-  AreaChart,
+  AreaChart as ReAreaChart,
   Area
 } from 'recharts';
 
@@ -352,6 +354,11 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
 
   // Perspective State
   const [graphPerspective, setGraphPerspective] = useState<'career' | 'recent' | 'jurisdiction'>('career');
+  const [graphType, setGraphType] = useState<'pie' | 'bar' | 'area'>('pie');
+
+  // Court Insights Intelligence State
+  const [isGeneratingInsights, setIsGeneratingInsights] = useState(false);
+  const [selectedJurisdiction, setSelectedJurisdiction] = useState('Kenya');
 
   // Drawer Hub State
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -503,8 +510,6 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
     switch (activeSubView) {
       case 'Court insights':
         return renderCourtInsights();
-      case 'Case tracker':
-        return renderCaseTracker();
       case 'Judge directory':
       default:
         return renderDirectory();
@@ -646,13 +651,19 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
     </motion.div>
   );
 
+  const majorCases = [
+    { id: '1', title: 'State vs. Digital Rights Found.', court: 'Supreme Court', date: 'Jan 2026', outcome: 'Favorable', impact: 'High' },
+    { id: '2', title: 'Matter of Electoral Integrity', court: 'Constitutional', date: 'Feb 2026', outcome: 'Neutral', impact: 'Critical' },
+    { id: '3', title: 'Tech-Hub Property Dispute', court: 'Commercial', date: 'Mar 2026', outcome: 'Hostile', impact: 'Medium' },
+  ];
+
   const renderCourtInsights = () => (
     <motion.div 
       initial={{ opacity: 0, scale: 0.99 }}
       animate={{ opacity: 1, scale: 1 }}
       className="p-8 max-w-7xl mx-auto space-y-10"
     >
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-primary rounded-xl shadow-md text-white">
             <Building className="w-6 h-6" />
@@ -662,9 +673,55 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
             <p className="text-sm text-slate-500 font-bold uppercase tracking-[0.2em] mt-1">Institutional analysis & Bench metrics</p>
           </div>
         </div>
-        <div className="bg-white border border-slate-200 rounded-xl px-4 py-2 flex items-center gap-3 shadow-sm">
-          <Globe className="w-4 h-4 text-slate-400" />
-          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">East African Community (EAC)</span>
+        
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <div className="bg-white border-2 border-slate-200 rounded-2xl px-6 py-3 flex items-center gap-4 shadow-sm relative group">
+            <Globe className="w-4 h-4 text-primary" />
+            <select 
+              value={selectedJurisdiction}
+              onChange={(e) => setSelectedJurisdiction(e.target.value)}
+              className="bg-transparent text-[11px] font-black text-slate-900 uppercase tracking-widest focus:outline-none appearance-none pr-6"
+            >
+              {JURISDICTIONS.filter(j => j !== 'All Regions').map(j => (
+                <option key={j} value={j}>{j}</option>
+              ))}
+            </select>
+            <ChevronDown className="w-3 h-3 text-slate-400 absolute right-4" />
+          </div>
+
+          <button 
+            onClick={() => {
+              setIsGeneratingInsights(true);
+              setTimeout(() => setIsGeneratingInsights(false), 2000);
+            }}
+            disabled={isGeneratingInsights}
+            className="px-8 py-3 bg-red-600 text-white rounded-2xl border-2 border-black text-[11px] font-black uppercase tracking-widest shadow-xl shadow-red-600/10 hover:bg-black transition-all active:scale-95 flex items-center gap-3"
+          >
+            <Sparkles className={`w-4 h-4 ${isGeneratingInsights ? 'animate-ping' : ''}`} />
+            {isGeneratingInsights ? 'Synthesizing Bureau Data...' : 'Generate New Insights'}
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-slate-900 rounded-[2.5rem] p-10 border border-slate-800 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/20 blur-[100px] rounded-full -mr-48 -mt-48"></div>
+        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
+           <div>
+             <span className="px-4 py-2 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg border-2 border-black mb-6 inline-block">Active Jurisdiction</span>
+             <h2 className="text-4xl font-black text-white tracking-tighter mb-4">{selectedJurisdiction} Judiciary</h2>
+             <p className="text-slate-400 max-w-lg font-medium">Real-time meta-analysis for {selectedJurisdiction}. Viewing institutional efficiency and outcome favorability across all divisions.</p>
+           </div>
+           <div className="flex gap-10">
+              <div className="text-center">
+                 <p className="text-5xl font-black text-white tracking-tighter">94%</p>
+                 <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest mt-2">Efficiency Rating</p>
+              </div>
+              <div className="w-px h-16 bg-white/10 self-center"></div>
+              <div className="text-center">
+                 <p className="text-5xl font-black text-white tracking-tighter">1.2M</p>
+                 <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-2">Total Filings</p>
+              </div>
+           </div>
         </div>
       </div>
 
@@ -696,15 +753,15 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
           </h3>
           <div className="h-[260px]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={[
-                  { name: 'Commercial HC', value: 72 },
-                  { name: 'Land Court', value: 58 },
-                  { name: 'Employment', value: 84 },
-                  { name: 'Constitutional', value: 45 },
-                ]}
-                margin={{ top: 5, right: 10, left: -20, bottom: 5 }}
-              >
+          <ReBarChart
+            data={[
+              { name: 'Commercial HC', value: 72 },
+              { name: 'Land Court', value: 58 },
+              { name: 'Employment', value: 84 },
+              { name: 'Constitutional', value: 45 },
+            ]}
+            margin={{ top: 5, right: 10, left: -20, bottom: 5 }}
+          >
                 <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
                 <XAxis dataKey="name" tick={{ fontSize: 11, fontWeight: 700, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} unit="%" domain={[0, 100]} />
@@ -717,7 +774,7 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
                     <Cell key={i} fill={val >= 70 ? '#10b981' : val >= 55 ? '#ef4444' : '#f59e0b'} />
                   ))}
                 </Bar>
-              </BarChart>
+            </ReBarChart>
             </ResponsiveContainer>
           </div>
         </div>
@@ -728,17 +785,17 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-6">Days from filing to first hearing</p>
           <div className="h-[260px]">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                data={[
-                  { div: 'DIV-1', days: 45 },
-                  { div: 'DIV-2', days: 120 },
-                  { div: 'DIV-3', days: 30 },
-                  { div: 'DIV-4', days: 90 },
-                  { div: 'DIV-5', days: 60 },
-                  { div: 'DIV-6', days: 150 },
-                ]}
-                margin={{ top: 5, right: 10, left: -20, bottom: 5 }}
-              >
+          <ReAreaChart
+            data={[
+              { div: 'DIV-1', days: 45 },
+              { div: 'DIV-2', days: 120 },
+              { div: 'DIV-3', days: 30 },
+              { div: 'DIV-4', days: 90 },
+              { div: 'DIV-5', days: 60 },
+              { div: 'DIV-6', days: 150 },
+            ]}
+            margin={{ top: 5, right: 10, left: -20, bottom: 5 }}
+          >
                 <defs>
                   <linearGradient id="effGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#ef4444" stopOpacity={0.15} />
@@ -753,7 +810,7 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
                   contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '12px', fontSize: 12 }}
                 />
                 <Area type="monotone" dataKey="days" stroke="#ef4444" strokeWidth={2.5} fill="url(#effGrad)" dot={{ r: 4, fill: '#ef4444', strokeWidth: 0 }} />
-              </AreaChart>
+            </ReAreaChart>
             </ResponsiveContainer>
           </div>
           <div className="mt-4 pt-4 border-t border-gray-50 flex justify-between items-center">
@@ -762,114 +819,41 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
           </div>
         </div>
       </div>
-    </motion.div>
-  );
 
-  const renderCaseTracker = () => (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="p-8 max-w-7xl mx-auto space-y-10"
-    >
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="flex items-center gap-4">
-          <div className="p-3 bg-gray-900 rounded-xl shadow-md text-white">
-            <FileText className="w-6 h-6" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900">Case Tracker</h1>
-            <p className="text-sm text-slate-500 font-bold uppercase tracking-[0.2em] mt-1">Live updates from Registry</p>
-          </div>
-        </div>
-        <div className="flex gap-3">
-          <button className="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm hover:bg-slate-50 transition-all">Export Report</button>
-          <button className="px-5 py-2.5 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:-translate-y-0.5 transition-all">Add new case</button>
-        </div>
-      </div>
-
-      <div className="bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-        <div className="p-6 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Hash className="w-4 h-4 text-slate-400" />
-            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Monitored Cases</h3>
-          </div>
-          <div className="flex items-center gap-4">
-             <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Live Monitoring</span>
-             </div>
-          </div>
-        </div>
-        <div className="divide-y divide-gray-50">
-          {[
-            { id: 'MA-001', name: 'Alber & Co vs State Dept', status: 'Hearing Set', date: 'Mar 28, 2026', judge: 'Hon. Justice Mabeya', priority: 'High' },
-            { id: 'CS-442', name: 'Digital Rights Initiative vs Telco-X', status: 'Judgment Date', date: 'Apr 05, 2026', judge: 'Hon. Justice Thande', priority: 'Medium' },
-            { id: 'ELC-102', name: 'Greenway Estate vs Municipal Council', status: 'Submissions', date: 'Mar 25, 2026', judge: 'Hon. Justice Angote', priority: 'Low' },
-            { id: 'APP-099', name: 'Central Bank vs Forex Bureau Ltd', status: 'Final Review', date: 'Apr 12, 2026', judge: 'Justice Murgor', priority: 'High' },
-          ].map((item) => (
-            <div key={item.id} className="p-8 flex flex-col sm:flex-row sm:items-center justify-between hover:bg-slate-50 transition-colors group">
-              <div className="flex items-center gap-6 mb-4 sm:mb-0">
-                <div className="w-14 h-14 bg-white border border-slate-100 rounded-2xl flex items-center justify-center text-slate-400 font-bold text-[10px] group-hover:border-primary/20 group-hover:text-primary shadow-sm transition-all">
-                  {item.id}
+      {/* Major Recent Cases Section */}
+      <div className="space-y-6 pt-10">
+        <h3 className="text-xl font-bold text-slate-900 flex items-center gap-3">
+           <Layers className="w-5 h-5 text-primary" /> Major Cases in {selectedJurisdiction}
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+           {majorCases.map(c => (
+             <div key={c.id} className="bg-white border border-slate-100 rounded-[2rem] p-8 shadow-sm hover:shadow-xl transition-all">
+                <div className="flex justify-between items-start mb-6">
+                   <div className="p-3 bg-slate-50 rounded-xl"><FileText className="w-4 h-4 text-slate-400" /></div>
+                   <span className={`px-2.5 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${
+                     c.outcome === 'Favorable' ? 'bg-emerald-500 text-white' : 
+                     c.outcome === 'Hostile' ? 'bg-red-600 text-white' : 'bg-slate-900 text-white'
+                   }`}>{c.outcome}</span>
                 </div>
-                <div>
-                  <h4 className="text-base font-bold text-slate-900 group-hover:text-primary transition-colors">{item.name}</h4>
-                  <div className="flex items-center gap-3 mt-1.5">
-                    <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">{item.judge}</p>
-                    <span className="w-1 h-1 rounded-full bg-gray-200"></span>
-                    <span className={`text-[8px] font-black uppercase tracking-widest ${item.priority === 'High' ? 'text-primary' : 'text-slate-400'}`}>
-                      {item.priority} Priority
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center justify-between sm:justify-end gap-12">
-                <div className="text-right">
-                   <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${
-                     item.status === 'Judgment Date' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 
-                     item.status === 'Hearing Set' ? 'bg-amber-50 text-amber-600 border-amber-100' :
-                     'bg-slate-50 text-gray-600 border-slate-100'
-                   }`}>{item.status}</span>
-                   <div className="flex items-center justify-end gap-2 mt-2.5">
-                      <Clock className="w-3 h-3 text-slate-300" />
-                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{item.date}</p>
+                <h4 className="text-base font-bold text-slate-900 mb-2 line-clamp-1">{c.title}</h4>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-6">{c.court} · {c.date}</p>
+                <div className="pt-6 border-t border-slate-50 flex justify-between items-center">
+                   <div className="flex items-center gap-2">
+                      <Zap className="w-3 h-3 text-amber-500" />
+                      <span className="text-[9px] font-black text-slate-400 uppercase">Impact: {c.impact}</span>
                    </div>
+                   <button className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-primary hover:text-white transition-all">
+                      <ArrowRight className="w-4 h-4" />
+                   </button>
                 </div>
-                <button className="w-10 h-10 bg-white border border-slate-100 rounded-xl flex items-center justify-center text-slate-300 hover:text-primary hover:border-primary/20 hover:shadow-md transition-all">
-                  <ExternalLink className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="p-10 bg-primary/5 rounded-3xl border border-primary/10 flex items-center gap-8 group">
-          <div className="p-4 bg-primary text-white rounded-2xl shadow-xl shadow-primary/20 group-hover:scale-105 transition-transform">
-            <Sparkles className="w-8 h-8" />
-          </div>
-          <div>
-            <h3 className="text-xl font-bold text-slate-900 mb-2">Registry Monitoring</h3>
-            <p className="text-xs text-gray-600 font-medium leading-relaxed">
-              Real-time synchronization with Kenya Law (eKLR) and Uganda Legal Information Institute.
-            </p>
-          </div>
-        </div>
-        <div className="p-10 bg-gray-900 rounded-3xl border border-gray-800 flex items-center gap-8 group">
-          <div className="p-4 bg-gray-800 text-amber-400 rounded-2xl shadow-xl group-hover:scale-105 transition-transform">
-            <AlertCircle className="w-8 h-8" />
-          </div>
-          <div>
-            <h3 className="text-xl font-bold text-white mb-2">Automated Alerts</h3>
-            <p className="text-xs text-slate-400 font-medium leading-relaxed">
-              Get notified via WhatsApp or Email as soon as a ruling is uploaded or dates are changed.
-            </p>
-          </div>
+             </div>
+           ))}
         </div>
       </div>
     </motion.div>
   );
+
+  const renderCaseTracker = () => null; // Logic moved to CaseManager
 
   const renderProfile = () => {
     if (!selectedJudge) return null;
@@ -981,58 +965,116 @@ const JudicialAnalytics: React.FC<JudicialAnalyticsProps> = ({ activeSubView = '
                 </div>
 
                 {/* Outcome DNA Breakdown (Now with Perspective Switcher) */}
-                <div className="bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-sm">
-                  <div className="flex items-center justify-between mb-8">
-                    <p className="text-[11px] font-black text-slate-900/30 uppercase tracking-[0.3em]">Outcome DNA</p>
-                    <div className="flex bg-slate-50 p-1 rounded-xl border border-slate-100">
-                      {[
-                        { id: 'career', label: 'All' },
-                        { id: 'recent', label: '24M' },
-                        { id: 'jurisdiction', label: 'Reg' }
-                      ].map((p) => (
-                        <button
-                          key={p.id}
-                          onClick={() => setGraphPerspective(p.id as any)}
-                          className={`px-3 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-lg transition-all ${
-                            graphPerspective === p.id 
-                              ? 'bg-white text-slate-900 shadow-sm border border-slate-100' 
-                              : 'text-slate-400 hover:text-slate-600'
-                          }`}
-                        >
-                          {p.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+                <div className="bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-sm relative overflow-hidden">
+                   <div className="flex items-center justify-between mb-8">
+                     <p className="text-[11px] font-black text-slate-900/30 uppercase tracking-[0.3em]">Outcome DNA</p>
+                     
+                     {/* Graph Type Switcher */}
+                     <div className="flex items-center gap-3">
+                        <div className="flex bg-slate-50 p-1 rounded-xl border border-slate-100">
+                           {[
+                             { id: 'pie', icon: <PieChartIcon size={14} /> },
+                             { id: 'bar', icon: <BarChartIcon size={14} /> },
+                             { id: 'area', icon: <TrendingUp size={14} /> }
+                           ].map((t) => (
+                             <button
+                               key={t.id}
+                               onClick={() => setGraphType(t.id as any)}
+                               className={`p-2 rounded-lg transition-all ${
+                                 graphType === t.id 
+                                   ? 'bg-white text-primary shadow-sm border border-slate-100' 
+                                   : 'text-slate-400 hover:text-slate-600'
+                               }`}
+                             >
+                               {t.icon}
+                             </button>
+                           ))}
+                        </div>
+                        <div className="w-px h-6 bg-slate-100 mx-1"></div>
+                        <div className="flex bg-slate-50 p-1 rounded-xl border border-slate-100">
+                          {[
+                            { id: 'career', label: 'All' },
+                            { id: 'recent', label: '24M' },
+                            { id: 'jurisdiction', label: 'Reg' }
+                          ].map((p) => (
+                            <button
+                              key={p.id}
+                              onClick={() => setGraphPerspective(p.id as any)}
+                              className={`px-3 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-lg transition-all ${
+                                graphPerspective === p.id 
+                                  ? 'bg-white text-slate-900 shadow-sm border border-slate-100' 
+                                  : 'text-slate-400 hover:text-slate-600'
+                              }`}
+                            >
+                              {p.label}
+                            </button>
+                          ))}
+                        </div>
+                     </div>
+                   </div>
 
-                   <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-8 text-center">Outcome DNA Breakdown</h3>
+                   <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-8 text-center">{graphType.toUpperCase()} Distribution</h3>
+                   
                    <div className="h-56 relative">
                       <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={outcomeData}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={55}
-                            outerRadius={75}
-                            paddingAngle={6}
-                            dataKey="value"
-                            stroke="none"
-                          >
-                            {outcomeData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                            <Label 
-                              value={`${selectedJudge.winRate}%`} 
-                              position="center" 
-                              className="text-2xl font-bold fill-gray-900" 
-                            />
-                          </Pie>
-                          <Tooltip 
-                            contentStyle={{ borderRadius: '0.75rem', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
-                            itemStyle={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase' }}
-                          />
-                        </PieChart>
+                        {graphType === 'pie' ? (
+            <RePieChart>
+              <Pie
+                              data={outcomeData}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={55}
+                              outerRadius={75}
+                              paddingAngle={6}
+                              dataKey="value"
+                              stroke="none"
+                            >
+                              {outcomeData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                              ))}
+                              <Label 
+                                value={`${selectedJudge.winRate}%`} 
+                                position="center" 
+                                className="text-2xl font-bold fill-gray-900" 
+                              />
+              </Pie>
+              <Tooltip 
+                contentStyle={{ borderRadius: '0.75rem', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
+                itemStyle={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase' }}
+              />
+            </RePieChart>
+                        ) : graphType === 'bar' ? (
+            <ReBarChart data={outcomeData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                            <XAxis dataKey="name" tick={{ fontSize: 9, fontWeight: 700, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+                            <YAxis tick={{ fontSize: 9, fill: '#94a3b8' }} axisLine={false} tickLine={false} unit="%" />
+                            <Tooltip contentStyle={{ borderRadius: '12px' }} />
+                            <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                               {outcomeData.map((entry, index) => (
+                                 <Cell key={`cell-${index}`} fill={entry.color} />
+                               ))}
+                            </Bar>
+            </ReBarChart>
+                        ) : (
+            <ReAreaChart data={[
+              { time: '2022', rate: 45 },
+              { time: '2023', rate: selectedJudge.winRate - 10 },
+              { time: '2024', rate: selectedJudge.winRate },
+              { time: '2025', rate: selectedJudge.winRate + 5 },
+            ]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                            <defs>
+                              <linearGradient id="colorRate" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.2} />
+                                <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                              </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                            <XAxis dataKey="time" tick={{ fontSize: 9, fontWeight: 700, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+                            <YAxis tick={{ fontSize: 9, fill: '#94a3b8' }} axisLine={false} tickLine={false} unit="%" />
+                            <Tooltip contentStyle={{ borderRadius: '12px' }} />
+                            <Area type="monotone" dataKey="rate" stroke="#ef4444" fillOpacity={1} fill="url(#colorRate)" strokeWidth={3} />
+            </ReAreaChart>
+                        )}
                       </ResponsiveContainer>
                    </div>
                    <div className="grid grid-cols-3 gap-2 mt-6">

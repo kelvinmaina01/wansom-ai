@@ -17,7 +17,8 @@ import {
   ExternalLink,
   Download,
   Link,
-  UserPlus
+  UserPlus,
+  X
 } from 'lucide-react';
 import { UserSettings } from '../types';
 import { supabase } from '../lib/supabase';
@@ -31,9 +32,13 @@ const INITIAL_SETTINGS: UserSettings = {
     firmName: '',
     avatarUrl: ''
   },
+  appearance: 'light',
+  fontSize: 'medium',
   notifications: {
     email: true,
     push: true,
+    sms: false,
+    whatsapp: false,
     securityAlerts: true,
     billingAlerts: true,
     productUpdates: true,
@@ -42,6 +47,12 @@ const INITIAL_SETTINGS: UserSettings = {
     commentsMentions: true,
     workspaceInvitations: true,
     caseDeadlines: true,
+    digest: 'daily',
+    quietHours: {
+      enabled: false,
+      start: '22:00',
+      end: '07:00'
+    }
   },
   security: {
     twoFactorEnabled: false
@@ -115,9 +126,13 @@ const Settings: React.FC = () => {
                 firmName: data.profile_firm_name || '',
                 avatarUrl: data.profile_avatar_url || user.user_metadata?.avatar_url || ''
               },
+              appearance: (data.appearance as 'light' | 'dark' | 'system') || 'light',
+              fontSize: (data.font_size as 'small' | 'medium' | 'large') || 'medium',
               notifications: {
                 email: data.notifications_email ?? true,
                 push: data.notifications_push ?? true,
+                sms: data.notifications_sms ?? false,
+                whatsapp: data.notifications_whatsapp ?? false,
                 securityAlerts: data.notifications_security_alerts ?? true,
                 billingAlerts: data.notifications_billing_alerts ?? true,
                 productUpdates: data.notifications_product_updates ?? true,
@@ -126,6 +141,8 @@ const Settings: React.FC = () => {
                 commentsMentions: data.notifications_comments_mentions ?? true,
                 workspaceInvitations: data.notifications_workspace_invitations ?? true,
                 caseDeadlines: data.notifications_case_deadlines ?? true,
+                digest: data.notifications_digest || 'daily',
+                quietHours: data.notifications_quiet_hours || { enabled: false, start: '22:00', end: '07:00' }
               },
               security: {
                 twoFactorEnabled: data.security_two_factor_enabled ?? false
@@ -148,6 +165,8 @@ const Settings: React.FC = () => {
                 firmName: '',
                 avatarUrl: user.user_metadata?.avatar_url || ''
               },
+              appearance: 'light' as const,
+              fontSize: 'medium' as const,
               notifications: { ...INITIAL_SETTINGS.notifications },
               security: { ...INITIAL_SETTINGS.security },
               billing: { ...INITIAL_SETTINGS.billing },

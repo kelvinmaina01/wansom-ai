@@ -413,14 +413,19 @@ const AgenticMentorship: React.FC<AgenticMentorshipProps> = ({ user }) => {
 
            <div className="pt-4 flex flex-col items-center gap-6">
               <div className="inline-flex items-center gap-4 px-6 py-4 bg-white/80 backdrop-blur-md rounded-2xl border border-gray-100 shadow-xl">
-                 <div className="flex -space-x-3">
-                    {[1,2,3,4].map(i => (
-                      <div key={i} className={`w-10 h-10 rounded-full border-4 border-white bg-gray-${i*100+100} flex items-center justify-center text-[8px] font-black text-white overflow-hidden shadow-sm`}>
-                         <img src={`https://i.pravatar.cc/100?u=${i+10}`} alt="User" />
+                 <div className="flex -space-x-4">
+                    {[
+                      { name: 'Google Drive', icon: 'https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg' },
+                      { name: 'Google Sheets', icon: 'https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg' },
+                      { name: 'OneDrive', icon: '/integrations/onedrive.png' },
+                      { name: 'Slack', icon: '/integrations/slack.png' }
+                    ].map((item, i) => (
+                      <div key={i} className="w-11 h-11 rounded-full border-[3px] border-black bg-red-600 flex items-center justify-center p-2 shadow-2xl relative transition-transform hover:scale-110 hover:z-20" style={{ zIndex: 40 - i }}>
+                         <img src={item.icon} alt={item.name} className="w-full h-full object-contain brightness-0 invert" />
                       </div>
                     ))}
-                    <div className="w-10 h-10 rounded-full border-4 border-white bg-red-500 flex items-center justify-center text-[8px] font-black text-white shadow-sm">
-                      +4k
+                    <div className="w-11 h-11 rounded-full border-[3px] border-black bg-red-600 flex items-center justify-center text-[10px] font-black text-white shadow-2xl relative z-0">
+                      + 4
                     </div>
                  </div>
                  <div className="text-left">

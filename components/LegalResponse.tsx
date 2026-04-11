@@ -47,6 +47,7 @@ export interface StructuredMessage extends LegalMessage {
   pillLabel?: string;
   /** Structured components emitted by AI */
   components?: AIComponent[];
+  isError?: boolean;
 }
 
 interface LegalResponseProps {

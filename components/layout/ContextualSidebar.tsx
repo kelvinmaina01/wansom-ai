@@ -251,12 +251,6 @@ const ContextualSidebar: React.FC<ContextualSidebarProps> = ({
               onClick: () => onSubViewChange?.('Court insights'),
               icon: <BarChart3 className="w-5 h-5" /> 
             },
-            { 
-              label: 'Case tracker', 
-              active: activeSubView === 'Case tracker', 
-              onClick: () => onSubViewChange?.('Case tracker'),
-              icon: <Radar className="w-5 h-5" /> 
-            },
           ]
         };
       case AppView.CASE_MANAGEMENT:
@@ -274,6 +268,12 @@ const ContextualSidebar: React.FC<ContextualSidebarProps> = ({
               active: activeSubView === 'Cases' || !activeSubView, 
               onClick: () => onSubViewChange?.('Cases'),
               icon: <FolderClosed className="w-5 h-5" /> 
+            },
+            { 
+              label: 'Registry Tracker', 
+              active: activeSubView === 'Registry Tracker', 
+              onClick: () => onSubViewChange?.('Registry Tracker'),
+              icon: <Radar className="w-5 h-5" /> 
             },
             { 
               label: 'AI Workflows', 

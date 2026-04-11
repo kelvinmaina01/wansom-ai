@@ -244,9 +244,9 @@ const LegalInput: React.FC<LegalInputProps> = ({
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   key={item.id} 
-                  className="w-5 h-5 rounded-md border border-white bg-white p-0.5 shadow-sm active-tunnel-glow"
+                  className="w-6 h-6 rounded-full border border-black bg-red-600 p-1 shadow-sm active-tunnel-glow"
                 >
-                  <img src={item.icon} alt="" className="w-full h-full object-contain" />
+                  <img src={item.icon} alt="" className="w-full h-full object-contain brightness-0 invert" />
                 </motion.div>
               ))}
             </div>
@@ -545,22 +545,22 @@ const LegalInput: React.FC<LegalInputProps> = ({
             <div className="flex items-center gap-6">
               {/* Tool Icons (Overlapping Stacks) */}
               <div 
-                className="flex items-center -space-x-3 mr-4 cursor-pointer"
+                className="flex items-center -space-x-4 mr-4 cursor-pointer"
                 onClick={onOpenConnectors}
               >
                  {allIntegrations.slice(0, 4).map((item, idx) => (
                    <motion.div 
                      key={item.id} 
-                     className="w-10 h-10 rounded-full border-2 border-primary bg-white p-1.5 shadow-lg relative"
-                     style={{ zIndex: 40 - idx }}
+                     className="w-11 h-11 rounded-full border-[3px] border-black bg-red-600 flex items-center justify-center p-2 shadow-xl relative transition-transform hover:scale-110 hover:z-20"
+                     style={{ zIndex: idx === 0 ? 40 : idx === 1 ? 30 : idx === 2 ? 20 : 10 }}
                      title={`Connect ${item.name}`}
                    >
-                     <img src={item.icon} alt="" className="w-full h-full object-contain" />
+                     <img src={item.icon} alt="" className="w-full h-full object-contain brightness-0 invert" />
                    </motion.div>
                  ))}
                  {allIntegrations.length > 4 && (
-                   <div className="w-10 h-10 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-[10px] font-black text-black shadow-md relative z-0">
-                     +{allIntegrations.length - 4}
+                   <div className="w-11 h-11 rounded-full border-[3px] border-black bg-red-600 flex items-center justify-center text-[10px] font-black text-white shadow-xl relative z-0">
+                     + {allIntegrations.length - 4}
                    </div>
                  )}
               </div>

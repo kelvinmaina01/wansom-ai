@@ -138,13 +138,86 @@ const CaseManager: React.FC<CaseManagerProps> = ({ activeSubView = 'Cases' }) =>
 
   return (
     <div className="flex h-full bg-[#f8fafc] text-gray-900 font-sans selection:bg-red-500/30 overflow-hidden relative">
-      {activeSubView !== 'Cases' && (
+      {activeSubView !== 'Cases' && activeSubView !== 'Registry Tracker' && (
         <div className="flex-1 flex flex-col items-center justify-center bg-white h-full text-gray-900 text-center w-full">
           <div className="w-20 h-20 mb-6 bg-red-600/10 text-red-600 rounded-[15px] flex items-center justify-center shadow-lg shadow-red-600/10">
             <Scale className="w-10 h-10" />
           </div>
           <h1 className="text-4xl font-black mb-4 tracking-tighter">{activeSubView}</h1>
           <p className="text-gray-500 font-medium text-lg">Integrated subsystem coming soon or managed centrally.</p>
+        </div>
+      )}
+
+      {activeSubView === 'Registry Tracker' && (
+        <div className="flex-1 flex flex-col h-full bg-white animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="p-10 border-b border-gray-100 flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-black tracking-tighter">Registry Tracker</h1>
+              <p className="text-sm text-gray-400 font-bold uppercase tracking-widest mt-1">Live updates from Kenya Law & ULII</p>
+            </div>
+            <div className="flex gap-3">
+              <button className="px-6 py-3 bg-white border-2 border-slate-100 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:border-black transition-all">Sync Registry</button>
+              <button className="px-6 py-3 bg-red-600 text-white border-2 border-black rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-red-600/20 hover:bg-black transition-all">Export Monitor</button>
+            </div>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto p-10 space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                { label: 'Active Monitors', value: '12', color: 'text-blue-600' },
+                { label: 'Judgment Alerts', value: '04', color: 'text-red-600' },
+                { label: 'Registry Sync', value: 'Live', color: 'text-emerald-600' },
+              ].map((s, i) => (
+                <div key={i} className="bg-slate-50 border border-slate-100 rounded-[2rem] p-8">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">{s.label}</p>
+                  <p className={`text-3xl font-black ${s.color}`}>{s.value}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="bg-white border border-gray-100 rounded-[2.5rem] overflow-hidden shadow-sm">
+              <div className="p-8 border-b border-gray-50 bg-gray-50/50">
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-900">Tracked Matters</h3>
+              </div>
+              <div className="divide-y divide-gray-50">
+                {[
+                  { id: 'MA-001', name: 'Alber & Co vs State Dept', status: 'Hearing Set', date: 'Mar 28, 2026', judge: 'Hon. Justice Mabeya', priority: 'High' },
+                  { id: 'CS-442', name: 'Digital Rights Initiative vs Telco-X', status: 'Judgment Date', date: 'Apr 05, 2026', judge: 'Hon. Justice Thande', priority: 'Medium' },
+                  { id: 'ELC-102', name: 'Greenway Estate vs Municipal Council', status: 'Submissions', date: 'Mar 25, 2026', judge: 'Hon. Justice Angote', priority: 'Low' },
+                ].map((item) => (
+                  <div key={item.id} className="p-8 flex items-center justify-between hover:bg-slate-50 transition-colors group">
+                    <div className="flex items-center gap-6">
+                      <div className="w-12 h-12 bg-white border border-slate-100 rounded-xl flex items-center justify-center text-slate-400 font-bold text-[10px] shadow-sm tracking-tighter">
+                        {item.id}
+                      </div>
+                      <div>
+                        <h4 className="text-base font-bold text-slate-900">{item.name}</h4>
+                        <div className="flex items-center gap-3 mt-1">
+                          <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">{item.judge}</p>
+                          <span className={`text-[8px] font-black uppercase tracking-widest ${item.priority === 'High' ? 'text-red-600' : 'text-slate-400'}`}>
+                            {item.priority} Priority
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-10">
+                      <div className="text-right">
+                         <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${
+                           item.status === 'Judgment Date' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 
+                           item.status === 'Hearing Set' ? 'bg-amber-50 text-amber-600 border-amber-100' :
+                           'bg-slate-50 text-gray-600 border-slate-100'
+                         }`}>{item.status}</span>
+                         <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">{item.date}</p>
+                      </div>
+                      <button className="w-10 h-10 bg-white border border-slate-100 rounded-xl flex items-center justify-center text-slate-300 hover:text-red-600 transition-all">
+                        <Plus className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
