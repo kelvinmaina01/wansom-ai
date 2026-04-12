@@ -277,8 +277,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
 
       {/* Features Grid - Redesigned to Fly.io Style (Single Card) */}
       <section id="features" className="py-32 px-6 bg-ai-studio relative overflow-hidden">
-        <div className="max-w-7xl mx-auto">
-          <div className="relative p-10 md:p-16 rounded-[2.5rem] bg-slate-50 border border-slate-200 overflow-visible group shadow-xl">
+        <div className="max-w-[1400px] mx-auto px-4">
+          <div className="relative p-10 md:p-16 rounded-[2.5rem] bg-slate-50 border border-slate-200 overflow-hidden group shadow-xl">
             <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 blur-[120px] rounded-full pointer-events-none group-hover:bg-primary/10 transition-all duration-700"></div>
             
             <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
@@ -300,8 +300,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
               </div>
 
               {/* Right Side: Overlapping Notebook Paper (Refined) */}
-              <div className="flex-1 w-full max-w-lg lg:absolute lg:-right-4 lg:top-[48%] lg:-translate-y-1/2 z-30">
-                <div className="bg-[#fffdf5] rounded-[2rem] border border-[#e8e4d1] relative overflow-hidden transform lg:rotate-3 text-neutral-900">
+              <div className="flex-1 w-full max-w-lg lg:absolute lg:right-12 lg:top-1/2 lg:-translate-y-1/2 z-30">
+                <div className="bg-[#fffdf5] rounded-[2rem] border border-[#e8e4d1] relative overflow-hidden transform lg:rotate-3 text-neutral-900 shadow-2xl">
                   {/* Red Margin Line */}
                   <div className="absolute left-12 top-0 bottom-0 w-[2px] bg-red-200/60" />
                   
