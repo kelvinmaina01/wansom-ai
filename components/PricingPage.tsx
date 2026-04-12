@@ -161,7 +161,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
       </div>
 
       {/* PRICING GRID */}
-      <div className="max-w-[1400px] mx-auto px-6 pb-24 grid grid-cols-1 md:grid-cols-4 gap-12 items-start">
+      <div className="max-w-[1550px] mx-auto px-6 pt-20 pb-24 grid grid-cols-1 md:grid-cols-4 gap-12 items-start relative z-10">
         {/* FREE */}
         <div className="bg-white border border-slate-200 rounded-[2.5rem] p-8 hover:border-black transition-all flex flex-col min-h-full shadow-sm">
           <div className="mb-6">
@@ -213,7 +213,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
         </div>
 
         {/* PERSONAL */}
-        <div className="bg-white border-2 border-primary rounded-[2.5rem] p-8 shadow-xl shadow-primary/5 flex flex-col min-h-full relative overflow-hidden">
+        <div className="bg-white border-2 border-primary rounded-[2.5rem] p-8 shadow-xl shadow-primary/5 flex flex-col min-h-full relative overflow-visible">
           <div className="self-center bg-primary text-white text-[9px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-full mb-8 absolute -top-4 shadow-lg shadow-primary/20">
             Most Popular
           </div>
@@ -374,43 +374,51 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
         </div>
       </div>
 
-        {/* BUY CREDITS SECTION - RESTORED */}
+        {/* BUY CREDITS SECTION - PIXEL PERFECT REPLICATION */}
         <div className="py-24 max-w-[1550px] mx-auto px-10 relative z-10">
-          <div className="bg-slate-900 rounded-[3rem] p-16 relative overflow-hidden group shadow-2xl">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 blur-[120px] rounded-full pointer-events-none group-hover:bg-primary/20 transition-all duration-700"></div>
-            
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-12 relative z-10">
-              <div className="max-w-xl">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary font-black text-[10px] uppercase tracking-[0.2em] mb-6 border border-primary/20">
-                  <Zap className="w-3 h-3 fill-current" />
-                  <span>Instant Credit Top-up</span>
-                </div>
-                <h2 className="text-4xl md:text-5xl font-black text-white mb-6">Need more power?</h2>
-                <p className="text-slate-300 text-lg font-medium leading-relaxed">
-                  Purchase standalone credits to supplement your monthly allocation. Top-up credits never expire and roll over indefinitely.
-                </p>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-6 w-full lg:w-auto">
-                {[
-                  { amt: 50, price: 2 },
-                  { amt: 150, price: 5, best: true },
-                  { amt: 500, price: 14 },
-                  { amt: 1000, price: 25 }
-                ].map((item, i) => (
-                  <button 
-                    key={i}
-                    onClick={() => openModal(item.amt, item.price)}
-                    className={`p-8 rounded-[2.5rem] border transition-all text-center relative group/btn min-w-[180px] ${item.best ? 'bg-primary border-primary shadow-2xl shadow-primary/30 hover:scale-[1.05]' : 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10'}`}
-                  >
-                    {item.best && <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-white text-primary text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full whitespace-nowrap shadow-xl">Best Value</div>}
-                    <div className="text-3xl font-black text-white mb-2">{item.amt}</div>
-                    <div className={`text-[11px] font-black uppercase tracking-widest mb-4 ${item.best ? 'text-white/80' : 'text-slate-500'}`}>Credits</div>
-                    <div className={`text-2xl font-black ${item.best ? 'text-white' : 'text-primary'}`}>${item.price}</div>
-                  </button>
-                ))}
-              </div>
+          <div className="text-left mb-10">
+            <h2 className="text-4xl font-black text-slate-900 mb-3 tracking-tight">Need more credits? Top up anytime.</h2>
+            <p className="text-slate-500 font-medium text-lg">Works on any plan. Top-up credits are consumed first and never expire.</p>
+          </div>
+
+          <div className="bg-orange-50/50 border border-orange-200/60 rounded-2xl p-6 mb-12 flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-white border border-orange-200 flex items-center justify-center shrink-0 shadow-sm">
+               <Info className="w-5 h-5 text-orange-600" />
             </div>
+            <p className="text-sm text-orange-900 leading-relaxed font-medium">
+              Top-up credits are consumed <span className="font-black">first</span> before your plan credits. They never expire — carry over month to month.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              { amt: '50', price: '2', unit: '0.04', border: 'border-red-400' },
+              { amt: '150', price: '5', unit: '0.033', best: true, border: 'border-orange-400' },
+              { amt: '500', price: '14', unit: '0.028', border: 'border-slate-100' },
+              { amt: '1,000', price: '25', unit: '0.025', border: 'border-slate-100' }
+            ].map((item, i) => (
+              <div key={i} className={`bg-white rounded-[2.5rem] p-10 flex flex-col items-center text-center relative shadow-sm border ${item.border} hover:shadow-xl transition-all duration-300`}>
+                {item.best && (
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full whitespace-nowrap shadow-lg">
+                    Best value
+                  </div>
+                )}
+                <div className="text-5xl font-black text-slate-900 mb-2">{item.amt}</div>
+                <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-10">CREDITS</div>
+                
+                <div className="mb-10">
+                  <div className="text-3xl font-black text-primary mb-1">${item.price}</div>
+                  <div className="text-[10px] font-medium text-slate-400 leading-tight">${item.unit} / credit</div>
+                </div>
+
+                <button 
+                  onClick={() => openModal(parseInt(item.amt.replace(',','')), parseInt(item.price))}
+                  className="w-full py-4 bg-slate-900 text-white rounded-xl font-black text-[11px] uppercase tracking-widest hover:bg-black transition-all shadow-lg shadow-slate-200"
+                >
+                  Buy {item.amt} credits
+                </button>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -564,7 +572,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
           <p className="text-black font-black uppercase tracking-widest text-[10px]">Everything you need to make the right decision for your firm.</p>
         </div>
 
-        <div className="overflow-x-auto rounded-[3rem] border border-slate-200 bg-white shadow-2xl pt-12">
+        <div className="overflow-x-auto rounded-[3rem] border border-slate-200 bg-white shadow-2xl pt-20">
           <table className="w-full border-collapse min-w-[1100px]">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200">
