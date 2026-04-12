@@ -171,7 +171,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
           <div className="mb-8">
             <div className="flex items-baseline gap-1">
               <span className="text-4xl font-black text-slate-900">$0</span>
-              <span className="text-black font-bold uppercase tracking-widest text-[10px]">/mo</span>
+              <span className="text-black font-black uppercase tracking-widest text-[10px]">/mo</span>
             </div>
             <div className="h-4 mt-1">&nbsp;</div>
           </div>
@@ -206,7 +206,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
                  <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${f.on ? 'bg-primary/10 border border-primary/20' : 'bg-slate-100 border border-slate-200'}`}>
                    {f.on && <Check className="w-2.5 h-2.5 text-primary" strokeWidth={3} />}
                  </div>
-                  <span className={`text-[12px] font-medium ${f.on ? 'text-black' : 'text-slate-400'}`}>{f.text}</span>
+                 <span className="text-[12px] font-medium text-black">{f.text}</span>
                </div>
              ))}
           </div>
@@ -214,7 +214,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
 
         {/* PERSONAL */}
         <div className="bg-white border-2 border-primary rounded-[2.5rem] p-8 shadow-xl shadow-primary/5 flex flex-col min-h-full relative overflow-hidden">
-          <div className="self-center bg-primary text-white text-[9px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-full mb-8 absolute -top-3 shadow-lg shadow-primary/20">
+          <div className="self-center bg-primary text-white text-[9px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-full mb-8 absolute -top-4 shadow-lg shadow-primary/20">
             Most Popular
           </div>
           
@@ -226,10 +226,10 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
           <div className="mb-8">
             <div className="flex items-baseline gap-1">
               <span className="text-4xl font-black text-slate-900">${isAnnual ? '12' : '15'}</span>
-              <span className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">/mo</span>
+              <span className="text-black font-black uppercase tracking-widest text-[10px]">/mo</span>
             </div>
-            <div className="text-[9px] text-slate-400 uppercase tracking-widest font-black mt-1 h-4">
-              {isAnnual ? 'Billed annually ($144)' : <>&nbsp;</>}
+            <div className="text-[9px] text-black uppercase tracking-widest font-black mt-1 h-4">
+              {isAnnual ? `Billed annually ($144)` : <>&nbsp;</>}
             </div>
           </div>
 
@@ -264,7 +264,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
                  <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${i < 7 ? 'bg-primary/10 border border-primary/20' : 'bg-slate-100 border border-slate-200'}`}>
                    {i < 7 && <Check className="w-2.5 h-2.5 text-primary" strokeWidth={3} />}
                  </div>
-                  <span className={`text-[12px] font-medium ${i < 7 ? 'text-black' : 'text-slate-400'}`}>{f}</span>
+                 <span className="text-[12px] font-medium text-black">{f}</span>
                </div>
              ))}
           </div>
@@ -279,7 +279,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
           <div className="mb-8">
             <div className="flex items-baseline gap-1">
               <span className="text-4xl font-black text-slate-900">${isAnnual ? '12' : '15'}</span>
-              <span className="text-black font-bold uppercase tracking-widest text-[10px]">/seat/mo</span>
+              <span className="text-black font-black uppercase tracking-widest text-[10px]">/seat/mo</span>
             </div>
             <div className="text-[9px] text-black uppercase tracking-widest font-black mt-1 leading-tight h-4">
               Prorated billing when members join
@@ -317,7 +317,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
                  <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 bg-primary/20 border border-primary/30`}>
                    <Check className="w-2.5 h-2.5 text-primary" strokeWidth={3} />
                  </div>
-                 <span className={`text-[12px] font-medium text-gray-300`}>{f}</span>
+                 <span className="text-[12px] font-medium text-black">{f}</span>
                </div>
              ))}
           </div>
@@ -367,7 +367,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
                  <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 bg-green-500/20 border border-green-500/30`}>
                    <Check className="w-2.5 h-2.5 text-green-500" strokeWidth={3} />
                  </div>
-                 <span className={`text-[12px] font-medium text-gray-300`}>{f}</span>
+                 <span className="text-[12px] font-medium text-black">{f}</span>
                </div>
              ))}
           </div>

@@ -51,18 +51,18 @@ const StepIndicator: React.FC<{ current: number }> = ({ current }) => {
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-black border-2 transition-all duration-300 ${
                 done ? 'bg-primary border-primary text-white' :
                 active ? 'border-primary text-primary bg-primary/10' :
-                'border-white/20 text-white/30'
+                'border-slate-200 text-slate-300'
               }`}>
                 {done ? <Check className="w-4 h-4" /> : idx}
               </div>
               <span className={`text-sm font-bold hidden sm:block transition-colors duration-300 ${
-                active ? 'text-white' : done ? 'text-primary' : 'text-white/30'
+                active ? 'text-black' : done ? 'text-primary' : 'text-slate-300'
               }`}>
                 {label}
               </span>
             </div>
             {i < steps.length - 1 && (
-              <div className={`flex-1 h-px transition-all duration-500 ${idx < current ? 'bg-primary' : 'bg-white/10'}`} />
+              <div className={`flex-1 h-px transition-all duration-500 ${idx < current ? 'bg-primary' : 'bg-slate-200'}`} />
             )}
           </React.Fragment>
         );
@@ -168,29 +168,27 @@ const EnterpriseBooking: React.FC = () => {
   // ── Success Screen ──
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-6">
-        <div className="absolute inset-0 bg-dots-dark pointer-events-none" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="min-h-screen bg-white flex items-center justify-center p-6" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #f1f5f9 1px, transparent 0)', backgroundSize: '40px 40px' }}>
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="relative z-10 max-w-md w-full text-center"
+          className="relative z-10 max-w-xl w-full text-center p-12 bg-white border border-slate-200 rounded-[3rem] shadow-2xl"
         >
-          <div className="w-24 h-24 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-primary/30">
+          <div className="w-24 h-24 rounded-full bg-primary/10 border-2 border-primary flex items-center justify-center mx-auto mb-8 shadow-xl">
             <CheckCircle className="w-12 h-12 text-primary" />
           </div>
-          <h1 className="text-4xl font-black text-white tracking-tight mb-4">Session Locked In</h1>
-          <p className="text-gray-400 text-lg font-medium mb-2">
+          <h1 className="text-4xl font-black text-slate-900 tracking-tight mb-4">Session Locked In</h1>
+          <p className="text-black text-lg font-medium mb-2">
             Your enterprise strategy session is booked for
           </p>
-          <p className="text-primary font-black text-xl mb-2">{formattedDate}</p>
-          <p className="text-white font-bold text-lg mb-8">{selectedTime} EAT</p>
-          <p className="text-gray-500 text-sm mb-10">
-            Our legal technology team will reach out to <span className="text-white font-bold">{email}</span> to confirm the session and share a secure video link.
+          <p className="text-primary font-black text-2xl mb-2">{formattedDate}</p>
+          <p className="text-black font-black text-xl mb-8">{selectedTime} EAT</p>
+          <p className="text-black text-sm mb-10 font-medium">
+            Our legal technology team will reach out to <span className="text-primary font-bold">{email}</span> to confirm the session and share a secure video link.
           </p>
           <button
             onClick={() => navigate('/')}
-            className="w-full py-4 bg-primary text-white font-black rounded-2xl hover:bg-primary/90 transition-all shadow-xl shadow-primary/20"
+            className="w-full py-4 bg-primary text-white font-black rounded-2xl hover:bg-primary-hover transition-all shadow-xl shadow-primary/20"
           >
             Back to Lawlify
           </button>
@@ -200,17 +198,13 @@ const EnterpriseBooking: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans overflow-x-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 bg-dots-dark pointer-events-none" />
-      <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-primary/8 rounded-full blur-[150px] pointer-events-none" />
-
+    <div className="min-h-screen bg-white text-black font-sans overflow-x-hidden relative" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #f1f5f9 1px, transparent 0)', backgroundSize: '40px 40px' }}>
       {/* Nav */}
-      <nav className="relative z-20 border-b border-white/5 bg-black/60 backdrop-blur-xl">
-        <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+      <nav className="relative z-20 border-b border-slate-100 bg-white/60 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-white transition-colors group"
+            className="flex items-center gap-2 text-sm font-bold text-black hover:text-primary transition-colors group"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             Back
@@ -219,98 +213,84 @@ const EnterpriseBooking: React.FC = () => {
             <div className="w-8 h-8 bg-primary rounded-xl flex items-center justify-center">
               <Scale className="w-5 h-5 text-white" />
             </div>
-            <span className="text-lg font-black tracking-tight">Lawlify</span>
-            <span className="text-white/20 font-light">|</span>
-            <span className="text-sm font-bold text-gray-400">Enterprise Session</span>
+            <span className="text-lg font-black tracking-tight text-slate-900">Lawlify</span>
+            <span className="text-slate-200 font-light">|</span>
+            <span className="text-sm font-bold text-black">Enterprise Session</span>
           </div>
           <div className="w-20" />
         </div>
       </nav>
 
       <div className="relative z-10 max-w-6xl mx-auto px-6 pt-16 pb-24">
+      <div className="relative z-10 max-w-5xl mx-auto px-6 pt-16 pb-24">
         {/* Header */}
         <div className="text-center mb-14">
-          <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-4 leading-tight">
+          <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-4 leading-tight text-slate-900">
             Book Your Private<br />
             <span className="text-primary">Lawlify Demo</span>
           </h1>
-          <p className="text-gray-400 text-xl font-medium max-w-2xl mx-auto">
+          <p className="text-black text-xl font-medium max-w-2xl mx-auto">
             Get a live walkthrough tailored to your firm's workflow. Our legal AI consultants will show you exactly how Lawlify transforms your practice.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left: Session Info */}
-          <div className="space-y-6">
-            <div className="p-6 rounded-3xl bg-white/5 border border-white/10">
-              <h3 className="font-black text-white mb-5 text-lg">What's Included</h3>
-              <div className="space-y-4">
+        <div className="space-y-12">
+          {/* Horizontal Info Strips */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="p-8 rounded-[2.5rem] bg-white border border-slate-200 shadow-sm flex flex-col justify-center">
+              <h3 className="font-black text-slate-900 mb-6 text-xl">What's Included</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
                   { icon: Sparkles, label: '45-min live AI demonstration', color: 'text-primary' },
-                  { icon: Shield, label: 'Security & compliance walkthrough', color: 'text-blue-400' },
-                  { icon: Zap, label: 'Custom workflow mapping', color: 'text-yellow-400' },
-                  { icon: Globe, label: 'Jurisdiction-specific legal tools', color: 'text-green-400' },
-                  { icon: Users, label: 'Team onboarding roadmap', color: 'text-purple-400' },
+                  { icon: Shield, label: 'Security & compliance walkthrough', color: 'text-blue-500' },
+                  { icon: Zap, label: 'Custom workflow mapping', color: 'text-orange-500' },
+                  { icon: Globe, label: 'Jurisdiction-specific legal tools', color: 'text-green-600' },
+                  { icon: Users, label: 'Team onboarding roadmap', color: 'text-purple-600' },
                 ].map(({ icon: Icon, label, color }, i) => (
-                  <div key={i} className="flex items-center gap-3 text-sm font-medium text-gray-300">
-                    <Icon className={`w-4 h-4 shrink-0 ${color}`} />
+                  <div key={i} className="flex items-center gap-3 text-sm font-bold text-black">
+                    <Icon className={`w-4 h-4 shrink-0 ${color}`} strokeWidth={3} />
                     {label}
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="p-6 rounded-3xl bg-primary/10 border border-primary/20">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center shrink-0">
-                  <Scale className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <p className="font-black text-white text-sm mb-1">Hosted by</p>
-                  <p className="text-gray-300 text-sm font-medium">Lawlify Legal AI Team</p>
-                  <p className="text-primary text-xs font-bold mt-1 uppercase tracking-widest">Enterprise Specialists</p>
+            <div className="flex flex-col gap-6">
+              <div className="p-8 rounded-[2.5rem] bg-primary/5 border border-primary/10 flex items-center justify-between">
+                <div className="flex items-center gap-6">
+                  <div className="w-16 h-16 rounded-3xl bg-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/20">
+                    <Scale className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-black text-slate-900 text-lg mb-0.5">Hosted by</p>
+                    <p className="text-black text-sm font-bold">Lawlify Legal AI Team</p>
+                    <p className="text-primary text-[10px] font-black mt-1 uppercase tracking-[0.2em]">Enterprise Specialists</p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {selectedDate && selectedTime && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="p-6 rounded-3xl bg-white/5 border border-white/10"
-              >
-                <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-3">Your Selection</p>
-                <div className="flex items-center gap-2 mb-2">
-                  <Calendar className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-bold text-white">{formattedDate}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-bold text-white">{selectedTime} EAT</span>
-                </div>
-              </motion.div>
-            )}
-
-            {/* Alternative Contact */}
-            <div className="p-6 rounded-3xl bg-white/5 border border-white/10 space-y-4">
-              <h3 className="font-black text-white text-lg">Prefer to talk right now?</h3>
-              <p className="text-gray-400 text-sm font-medium">Skip the calendar and speak directly with our Enterprise Team.</p>
-              
-              <a href="tel:+254200000000" className="flex items-center justify-center gap-3 w-full py-4 bg-white/5 hover:bg-white/10 text-white font-bold rounded-2xl transition-all border border-white/10 shadow-lg shadow-black/20">
-                <Phone className="w-5 h-5" />
-                Call +254 200 000 000
-              </a>
-              
-              <a href="https://wa.me/254700000000" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3 w-full py-4 bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] font-bold rounded-2xl transition-all border border-[#25D366]/20 shadow-lg shadow-[#25D366]/5">
-                <MessageCircle className="w-5 h-5" />
-                WhatsApp Us
-              </a>
+              <div className="p-8 rounded-[2.5rem] bg-slate-50 border border-slate-200 flex items-center justify-between">
+                 <div>
+                    <h3 className="font-black text-slate-900 text-lg mb-1">Prefer to talk right now?</h3>
+                    <p className="text-black text-sm font-medium">Speak directly with our Enterprise Team.</p>
+                 </div>
+                 <div className="flex items-center gap-3">
+                    <a href="tel:+254200000000" className="w-12 h-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-black hover:text-primary transition-all shadow-sm">
+                      <Phone className="w-5 h-5" />
+                    </a>
+                    <a href="https://wa.me/254700000000" target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-2xl bg-[#25D366]/10 border border-[#25D366]/20 flex items-center justify-center text-[#25D366] hover:bg-[#25D366]/20 transition-all shadow-sm">
+                      <MessageCircle className="w-5 h-5" />
+                    </a>
+                 </div>
+              </div>
             </div>
           </div>
 
-          {/* Right: Booking Widget */}
-          <div className="lg:col-span-2">
-            <div className="p-8 rounded-[2rem] bg-white/5 border border-white/10 backdrop-blur-sm">
+          {/* Booking Widget (Stretched) */}
+          <div className="w-full">
+            <div className="p-10 rounded-[3rem] bg-white border border-slate-200 shadow-xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-slate-50 rounded-full blur-[80px] -mr-32 -mt-32 pointer-events-none" />
+              
               <StepIndicator current={step} />
 
               <AnimatePresence mode="wait">
@@ -319,81 +299,82 @@ const EnterpriseBooking: React.FC = () => {
                 {step === 1 && (
                   <motion.div
                     key="step1"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    className="max-w-4xl mx-auto"
                   >
-                    <div className="flex items-center justify-between mb-6">
-                      <button onClick={prevMonth} className="p-2 hover:bg-white/10 rounded-xl transition-colors">
-                        <ChevronLeft className="w-5 h-5 text-gray-400" />
+                    <div className="flex items-center justify-between mb-8">
+                      <button onClick={prevMonth} className="w-12 h-12 flex items-center justify-center bg-slate-50 hover:bg-slate-100 rounded-2xl transition-colors">
+                        <ChevronLeft className="w-6 h-6 text-black" />
                       </button>
-                      <h3 className="text-lg font-black text-white">
+                      <h3 className="text-2xl font-black text-slate-900">
                         {MONTHS[currentMonth]} {currentYear}
                       </h3>
-                      <button onClick={nextMonth} className="p-2 hover:bg-white/10 rounded-xl transition-colors">
-                        <ChevronRight className="w-5 h-5 text-gray-400" />
+                      <button onClick={nextMonth} className="w-12 h-12 flex items-center justify-center bg-slate-50 hover:bg-slate-100 rounded-2xl transition-colors">
+                        <ChevronRight className="w-6 h-6 text-black" />
                       </button>
                     </div>
 
-                    {/* Day headers */}
-                    <div className="grid grid-cols-7 border-b border-white/10 mb-0">
-                      {DAYS_OF_WEEK.map(d => (
-                        <div key={d} className="text-center text-[10px] font-black text-gray-500 uppercase tracking-widest py-3 border-r border-white/5 last:border-r-0">
-                          {d}
-                        </div>
-                      ))}
+                    <div className="border border-slate-200 rounded-[2rem] overflow-hidden bg-white shadow-sm">
+                      {/* Day headers */}
+                      <div className="grid grid-cols-7 border-b border-slate-100 bg-slate-50/50">
+                        {DAYS_OF_WEEK.map(d => (
+                          <div key={d} className="text-center text-[11px] font-black text-black uppercase tracking-widest py-4">
+                            {d}
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Day grid */}
+                      <div className="grid grid-cols-7">
+                        {Array.from({ length: firstDay }).map((_, i) => <div key={`empty-${i}`} className="bg-slate-50/30 border-r border-b border-slate-100 h-24" />)}
+
+                        {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => {
+                          const unavailable = isWeekend(day) || isPast(day);
+                          const selected = isSelected(day);
+
+                          return (
+                            <button
+                              key={day}
+                              onClick={() => handleDayClick(day)}
+                              disabled={unavailable}
+                              className={`
+                                h-24 flex flex-col items-center justify-center text-lg font-bold transition-all relative
+                                border-r border-b border-slate-100
+                                ${selected
+                                  ? 'bg-primary text-white shadow-inner z-10'
+                                  : unavailable
+                                    ? 'bg-slate-50/50 text-slate-300 cursor-not-allowed'
+                                    : 'bg-white text-slate-900 hover:bg-primary/5 hover:text-primary cursor-pointer'
+                                }
+                              `}
+                            >
+                              <span>{day}</span>
+                              {selected && (
+                                <motion.div layoutId="select" className="absolute bottom-4 w-1.5 h-1.5 bg-white rounded-full" />
+                              )}
+                            </button>
+                          );
+                        })}
+                        {Array.from({ length: (7 - ((firstDay + daysInMonth) % 7)) % 7 }).map((_, i) => <div key={`empty-end-${i}`} className="bg-slate-50/30 border-b border-slate-100 h-24" />)}
+                      </div>
                     </div>
 
-                    {/* Day grid */}
-                    <div className="grid grid-cols-7 bg-white/5 border border-white/10 rounded-b-xl overflow-hidden">
-                      {/* Empty leading cells */}
-                      {Array.from({ length: firstDay }).map((_, i) => <div key={`empty-${i}`} className="border-r border-b border-white/5 bg-black/40" />)}
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-6 mt-10">
+                      <p className="text-sm text-black font-bold flex items-center gap-2">
+                        <Info className="w-4 h-4 text-primary" />
+                        Weekends unavailable · All times in East Africa Time (EAT)
+                      </p>
 
-                      {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => {
-                        const weekend = isWeekend(day);
-                        const past = isPast(day);
-                        const unavailable = weekend || past;
-                        const selected = isSelected(day);
-
-                        return (
-                          <motion.button
-                            key={day}
-                            whileHover={!unavailable ? { scale: 1.05 } : {}}
-                            whileTap={!unavailable ? { scale: 0.95 } : {}}
-                            onClick={() => handleDayClick(day)}
-                            disabled={unavailable}
-                            className={`
-                              aspect-square flex items-center justify-center text-sm font-bold transition-all duration-200
-                              border-r border-b border-white/5 overflow-hidden
-                              ${selected
-                                ? 'bg-primary text-white shadow-lg shadow-primary/30 z-10 relative border-primary'
-                                : unavailable
-                                  ? 'bg-black/60 text-white/20 cursor-not-allowed'
-                                  : 'bg-black/20 text-white hover:bg-primary/20 hover:text-primary cursor-pointer hover:z-10 relative hover:border-primary/50'
-                              }
-                            `}
-                          >
-                            {day}
-                          </motion.button>
-                        );
-                      })}
-                      {/* Empty trailing cells to complete grid */}
-                      {Array.from({ length: (7 - ((firstDay + daysInMonth) % 7)) % 7 }).map((_, i) => <div key={`empty-end-${i}`} className="border-r border-b border-white/5 bg-black/40" />)}
-                    </div>
-
-                    <p className="text-center text-[11px] text-gray-500 font-medium mt-6">
-                      Weekends unavailable · All times in East Africa Time (EAT)
-                    </p>
-
-                    <div className="flex justify-end mt-8">
                       <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         disabled={!selectedDate}
                         onClick={() => setStep(2)}
-                        className="flex items-center gap-2 px-8 py-4 bg-primary text-white font-black rounded-2xl disabled:opacity-30 hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+                        className="px-12 py-5 bg-primary text-white font-black rounded-2xl disabled:opacity-30 hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 text-sm uppercase tracking-widest"
                       >
-                        Select Time <ArrowRight className="w-4 h-4" />
+                        Select Time
                       </motion.button>
                     </div>
                   </motion.div>
@@ -403,204 +384,120 @@ const EnterpriseBooking: React.FC = () => {
                 {step === 2 && (
                   <motion.div
                     key="step2"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="max-w-4xl mx-auto"
                   >
-                    <div className="mb-6">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1">Selected Date</p>
-                      <p className="text-xl font-black text-white">{formattedDate}</p>
+                    <div className="mb-10 text-center">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-2">Confirmed Date</p>
+                      <p className="text-3xl font-black text-slate-900">{formattedDate}</p>
                     </div>
 
-                    <h3 className="text-lg font-black text-white mb-6">Available Time Slots</h3>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
                       {TIME_SLOTS.map(slot => (
-                        <motion.button
+                        <button
                           key={slot}
-                          whileHover={{ scale: 1.03 }}
-                          whileTap={{ scale: 0.97 }}
                           onClick={() => setSelectedTime(slot)}
-                          className={`flex items-center justify-center gap-2 py-4 rounded-2xl border-2 font-bold text-sm transition-all duration-200 ${
+                          className={`flex items-center justify-center gap-3 py-6 rounded-3xl border-2 font-black text-lg transition-all ${
                             selectedTime === slot
-                              ? 'border-primary bg-primary/20 text-primary shadow-lg shadow-primary/20'
-                              : 'border-white/10 bg-white/5 text-gray-300 hover:border-primary/50 hover:text-white'
+                              ? 'border-primary bg-primary/5 text-primary shadow-lg shadow-primary/10'
+                              : 'border-slate-100 bg-white text-slate-900 hover:border-primary/30 hover:text-primary'
                           }`}
                         >
-                          <Clock className="w-4 h-4" />
+                          <Clock className="w-5 h-5" />
                           {slot}
-                        </motion.button>
+                        </button>
                       ))}
-                      <motion.button
+                      <button
                         key="Custom"
-                        whileHover={{ scale: 1.03 }}
-                        whileTap={{ scale: 0.97 }}
                         onClick={() => setSelectedTime('Custom')}
-                        className={`flex items-center justify-center gap-2 py-4 rounded-2xl border-2 font-bold text-sm transition-all duration-200 ${
+                        className={`flex items-center justify-center gap-3 py-6 rounded-3xl border-2 font-black text-lg transition-all ${
                           selectedTime === 'Custom'
-                            ? 'border-primary bg-primary/20 text-primary shadow-lg shadow-primary/20'
-                            : 'border-white/10 bg-white/5 text-gray-300 hover:border-primary/50 hover:text-white'
+                            ? 'border-primary bg-primary/5 text-primary shadow-lg shadow-primary/10'
+                            : 'border-slate-100 bg-white text-slate-900 hover:border-primary/30 hover:text-primary'
                         }`}
                       >
-                        <Clock className="w-4 h-4" />
-                        Suggest Custom
-                      </motion.button>
+                        <Calendar className="w-5 h-5" />
+                        Custom
+                      </button>
                     </div>
 
-                    <AnimatePresence>
-                      {selectedTime === 'Custom' && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                          animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
-                          exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                          className="overflow-hidden mb-8 -mt-4 relative"
-                        >
-                          <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-2 px-1">Preferred Time (EAT)</p>
-                          <input 
-                            type="text" 
-                            placeholder="e.g. 05:30 PM or anytime after 2 PM" 
-                            value={customTime}
-                            onChange={(e) => setCustomTime(e.target.value)}
-                            className="w-full bg-primary/5 border border-primary/30 rounded-2xl py-4 px-4 text-white placeholder-gray-500 font-semibold focus:outline-none focus:border-primary transition-colors focus:shadow-[0_0_20px_rgba(239,68,68,0.1)]"
-                          />
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                    {selectedTime === 'Custom' && (
+                      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
+                        <input 
+                          type="text" 
+                          placeholder="Suggest a time (e.g. 5:30 PM EAT)" 
+                          value={customTime}
+                          onChange={(e) => setCustomTime(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-3xl py-6 px-8 text-xl font-black text-slate-900 placeholder-slate-400 focus:outline-none focus:border-primary transition-all shadow-inner"
+                        />
+                      </motion.div>
+                    )}
 
-                    <p className="text-[11px] text-gray-500 font-medium mb-8 flex items-center gap-1">
-                      <Globe className="w-3 h-3" /> East Africa Time (UTC +3) · 45-minute session
-                    </p>
-
-                    <div className="flex items-center justify-between">
-                      <button
-                        onClick={() => setStep(1)}
-                        className="flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-white transition-colors"
-                      >
-                        <ArrowLeft className="w-4 h-4" /> Back
+                    <div className="flex items-center justify-between mt-12 pt-8 border-t border-slate-100">
+                      <button onClick={() => setStep(1)} className="font-black text-slate-400 hover:text-black transition-colors uppercase tracking-widest text-xs flex items-center gap-2">
+                        <ArrowLeft className="w-4 h-4" /> Change Date
                       </button>
                       <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         disabled={selectedTime !== 'Custom' ? !selectedTime : !customTime}
                         onClick={() => setStep(3)}
-                        className="flex items-center gap-2 px-8 py-4 bg-primary text-white font-black rounded-2xl disabled:opacity-30 hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+                        className="px-12 py-5 bg-primary text-white font-black rounded-2xl disabled:opacity-30 hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 text-sm uppercase tracking-widest"
                       >
-                        Your Details <ArrowRight className="w-4 h-4" />
+                        Continue <ArrowRight className="w-4 h-4" />
                       </motion.button>
                     </div>
                   </motion.div>
                 )}
 
-                {/* ── Step 3: Details Form ── */}
+                {/* ── Step 3: Details ── */}
                 {step === 3 && (
                   <motion.div
                     key="step3"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    className="max-w-3xl mx-auto"
                   >
-                    <div className="flex flex-wrap gap-4 mb-8 p-4 bg-primary/10 border border-primary/20 rounded-2xl">
-                      <div className="flex items-center gap-2 text-sm font-bold text-primary">
-                        <Calendar className="w-4 h-4" /> {formattedDate}
-                      </div>
-                      <div className="flex items-center gap-2 text-sm font-bold text-primary">
-                        <Clock className="w-4 h-4" /> {selectedTime === 'Custom' ? customTime : selectedTime} EAT
-                      </div>
+                    <div className="flex items-center justify-center gap-8 mb-12 p-6 bg-slate-50 border border-slate-100 rounded-[2rem]">
+                       <div className="text-center">
+                          <p className="text-[10px] font-black uppercase text-primary mb-1">Date</p>
+                          <p className="font-black text-slate-900">{formattedDate}</p>
+                       </div>
+                       <div className="w-px h-10 bg-slate-200" />
+                       <div className="text-center">
+                          <p className="text-[10px] font-black uppercase text-primary mb-1">Time</p>
+                          <p className="font-black text-slate-900">{selectedTime === 'Custom' ? customTime : selectedTime} EAT</p>
+                       </div>
                     </div>
 
-                    <div className="space-y-4 mb-8">
-                      {/* Full Name */}
-                      <div className="relative">
-                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                        <input
-                          type="text"
-                          placeholder="Your full name"
-                          value={fullName}
-                          onChange={e => setFullName(e.target.value)}
-                          className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder-gray-500 font-semibold focus:outline-none focus:border-primary/50 transition-colors"
-                        />
-                      </div>
-
-                      {/* Firm Name */}
-                      <div className="relative">
-                        <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                        <input
-                          type="text"
-                          placeholder="Law firm or organisation name"
-                          value={firmName}
-                          onChange={e => setFirmName(e.target.value)}
-                          className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder-gray-500 font-semibold focus:outline-none focus:border-primary/50 transition-colors"
-                        />
-                      </div>
-
-                      {/* Email */}
-                      <div className="relative">
-                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                        <input
-                          type="email"
-                          placeholder="Work email address"
-                          value={email}
-                          onChange={e => setEmail(e.target.value)}
-                          className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder-gray-500 font-semibold focus:outline-none focus:border-primary/50 transition-colors"
-                        />
-                      </div>
-
-                      {/* Team Size */}
-                      <div className="relative">
-                        <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
-                        <select
-                          value={teamSize}
-                          onChange={e => setTeamSize(e.target.value)}
-                          className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white font-semibold focus:outline-none focus:border-primary/50 transition-colors appearance-none cursor-pointer"
-                          style={{ colorScheme: 'dark' }}
-                        >
-                          <option value="" disabled className="bg-black">Team size</option>
-                          {TEAM_SIZES.map(s => (
-                            <option key={s} value={s} className="bg-black">{s}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      {/* Use Case */}
-                      <textarea
-                        placeholder="Tell us briefly about your firm's legal workflow and what you'd like Lawlify to help with…"
-                        value={useCase}
-                        onChange={e => setUseCase(e.target.value)}
-                        rows={4}
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-4 text-white placeholder-gray-500 font-semibold focus:outline-none focus:border-primary/50 transition-colors resize-none"
-                      />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                      <input type="text" placeholder="Full name" value={fullName} onChange={e => setFullName(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-5 px-6 font-bold text-slate-900 focus:outline-none focus:border-primary shadow-inner" />
+                      <input type="text" placeholder="Firm name" value={firmName} onChange={e => setFirmName(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-5 px-6 font-bold text-slate-900 focus:outline-none focus:border-primary shadow-inner" />
+                      <input type="email" placeholder="Work email" value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-5 px-6 font-bold text-slate-900 focus:outline-none focus:border-primary shadow-inner" />
+                      <select value={teamSize} onChange={e => setTeamSize(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-5 px-6 font-bold text-slate-900 focus:outline-none focus:border-primary shadow-inner appearance-none cursor-pointer">
+                          <option value="" disabled>Team size</option>
+                          {TEAM_SIZES.map(s => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                      <textarea placeholder="Your primary use case..." value={useCase} onChange={e => setUseCase(e.target.value)} rows={3} className="md:col-span-2 w-full bg-slate-50 border border-slate-200 rounded-2xl py-5 px-6 font-bold text-slate-900 focus:outline-none focus:border-primary shadow-inner resize-none" />
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <button
-                        onClick={() => setStep(2)}
-                        className="flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-white transition-colors"
-                      >
-                        <ArrowLeft className="w-4 h-4" /> Back
+                      <button onClick={() => setStep(2)} className="font-black text-slate-400 hover:text-black transition-colors uppercase tracking-widest text-xs">
+                        Back to time
                       </button>
                       <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         disabled={!fullName || !firmName || !email || !teamSize || !useCase || isSubmitting}
                         onClick={handleSubmit}
-                        className="flex items-center gap-2 px-8 py-4 bg-primary text-white font-black rounded-2xl disabled:opacity-40 hover:bg-primary/90 transition-all shadow-xl shadow-primary/20"
+                        className="px-16 py-6 bg-primary text-white font-black rounded-3xl disabled:opacity-40 hover:bg-primary-hover shadow-2xl shadow-primary/30 transition-all text-sm uppercase tracking-widest"
                       >
-                        {isSubmitting ? (
-                          <>
-                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                            Securing Session...
-                          </>
-                        ) : (
-                          <>
-                            Confirm Session <Check className="w-4 h-4" />
-                          </>
-                        )}
+                        {isSubmitting ? 'Securing...' : 'Confirm Session'}
                       </motion.button>
                     </div>
-
-                    <p className="text-center text-[11px] text-gray-600 font-medium mt-6">
-                      By booking, you agree to receive a confirmation email from our team. No spam, ever.
-                    </p>
                   </motion.div>
                 )}
 
@@ -608,6 +505,7 @@ const EnterpriseBooking: React.FC = () => {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
