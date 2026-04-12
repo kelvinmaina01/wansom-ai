@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   Scale, ArrowLeft, ArrowRight, Check, Calendar, Clock,
   User, Building2, Mail, Users, ChevronLeft, ChevronRight,
-  Sparkles, Shield, Globe, Zap, CheckCircle, Phone, MessageCircle
+  Sparkles, Shield, Globe, Zap, CheckCircle, Phone, MessageCircle, Info
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';

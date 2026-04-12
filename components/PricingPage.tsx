@@ -17,13 +17,48 @@ import {
   Server, 
   HeadphonesIcon, 
   ArrowRight,
-  Info,
   Users,
   CreditCard,
   History
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
+
+const TypingSubText: React.FC = () => {
+  const fullText = "Start free. Scale as you grow.";
+  const [displayedText, setDisplayedText] = React.useState("");
+  const [index, setIndex] = React.useState(0);
+  const [isDeleting, setIsDeleting] = React.useState(false);
+
+  React.useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (!isDeleting && index < fullText.length) {
+        setDisplayedText(fullText.slice(0, index + 1));
+        setIndex(prev => prev + 1);
+      } else if (isDeleting && index > 0) {
+        setDisplayedText(fullText.slice(0, index - 1));
+        setIndex(prev => prev - 1);
+      } else if (index === fullText.length) {
+        setTimeout(() => setIsDeleting(true), 2000);
+      } else if (index === 0 && isDeleting) {
+        setIsDeleting(false);
+      }
+    }, isDeleting ? 30 : 60);
+
+    return () => clearTimeout(timeout);
+  }, [index, isDeleting]);
+
+  return (
+    <span className="text-primary text-3xl font-bold tracking-tight inline-block min-h-[1.2em]">
+      {displayedText}
+      <motion.span
+        animate={{ opacity: [0, 1, 0] }}
+        transition={{ repeat: Infinity, duration: 0.8 }}
+        className="inline-block w-1 h-[0.8em] bg-primary ml-1 align-middle"
+      />
+    </span>
+  );
+};
 
 interface PricingPageProps {
   onBack: () => void;
@@ -74,7 +109,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
 
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-primary/30 overflow-x-hidden pb-24 relative">
-      <div className="fixed inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:32px_32px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
+      <div className="fixed inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:48px_48px] pointer-events-none" />
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-xl">
 锋        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -100,7 +135,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
           className="text-5xl md:text-7xl font-black tracking-tighter mb-6 leading-tight text-slate-900"
         >
           Simple, transparent pricing.<br />
-          <span className="text-primary text-3xl font-bold tracking-tight">Start free. Scale as you grow.</span>
+          <TypingSubText />
         </motion.h1>
 
         <motion.p 
@@ -370,12 +405,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
             <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/5 mb-6">
               <Zap className="w-7 h-7 text-primary" />
             </div>
-            <h3 className="text-2xl font-black text-slate-900 uppercase tracking-widest mb-3">How credits work</h3>
-            <p className="text-sm text-black font-black uppercase tracking-widest mb-8">Start free. Scale as you grow.</p>
-            
-            <div className="px-8 py-3 bg-white border border-slate-200 rounded-full text-xs font-black tracking-widest text-black uppercase shadow-sm">
-               Transparent usage: <span className="text-primary">1 action = 1–3 credits</span>
-            </div>
+            <h3 className="text-2xl font-black text-slate-900 uppercase tracking-widest">How credits work</h3>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 px-6">
