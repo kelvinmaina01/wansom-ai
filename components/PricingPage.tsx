@@ -32,7 +32,7 @@ interface PricingPageProps {
 
 const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
   const [isAnnual, setIsAnnual] = useState(true);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [isCheckout, setIsCheckout] = useState(false);
   const [selAmt, setSelAmt] = useState(150);
   const [selPrice, setSelPrice] = useState(5);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -41,7 +41,6 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
   const navigate = useNavigate();
 
   const openModal = (amt?: number, price?: number) => {
-    if (amt && price) {
       setSelAmt(amt);
       setSelPrice(price);
     }
@@ -74,6 +73,8 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
 
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-primary/30 overflow-x-hidden pb-24 relative">
+      { !isCheckout && (
+        <>
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -695,49 +696,53 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
           </table>
         </div>
       </div>
+      </>
+      )}
 
-      {/* MODALS */}
-      <AnimatePresence>
-        {modalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }}
-              onClick={() => setModalOpen(false)}
-              className="absolute inset-0 bg-white/80 backdrop-blur-xl" 
-            />
-            
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative bg-white border border-slate-200 rounded-[2.5rem] w-[880px] max-w-full overflow-hidden shadow-2xl flex flex-col"
-            >
-              <div className="p-8 border-b border-slate-100 flex items-center justify-between">
-                <div className="flex items-center gap-6">
-                  <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                     <CreditCard className="w-7 h-7 text-primary" />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-black text-slate-900 mb-1">Buy credits</h2>
-                    <p className="text-sm text-black font-medium">Choose an option to continue without interruption</p>
-                  </div>
-                </div>
-                <button onClick={() => setModalOpen(false)} className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center transition-colors">
-                  <X className="w-5 h-5 text-gray-400" />
-                </button>
+      {isCheckout && (
+        <div className="min-h-screen bg-white text-slate-900 pt-32 pb-24 relative z-[100]">
+          <div className="max-w-[1550px] mx-auto px-10">
+            <div className="flex items-center justify-between mb-16">
+              <button 
+                onClick={() => setIsCheckout(false)} 
+                className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-black hover:text-primary transition-colors group"
+              >
+                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                Back to Pricing
+              </button>
+              <div className="flex items-center gap-4">
+                 <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                    <CreditCard className="w-6 h-6 text-primary" />
+                 </div>
+                 <div>
+                   <h2 className="text-2xl font-black text-slate-900">Checkout</h2>
+                   <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Complete your transaction</p>
+                 </div>
               </div>
+            </div>
 
-              <div className="px-8 py-5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-                <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Current Balance</div>
-                <div className="text-2xl font-black text-slate-900">0 <span className="text-xs text-gray-400 font-bold uppercase tracking-widest ml-1">credits remaining</span></div>
-              </div>
+            <div className="bg-slate-50 border border-slate-200 rounded-[3rem] p-10 mb-12 flex items-center justify-between shadow-sm">
+               <div className="flex items-center gap-4">
+                 <div className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center shadow-sm">
+                    <Shield className="w-5 h-5 text-primary" />
+                 </div>
+                 <div>
+                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Current Balance</div>
+                    <div className="text-xl font-black text-slate-900">0 credits remaining</div>
+                 </div>
+               </div>
+               <div className="px-6 py-2 bg-white border border-slate-200 rounded-full text-[10px] font-black uppercase tracking-widest text-black shadow-sm">
+                  Verified Secure Checkout
+               </div>
+            </div>
 
-              <div className="flex flex-col md:flex-row flex-1">
-                <div className="flex-1 p-8 border-r border-slate-100">
-                  <div className="text-[10px] font-black text-black uppercase tracking-widest mb-6">Top Up Credits</div>
-                  <div className="space-y-3 mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+               <div className="lg:col-span-7">
+                  <div className="text-[10px] font-black text-black uppercase tracking-widest mb-8 flex items-center gap-3">
+                    <Zap className="w-4 h-4 text-primary" />
+                    Select Credit Package
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
                     {[
                       { amt: 50, price: 2 },
                       { amt: 150, price: 5, best: true },
@@ -746,86 +751,69 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
                     ].map((item, i) => (
                       <div 
                         key={i} 
-                        onClick={() => {setSelAmt(item.amt); setSelPrice(item.price);}}
-                        className={`flex items-center justify-between p-5 rounded-2xl border cursor-pointer transition-all ${selAmt === item.amt ? 'border-primary bg-primary/5 shadow-md' : 'border-slate-200 bg-white hover:border-primary/40'}`}
+                        onClick={() => {setSelAmt(item.amt); setSelPrice(item.price)}}
+                        className={`p-8 rounded-[2.5rem] border-2 cursor-pointer transition-all relative ${selAmt === item.amt ? 'border-primary bg-primary/5 shadow-xl' : 'border-slate-100 bg-white hover:border-slate-300 shadow-sm'}`}
                       >
-                        <div className="flex items-center gap-4">
-                           <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selAmt === item.amt ? 'border-primary bg-primary' : 'border-slate-200'}`}>
-                             {selAmt === item.amt && <div className="w-2 h-2 rounded-full bg-white" />}
+                        {item.best && <div className="absolute -top-3 left-8 bg-amber-400 text-black text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-md">Best Value</div>}
+                        <div className="flex items-center justify-between mb-4">
+                           <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${selAmt === item.amt ? 'border-primary bg-primary' : 'border-slate-200'}`}>
+                              {selAmt === item.amt && <div className="w-2 h-2 rounded-full bg-white" />}
                            </div>
-                           <div className="flex items-center gap-3">
-                             <div className="text-lg font-black text-slate-900">{item.amt} <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">credits</span></div>
-                             {item.best && <span className="text-[8px] font-black bg-amber-400 text-black px-2 py-0.5 rounded-full uppercase tracking-widest">Best</span>}
-                           </div>
+                           <div className="text-2xl font-black text-primary">${item.price}</div>
                         </div>
-                        <div className="text-lg font-black text-primary">${item.price}</div>
+                        <div className="text-4xl font-black text-slate-900 tracking-tight">{item.amt.toLocaleString()}</div>
+                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Credits</div>
                       </div>
                     ))}
                   </div>
 
                   <button 
                     onClick={handleBuyCredits}
-                    className="w-full py-5 bg-primary text-white rounded-2xl font-black uppercase tracking-widest text-[12px] shadow-2xl shadow-primary/20 hover:scale-[1.01] transition-all flex items-center justify-center gap-3"
+                    className="w-full py-6 bg-slate-900 text-white rounded-[2rem] font-black uppercase tracking-widest text-[13px] hover:bg-black transition-all shadow-2xl shadow-slate-200 flex items-center justify-center gap-4"
                   >
-                    <Shield className="w-4 h-4" />
+                    <Shield className="w-5 h-5 text-primary" />
                     Buy {selAmt.toLocaleString()} credits — ${selPrice}
                   </button>
-                </div>
+               </div>
 
-                <div className="flex-1 p-8 bg-slate-50">
-                  <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6">Or Upgrade Your Plan</div>
-                  <div className="space-y-4 mb-10">
-                    <div 
-                      onClick={() => handleSelectUpgrade('Personal', 15, 500)}
-                      className="p-5 rounded-2xl border-2 border-primary bg-white cursor-pointer relative group transition-all"
-                    >
-                      <div className="absolute -top-3 right-6 bg-primary text-white text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full">Recommended</div>
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="text-lg font-black text-slate-900">Personal</div>
-                        <div className="text-lg font-black text-primary">$15<span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest ml-1">/mo</span></div>
-                      </div>
-                      <div className="text-[11px] text-gray-500 font-bold uppercase tracking-widest mb-3">500 credits/month · No daily reset</div>
-                      <div className="text-[10px] text-gray-400 font-medium leading-relaxed">+ Integrations · AI Associates · 5GB · Priority support</div>
+               <div className="lg:col-span-5">
+                  <div className="bg-slate-50 border border-slate-200 rounded-[3rem] p-10 h-full flex flex-col">
+                    <div className="text-[10px] font-black text-black uppercase tracking-widest mb-8">Or Upgrade Your Plan</div>
+                    <div className="space-y-4 mb-10 overflow-hidden">
+                      {[
+                        { plan: 'Personal', price: 15, sub: '500 credits/month · No daily reset', meta: 'Recommended' },
+                        { plan: 'Teams', price: 15, sub: '800 credits/seat · Shared pool', meta: 'Best for Firms' },
+                        { plan: 'Student', price: 1.5, sub: 'Personal plan · 90% discount', meta: 'Education' }
+                      ].map((p, i) => (
+                        <div 
+                          key={i}
+                          onClick={() => handleSelectUpgrade(p.plan, p.price, p.plan === 'Teams' ? 800 : 500)}
+                          className="group bg-white border border-slate-200 rounded-[2rem] p-6 hover:border-primary transition-all cursor-pointer relative shadow-sm"
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                             <div className="text-xl font-black text-slate-900">{p.plan}</div>
+                             <div className="text-xl font-black text-primary">${p.price}<span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest ml-1">{p.plan === 'Teams' ? '/seat' : '/mo'}</span></div>
+                          </div>
+                          <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest leading-relaxed">{p.sub}</p>
+                        </div>
+                      ))}
                     </div>
-
-                    <div 
-                      onClick={() => handleSelectUpgrade('Teams', 15, 800)}
-                      className="p-5 rounded-2xl border border-slate-200 bg-white hover:border-primary/40 cursor-pointer group transition-all"
-                    >
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="text-lg font-black text-slate-900">Teams</div>
-                        <div className="text-lg font-black text-primary">$15<span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest ml-1">/seat</span></div>
-                      </div>
-                      <div className="text-[11px] text-gray-500 font-bold uppercase tracking-widest mb-3">800 credits/seat · Shared pool</div>
-                      <div className="text-[10px] text-gray-400 font-medium leading-relaxed">+ RBAC · Unlimited Associates · 50GB · Custom workflows</div>
-                    </div>
-
-                    <div 
-                      onClick={() => handleSelectUpgrade('Student', 1.5, 500)}
-                      className="p-5 rounded-2xl border border-slate-200 bg-white hover:border-primary/40 cursor-pointer group transition-all"
-                    >
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="text-lg font-black text-slate-900">Student</div>
-                        <div className="text-lg font-black text-primary">$1.50<span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest ml-1">/mo</span></div>
-                      </div>
-                      <div className="text-[11px] text-black font-bold uppercase tracking-widest mb-3">Personal plan · 90% student discount</div>
-                      <div className="text-[10px] text-black font-medium leading-relaxed">Verify with .edu email · instant access</div>
+                    
+                    <div className="mt-auto pt-10 border-t border-slate-200">
+                      <p className="text-[11px] text-slate-500 font-medium leading-relaxed mb-8 italic">
+                        "Upgrading provides a consistent monthly allocation and unlocks pro features like AI Associates, Matter Vault, and advanced integrations."
+                      </p>
+                      <button onClick={() => navigate('/book-enterprise-demo')} className="w-full py-5 border border-slate-200 rounded-2xl text-[11px] font-black uppercase tracking-widest text-slate-900 bg-white hover:bg-slate-50 transition-all shadow-sm">
+                        Contact Enterprise Sales
+                      </button>
                     </div>
                   </div>
-
-                  <button 
-                    onClick={() => handleSelectUpgrade('Personal', 15, 500)}
-                    className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-[12px] hover:bg-black transition-all flex items-center justify-center gap-3"
-                  >
-                    <ArrowRight className="w-4 h-4 rotate-[-45deg]" />
-                    Upgrade to Personal — $15/mo
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+               </div>
+            </div>
+      {/* PURCHASE SUCCESS MODAL */}
+      <AnimatePresence>
+        {showSuccess && (
+nce>
 
       <AnimatePresence>
         {showSuccess && (
