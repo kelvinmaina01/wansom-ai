@@ -153,14 +153,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
             <span className="text-xl font-bold tracking-tighter">Lawlify AI</span>
           </div>
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm font-medium text-slate-600 hover:text-primary transition-colors">Features</a>
-            <button onClick={onPricingClick} className="text-sm font-medium text-slate-600 hover:text-primary transition-colors">Pricing</button>
-            <a href="#capabilities" className="text-sm font-medium text-slate-600 hover:text-primary transition-colors">Capabilities</a>
-            <a href="#security" className="text-sm font-medium text-slate-600 hover:text-primary transition-colors">Security</a>
+            <a href="#features" className="text-sm font-medium text-black hover:text-primary transition-colors">Features</a>
+            <button onClick={onPricingClick} className="text-sm font-medium text-black hover:text-primary transition-colors">Pricing</button>
+            <a href="#capabilities" className="text-sm font-medium text-black hover:text-primary transition-colors">Capabilities</a>
+            <a href="#security" className="text-sm font-medium text-black hover:text-primary transition-colors">Security</a>
             
             <button 
               onClick={() => setIsKelvinOpen(true)}
-              className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-primary transition-colors border-l border-slate-200 pl-8"
+              className="flex items-center gap-2 text-sm font-medium text-black hover:text-primary transition-colors border-l border-slate-200 pl-8"
             >
               <HelpCircle className="w-4 h-4" />
               <span>Support</span>
@@ -185,7 +185,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
           <h1 className="text-6xl md:text-8xl font-black tracking-tight mb-8 leading-[0.9] max-w-5xl mx-auto text-slate-900">
             The future of <span className="text-primary font-bold">legal work</span> is here.
           </h1>
-          <p className="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto mb-12 font-medium leading-relaxed">
+          <p className="text-lg md:text-xl text-black max-w-2xl mx-auto mb-12 font-medium leading-relaxed">
             Lawlify empowers legal professionals across East Africa with AI-driven research,
             document analysis, and case intelligence. Built for the modern advocate.
           </p>
@@ -210,7 +210,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
 
           {/* Dashboard Preview Mockup */}
           <div className="mt-24 relative max-w-6xl mx-auto">
-            <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/20 blur-[120px] rounded-full pointer-events-none"></div>
             <div className="relative bg-white rounded-[2.5rem] border border-slate-200 shadow-2xl overflow-hidden aspect-[16/10] group">
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-200/20 pointer-events-none"></div>
               <img
@@ -227,7 +226,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                     </div>
                     <div>
                       <h4 className="font-bold text-slate-900">AI Legal Assistant</h4>
-                      <p className="text-xs text-slate-400 font-medium tracking-tight">Processing Kenyan Statutes...</p>
+                      <p className="text-xs text-black font-medium tracking-tight">Processing Kenyan Statutes...</p>
                     </div>
                   </div>
                   <div className="space-y-3">
@@ -245,7 +244,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
       {/* Adopted By Section - Enhanced for Visibility */}
       <section className="py-16 border-y border-slate-200 bg-slate-50 overflow-hidden relative z-20">
         <div className="max-w-7xl mx-auto px-6 mb-10">
-          <p className="text-center text-xs font-black tracking-[0.3em] uppercase text-slate-400 opacity-80">
+          <p className="text-center text-xs font-black tracking-[0.3em] uppercase text-black">
             Trusted by leading legal minds across Africa
           </p>
         </div>
@@ -288,7 +287,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                 <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-8 leading-[1.1] text-slate-900">
                   Features That <br /><span className="text-primary">Make Sense</span>
                 </h2>
-                <p className="text-xl text-slate-500 font-medium leading-relaxed mb-12">
+                <p className="text-xl text-black font-medium leading-relaxed mb-12">
                   Want to feel special? Join Lawlify AI and take home these wonderful features (and more) designed for the modern African advocate.
                 </p>
                 <button
@@ -324,7 +323,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                         </div>
                         <div>
                           <h4 className="text-lg font-black text-gray-900 leading-tight mb-1">{feature.title}</h4>
-                          <p className="text-sm font-medium text-gray-500 leading-snug">{feature.description}</p>
+                          <p className="text-sm font-medium text-black leading-snug">{feature.description}</p>
                         </div>
                       </div>
                     ))}
@@ -345,7 +344,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
             <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-6 text-slate-900">Solutions for every practice.</h2>
-            <p className="text-slate-500 max-w-2xl mx-auto font-medium text-lg">
+            <p className="text-black max-w-2xl mx-auto font-medium text-lg">
               Lawlify is designed to meet the specific needs of diverse legal professionals.
             </p>
           </div>
@@ -398,7 +397,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
               <h2 className="text-4xl md:text-6xl font-black tracking-tight mb-8 leading-tight text-slate-900">
                 Your data is <span className="text-primary">safe</span> with us.
               </h2>
-              <p className="text-xl text-slate-500 font-medium leading-relaxed mb-12">
+              <p className="text-xl text-black font-medium leading-relaxed mb-12">
                 We understand that legal data is the most sensitive asset of any firm.
                 That's why we've built Lawlify with a security-first architecture that
                 exceeds industry standards.
@@ -447,7 +446,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
               </div>
               <div className="flex flex-col max-w-[150px]">
                 <span className="text-slate-900 font-bold text-lg mb-1">SOC 2 Type II</span>
-                <span className="text-xs text-slate-400 font-medium uppercase tracking-widest leading-relaxed">Audited controls protect every case</span>
+                <span className="text-xs text-black font-medium uppercase tracking-widest leading-relaxed">Audited controls protect every case</span>
               </div>
             </div>
 
@@ -472,7 +471,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
               </div>
               <div className="flex flex-col max-w-[150px]">
                 <span className="text-slate-900 font-bold text-lg mb-1">GDPR Compliant</span>
-                <span className="text-xs text-slate-400 font-medium uppercase tracking-widest leading-relaxed">Your data, always your property</span>
+                <span className="text-xs text-black font-medium uppercase tracking-widest leading-relaxed">Your data, always your property</span>
               </div>
             </div>
           </div>
@@ -489,7 +488,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
               <span>Supporting Education</span>
             </div>
             <h2 className="text-4xl font-black mb-4 text-slate-900">We believe in empowering the next generation</h2>
-            <p className="text-slate-500 text-lg font-medium max-w-2xl mx-auto">
+            <p className="text-black text-lg font-medium max-w-2xl mx-auto">
               The future of law depends on accessible tools. That's why we offer students and academic researchers massive discounts because breakthrough legal work shouldn't be limited by budget.
             </p>
           </div>
@@ -503,7 +502,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                 </div>
                 <div>
                   <h3 className="text-lg font-black text-slate-900 mb-1 group-hover:text-primary transition-colors">90% Student Discount</h3>
-                  <p className="text-slate-500 text-sm font-medium">Full Personal features for just $1.50/month. Same powerful AI, same unlimited analysis.</p>
+                  <p className="text-black text-sm font-medium">Full Personal features for just $1.50/month. Same powerful AI, same unlimited analysis.</p>
                 </div>
               </div>
 
@@ -513,7 +512,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                 </div>
                 <div>
                   <h3 className="text-lg font-black text-slate-900 mb-1 group-hover:text-blue-500 transition-colors">50% Academic Institution</h3>
-                  <p className="text-slate-500 text-sm font-medium">Universities, research institutions, and legal clinics qualify for institutional discounts on team plans.</p>
+                  <p className="text-black text-sm font-medium">Universities, research institutions, and legal clinics qualify for institutional discounts on team plans.</p>
                 </div>
               </div>
 
@@ -523,7 +522,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                 </div>
                 <div>
                   <h3 className="text-lg font-black text-slate-900 mb-1 group-hover:text-green-500 transition-colors">Non-Profit Organizations</h3>
-                  <p className="text-slate-500 text-sm font-medium">Registered non-profits advancing justice receive 50% off all plans.</p>
+                  <p className="text-black text-sm font-medium">Registered non-profits advancing justice receive 50% off all plans.</p>
                 </div>
               </div>
             </div>
@@ -536,14 +535,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                 <div className="flex items-baseline gap-2">
                   <span className="text-slate-300 line-through text-lg font-medium">$15</span>
                   <span className="text-5xl font-black text-primary">$1.50</span>
-                  <span className="text-slate-400 font-medium">/mo</span>
+                  <span className="text-black font-medium">/mo</span>
                 </div>
-                <p className="text-sm text-slate-500 font-medium mt-2">Personal plan with student discount</p>
+                <p className="text-sm text-black font-medium mt-2">Personal plan with student discount</p>
               </div>
 
               <ul className="space-y-3 mb-8 relative z-10">
                 {['Full AI analysis suite', 'Unlimited workspaces', '5 GB storage', 'Priority support'].map((item, i) => (
-                  <li key={i} className="flex items-center gap-2 text-sm font-bold text-slate-600">
+                  <li key={i} className="flex items-center gap-2 text-sm font-bold text-black">
                     <Check className="w-4 h-4 text-primary" strokeWidth={3} />
                     {item}
                   </li>
@@ -553,7 +552,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
               <button className="w-full py-4 bg-primary text-white rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-primary-hover transition-colors shadow-lg shadow-primary/20 relative z-10">
                 Verify Student Status
               </button>
-              <p className="text-center text-[10px] text-slate-400 font-black uppercase tracking-widest mt-4 relative z-10">
+              <p className="text-center text-[10px] text-black font-black uppercase tracking-widest mt-4 relative z-10">
                 Instant verification with .edu email
               </p>
             </div>
@@ -576,7 +575,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                 <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-8 leading-tight text-white">
                   Need a custom <span className="text-primary font-bold">enterprise</span> solution?
                 </h2>
-                <p className="text-xl text-slate-400 font-medium leading-relaxed mb-12">
+                <p className="text-xl text-black font-medium leading-relaxed mb-12">
                   Large law firms and legal departments can get custom pricing, on-premise deployments, SSO, advanced audit logs, and dedicated account management.
                 </p>
                 <button 
@@ -633,7 +632,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
           </div>
 
           <div className="mt-16 text-center">
-            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">Explore more FAQs</h3>
+            <h3 className="text-sm font-bold text-black uppercase tracking-widest mb-6">Explore more FAQs</h3>
             <div className="flex flex-wrap justify-center gap-4">
               {FAQ_CATEGORIES.map((cat) => (
                 <button
@@ -673,7 +672,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
             <div className="mt-32 pt-16 border-t border-white/10 flex flex-col md:flex-row items-center justify-center gap-12 md:gap-32">
               <h3 className="text-3xl md:text-5xl font-serif text-center md:text-left leading-tight">
                 Still stuck?<br />
-                <span className="text-gray-400">Let <span className="text-white">us</span> assist you.</span>
+                <span className="text-black/60">Let <span className="text-black font-bold">us</span> assist you.</span>
               </h3>
 
                <div className="flex flex-col items-center gap-4">
@@ -690,10 +689,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                     <div className="text-xs font-black uppercase tracking-[0.2em] text-primary mb-1">Lawlify Support</div>
                     <div className="text-xl font-bold text-white">Open Support Hub</div>
                   </div>
-                  <ArrowRight className="w-6 h-6 text-gray-500 group-hover:translate-x-1 transition-all ml-4" />
+                  <ArrowRight className="w-6 h-6 text-black group-hover:translate-x-1 transition-all ml-4" />
                 </motion.button>
                 
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Typical response time: &lt; 2 minutes</p>
+                <p className="text-[10px] font-bold text-black uppercase tracking-widest">Typical response time: &lt; 2 minutes</p>
               </div>
             </div>
           </div>
@@ -718,7 +717,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
               </div>
               <div>
                 <h4 className="text-lg font-bold text-white mb-0.5">Founder, Lawlify AI</h4>
-                <p className="text-sm text-gray-500 font-medium">Building the legal operating system for East Africa</p>
+                <p className="text-sm text-black font-medium">Building the legal operating system for East Africa</p>
                 <a
                   href="https://www.linkedin.com/posts/lawlify-ai_lawlifyai-legaltech-eastafrica-activity-7441210114327486464-g5-U?utm_source=share&utm_medium=member_desktop&rcm=ACoAAFn6QnIBJ6an0SpQnnoh1262mrOpYO7pl8A"
                   target="_blank"
@@ -740,7 +739,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
               </div>
               <div className="relative z-10">
                 <h3 className="text-2xl font-bold mb-2">Lawlify AI</h3>
-                <p className="text-gray-500 text-sm font-medium mb-10">Legal Operating System for East Africa</p>
+                <p className="text-black text-sm font-medium mb-10">Legal Operating System for East Africa</p>
                 <a
                   href="https://www.linkedin.com/posts/lawlify-ai_lawlifyai-legaltech-eastafrica-activity-7441210114327486464-g5-U?utm_source=share&utm_medium=member_desktop&rcm=ACoAAFn6QnIBJ6an0SpQnnoh1262mrOpYO7pl8A"
                   target="_blank"
@@ -784,7 +783,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                   <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=faces" alt="User" className="w-8 h-8 rounded-full border-2 border-black object-cover" />
                   <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&h=100&fit=crop&crop=faces" alt="User" className="w-8 h-8 rounded-full border-2 border-black object-cover" />
                 </div>
-                <p className="text-sm text-gray-500 font-medium uppercase tracking-[0.2em]">Join 2,000+ legal professionals across East Africa</p>
+                <p className="text-sm text-black font-medium uppercase tracking-[0.2em]">Join 2,000+ legal professionals across East Africa</p>
               </div>
             </div>
           </div>
@@ -803,11 +802,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
                 </div>
                 <span className="text-2xl font-bold tracking-tighter">Lawlify AI</span>
               </div>
-              <p className="text-gray-400 max-w-xs font-medium leading-relaxed">
+              <p className="text-black max-w-xs font-medium leading-relaxed">
                 AI-powered legal platform for modern law firms and in-house legal teams.
               </p>
               <div className="mt-8">
-                <p className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-2">Contact us</p>
+                <p className="text-sm font-bold text-black uppercase tracking-widest mb-2">Contact us</p>
                 <a href="mailto:law@lawlify.ai" className="text-lg font-bold text-white hover:text-primary transition-colors">law@lawlify.ai</a>
               </div>
             </div>
@@ -815,7 +814,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
             {/* Links Columns */}
             <div>
               <h4 className="text-white font-bold mb-6">AI Platform</h4>
-              <ul className="space-y-4 text-sm font-medium text-gray-500">
+              <ul className="space-y-4 text-sm font-medium text-black">
                 <li><a href="#" className="hover:text-white transition-colors">AI Assistant</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Draft & Review</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Document Vault</a></li>
@@ -827,7 +826,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
 
             <div>
               <h4 className="text-white font-bold mb-6">Solutions For</h4>
-              <ul className="space-y-4 text-sm font-medium text-gray-500">
+              <ul className="space-y-4 text-sm font-medium text-black">
                 <li><a href="#" className="hover:text-white transition-colors">In-house counsels</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Litigation Lawyers</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">M&A Lawyers</a></li>
@@ -838,7 +837,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
 
             <div>
               <h4 className="text-white font-bold mb-6">Resources</h4>
-              <ul className="space-y-4 text-sm font-medium text-gray-500">
+              <ul className="space-y-4 text-sm font-medium text-black">
                 <li><a href="#" className="hover:text-white transition-colors">Articles</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Newsletters</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Security</a></li>
@@ -849,11 +848,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
           </div>
 
           <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-8 text-xs font-bold text-gray-600 uppercase tracking-widest">
-              <button onClick={() => openTermsModal('privacy')} className="hover:text-white transition-colors">Privacy Policy</button>
-              <button onClick={() => openTermsModal('terms')} className="hover:text-white transition-colors">Terms of Service</button>
+            <div className="flex items-center gap-8 text-xs font-bold text-black uppercase tracking-widest">
+              <button onClick={() => openTermsModal('privacy')} className="hover:text-primary transition-colors">Privacy Policy</button>
+              <button onClick={() => openTermsModal('terms')} className="hover:text-primary transition-colors">Terms of Service</button>
             </div>
-            <div className="text-sm text-gray-600 font-medium">
+            <div className="text-sm text-black font-medium">
               © 2026 Lawlify AI. All Rights Reserved.
             </div>
           </div>
@@ -908,7 +907,7 @@ const FeatureCard = ({ icon, title, description, color }: { icon: React.ReactNod
         {icon}
       </div>
       <h3 className="text-2xl font-bold mb-4 tracking-tight">{title}</h3>
-      <p className="text-gray-400 leading-relaxed font-medium">{description}</p>
+      <p className="text-black leading-relaxed font-medium">{description}</p>
     </div>
   );
 };
@@ -918,7 +917,7 @@ const SolutionCard = ({ title, icon: Icon }: { title: string, icon: React.Elemen
     <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-white/20 group-hover:text-white transition-all duration-500 shadow-lg shadow-primary/5">
       <Icon className="w-8 h-8" />
     </div>
-    <span className="text-sm font-black text-gray-800 group-hover:text-white transition-colors duration-500 uppercase tracking-wider">{title}</span>
+    <span className="text-sm font-black text-black group-hover:text-white transition-colors duration-500 uppercase tracking-wider">{title}</span>
   </div>
 );
 
@@ -927,7 +926,7 @@ const CapabilityItem = ({ text }: { text: string }) => (
     <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
       <CheckCircle2 className="w-4 h-4 text-primary" />
     </div>
-    <span className="text-gray-300 font-medium">{text}</span>
+    <span className="text-black font-medium">{text}</span>
   </div>
 );
 
@@ -959,10 +958,10 @@ const AnimatedStatCard = ({ value, label }: { value: string, label: string }) =>
   return (
     <div ref={ref} className="p-8 rounded-3xl bg-white/5 border border-white/10 text-center hover:bg-white/10 transition-colors relative overflow-hidden group">
       <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      <div className="text-4xl md:text-5xl font-black text-white mb-2 tracking-tighter relative z-10 transition-transform duration-300 group-hover:scale-105 group-hover:text-primary">
+      <div className="text-4xl md:text-5xl font-black text-primary mb-2 tracking-tighter relative z-10 transition-transform duration-300 group-hover:scale-105">
         {numericValue > 0 ? count : ''}{numericValue > 0 ? suffix : value}
       </div>
-      <div className="text-xs font-bold text-gray-400 uppercase tracking-widest relative z-10 group-hover:text-gray-300">{label}</div>
+      <div className="text-xs font-bold text-black uppercase tracking-widest relative z-10">{label}</div>
     </div>
   );
 };
@@ -990,8 +989,8 @@ const SecurityItem = ({ icon, title, description, delay = 0 }: { icon: React.Rea
       {icon}
     </div>
     <div>
-      <h4 className="text-xl font-bold mb-2 tracking-tight text-white">{title}</h4>
-      <p className="text-gray-400 font-medium leading-relaxed text-sm">{description}</p>
+      <h4 className="text-xl font-bold mb-2 tracking-tight text-black">{title}</h4>
+      <p className="text-black font-medium leading-relaxed text-sm">{description}</p>
     </div>
   </motion.div>
 );
@@ -1001,13 +1000,13 @@ const FAQItem = ({ question, answer }: { question: string, answer: string }) => 
   return (
     <div className="py-6 border-b border-white/10 group cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
       <div className="flex items-center justify-between gap-4">
-        <h3 className="text-xl md:text-2xl font-serif text-white/90 group-hover:text-white transition-colors">{question}</h3>
-        <span className={`text-gray-400 font-light text-3xl transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}>
+        <h3 className="text-xl md:text-2xl font-serif text-black group-hover:text-primary transition-colors">{question}</h3>
+        <span className={`text-black font-light text-3xl transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}>
           +
         </span>
       </div>
       <div className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-96 mt-4 opacity-100' : 'max-h-0 opacity-0'}`}>
-        <p className="text-gray-400 text-lg font-sans font-medium leading-relaxed pr-12">
+        <p className="text-black text-lg font-sans font-medium leading-relaxed pr-12">
           {answer}
         </p>
       </div>

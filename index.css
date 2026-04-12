@@ -24,7 +24,7 @@ h1,h2,h3,h4,h5,h6 { font-family: var(--font); color: inherit; }
 
 /* ── CSS CUSTOM PROPERTIES (mirrors simulation :root) ── */
 :root {
-  --bg:      #fafafa;
+  --bg:      #ffffff;
   --white:   #ffffff;
   --sidebar: #000000;
   --red:     #ef4444;
@@ -68,8 +68,7 @@ h1,h2,h3,h4,h5,h6 { font-family: var(--font); color: inherit; }
 }
 
 .bg-ai-studio {
-  background: radial-gradient(circle at top center, #ffffff 0%, #f1f5f9 100%);
-  background-attachment: fixed;
+  background: #ffffff;
 }
 
 /* ── UTILITIES ── */

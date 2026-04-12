@@ -79,7 +79,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
 锋        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <button 
             onClick={onBack}
-            className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors group"
+            className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-black hover:text-primary transition-colors group"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             Back to Home
@@ -113,14 +113,14 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
           className="text-5xl md:text-7xl font-black tracking-tighter mb-6 leading-tight text-slate-900"
         >
           Simple, transparent pricing.<br />
-          <span className="text-gray-400 text-3xl font-bold tracking-tight">Start free. Scale as you grow.</span>
+          <span className="text-black text-3xl font-bold tracking-tight">Start free. Scale as you grow.</span>
         </motion.h1>
 
         <motion.p 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="text-lg text-gray-500 font-medium max-w-2xl mx-auto mb-10 leading-relaxed"
+          className="text-lg text-black font-medium max-w-2xl mx-auto mb-10 leading-relaxed"
         >
           Every plan runs on credits. Daily resets for free users, monthly cycles for paid plans. Top up or upgrade any time.
         </motion.p>
@@ -135,13 +135,13 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
           <div className="bg-white border border-slate-200 p-1.5 rounded-2xl flex items-center relative shadow-sm">
             <button 
               onClick={() => setIsAnnual(false)}
-              className={`px-8 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all z-10 ${!isAnnual ? 'text-slate-900' : 'text-gray-400 hover:text-slate-900'}`}
+              className={`px-8 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all z-10 ${!isAnnual ? 'text-slate-900' : 'text-black hover:text-primary'}`}
             >
               Monthly
             </button>
             <button 
               onClick={() => setIsAnnual(true)}
-              className={`px-8 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all z-10 ${isAnnual ? 'text-slate-900' : 'text-gray-400 hover:text-slate-900'}`}
+              className={`px-8 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all z-10 ${isAnnual ? 'text-slate-900' : 'text-black hover:text-primary'}`}
             >
               Annual
             </button>
@@ -161,31 +161,30 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
       </div>
 
       {/* PRICING GRID */}
-      <div className="max-w-[1400px] mx-auto px-6 pb-24 grid grid-cols-1 md:grid-cols-4 gap-10 items-start">
+      <div className="max-w-[1400px] mx-auto px-6 pb-24 grid grid-cols-1 md:grid-cols-4 gap-12 items-start">
         {/* FREE */}
-        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-12 hover:border-slate-300 transition-all flex flex-col min-h-full shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-8 hover:border-black transition-all flex flex-col min-h-full shadow-sm">
           <div className="mb-6">
             <h3 className="text-xl font-black text-slate-900 mb-1">Free</h3>
-            <p className="text-xs text-gray-500 font-medium leading-relaxed">For individuals exploring AI-powered legal work</p>
+            <p className="text-xs text-black font-medium leading-relaxed">For individuals exploring AI-powered legal work</p>
           </div>
           <div className="mb-8">
             <div className="flex items-baseline gap-1">
               <span className="text-4xl font-black text-slate-900">$0</span>
-              <span className="text-gray-500 font-bold uppercase tracking-widest text-[10px]">/mo</span>
+              <span className="text-black font-bold uppercase tracking-widest text-[10px]">/mo</span>
             </div>
             <div className="h-4 mt-1">&nbsp;</div>
           </div>
 
           <div className="bg-slate-50 border border-slate-200 rounded-[1.5rem] p-6 mb-8 relative overflow-hidden group/cr">
-             <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl group-hover/cr:bg-blue-500/10 transition-all" />
-             <div className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-4">Daily Credits — Midnight Reset</div>
+             <div className="text-[9px] font-black text-black uppercase tracking-widest mb-4">Daily Credits — Midnight Reset</div>
              <div className="flex items-baseline gap-2 mb-3">
-               <span className="text-3xl font-black text-slate-900">5</span>
-               <span className="text-[11px] font-black text-gray-500 uppercase tracking-widest">credits / day</span>
+               <span className="text-3xl font-black text-primary">5</span>
+               <span className="text-[11px] font-black text-black uppercase tracking-widest">credits / day</span>
              </div>
-             <p className="text-[10px] text-gray-500 leading-relaxed mb-6 font-medium">5 credits/day. Resets at midnight UTC. Each day starts fresh.</p>
+             <p className="text-[10px] text-black leading-relaxed mb-6 font-medium">5 credits/day. Resets at midnight UTC. Each day starts fresh.</p>
              <div className="h-1 bg-slate-200 rounded-full overflow-hidden">
-               <div className="h-full bg-blue-500/40 w-[5%] rounded-full shadow-[0_0_10px_rgba(59,130,246,0.3)]" />
+               <div className="h-full bg-primary/40 w-[5%] rounded-full shadow-[0_0_10px_rgba(239,68,68,0.3)]" />
              </div>
           </div>
 
@@ -204,50 +203,49 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
                { on: false, text: 'Integrations' }
              ].map((f, i) => (
                <div key={i} className="flex items-start gap-3">
-                 <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${f.on ? 'bg-primary/20 border border-primary/30' : 'bg-white/5 border border-white/10 opacity-30'}`}>
+                 <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${f.on ? 'bg-primary/10 border border-primary/20' : 'bg-slate-100 border border-slate-200'}`}>
                    {f.on && <Check className="w-2.5 h-2.5 text-primary" strokeWidth={3} />}
                  </div>
-                 <span className={`text-[12px] font-medium ${f.on ? 'text-gray-300' : 'text-gray-600'}`}>{f.text}</span>
+                  <span className={`text-[12px] font-medium ${f.on ? 'text-black' : 'text-slate-400'}`}>{f.text}</span>
                </div>
              ))}
           </div>
         </div>
 
         {/* PERSONAL */}
-        <div className="bg-white border-2 border-primary rounded-[2.5rem] p-12 shadow-2xl shadow-primary/10 flex flex-col min-h-full relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="bg-white border-2 border-primary rounded-[2.5rem] p-8 shadow-xl shadow-primary/5 flex flex-col min-h-full relative overflow-hidden">
           <div className="self-center bg-primary text-white text-[9px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-full mb-8 absolute -top-3 shadow-lg shadow-primary/20">
             Most Popular
           </div>
           
           <div className="mb-6 mt-4">
             <h3 className="text-xl font-black text-slate-900 mb-1">Personal</h3>
-            <p className="text-xs text-gray-500 font-medium leading-relaxed">Best for solo practitioners who want to do more</p>
+            <p className="text-xs text-black font-medium leading-relaxed">Best for solo practitioners who want to do more</p>
           </div>
           
           <div className="mb-8">
             <div className="flex items-baseline gap-1">
-              <span className="text-4xl font-black text-white">${isAnnual ? '12' : '15'}</span>
-              <span className="text-gray-500 font-bold uppercase tracking-widest text-[10px]">/mo</span>
+              <span className="text-4xl font-black text-slate-900">${isAnnual ? '12' : '15'}</span>
+              <span className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">/mo</span>
             </div>
-            <div className="text-[9px] text-gray-500 uppercase tracking-widest font-black mt-1 h-4">
+            <div className="text-[9px] text-slate-400 uppercase tracking-widest font-black mt-1 h-4">
               {isAnnual ? 'Billed annually ($144)' : <>&nbsp;</>}
             </div>
           </div>
 
-          <div className="bg-primary/10 border border-primary/30 rounded-[1.5rem] p-6 mb-8 relative overflow-hidden group/cr">
+          <div className="bg-primary/5 border border-primary/10 rounded-[1.5rem] p-6 mb-8 relative overflow-hidden group/cr">
              <div className="text-[9px] font-black text-primary uppercase tracking-widest mb-4">Monthly Credits — No Daily Reset</div>
              <div className="flex items-baseline gap-2 mb-3">
-               <span className="text-3xl font-black text-slate-900">500</span>
+               <span className="text-3xl font-black text-primary">500</span>
                <span className="text-[11px] font-black text-primary uppercase tracking-widest">credits / month</span>
              </div>
-             <p className="text-[10px] text-gray-300 leading-relaxed mb-6 font-medium">500 credits/month. No daily reset — use them any time.</p>
-             <div className="h-1 bg-white/10 rounded-full overflow-hidden">
-               <div className="h-full bg-primary/60 w-[42%] rounded-full shadow-[0_0_10px_rgba(239,68,68,0.3)]" />
+             <p className="text-[10px] text-black leading-relaxed mb-6 font-medium">500 credits/month. No daily reset — use them any time.</p>
+             <div className="h-1 bg-primary/10 rounded-full overflow-hidden">
+               <div className="h-full bg-primary w-[42%] rounded-full" />
              </div>
           </div>
 
-          <button onClick={onGetStarted} className="w-full py-4 rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-[11px] shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all mb-10">
+          <button onClick={onGetStarted} className="w-full py-4 rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-[11px] shadow-lg shadow-primary/20 hover:bg-primary-hover transition-all mb-10">
             Upgrade Now
           </button>
           
@@ -263,40 +261,40 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
                'Team collaboration'
              ].map((f, i) => (
                <div key={i} className="flex items-start gap-3">
-                 <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${i < 7 ? 'bg-primary/20 border border-primary/30' : 'bg-white/5 border border-white/10 opacity-30'}`}>
+                 <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${i < 7 ? 'bg-primary/10 border border-primary/20' : 'bg-slate-100 border border-slate-200'}`}>
                    {i < 7 && <Check className="w-2.5 h-2.5 text-primary" strokeWidth={3} />}
                  </div>
-                 <span className={`text-[12px] font-medium ${i < 7 ? 'text-gray-300' : 'text-gray-600'}`}>{f}</span>
+                  <span className={`text-[12px] font-medium ${i < 7 ? 'text-black' : 'text-slate-400'}`}>{f}</span>
                </div>
              ))}
           </div>
         </div>
 
         {/* TEAMS */}
-        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-12 hover:border-slate-300 transition-all flex flex-col min-h-full shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-8 hover:border-black transition-all flex flex-col min-h-full shadow-sm">
           <div className="mb-6">
             <h3 className="text-xl font-black text-slate-900 mb-1">Teams</h3>
-            <p className="text-xs text-gray-500 font-medium leading-relaxed">Collaborate on client matters with your whole firm</p>
+            <p className="text-xs text-black font-medium leading-relaxed">Collaborate on client matters with your whole firm</p>
           </div>
           <div className="mb-8">
             <div className="flex items-baseline gap-1">
               <span className="text-4xl font-black text-slate-900">${isAnnual ? '12' : '15'}</span>
-              <span className="text-gray-500 font-bold uppercase tracking-widest text-[10px]">/seat/mo</span>
+              <span className="text-black font-bold uppercase tracking-widest text-[10px]">/seat/mo</span>
             </div>
-            <div className="text-[9px] text-gray-600 uppercase tracking-widest font-black mt-1 leading-tight h-4">
+            <div className="text-[9px] text-black uppercase tracking-widest font-black mt-1 leading-tight h-4">
               Prorated billing when members join
             </div>
           </div>
 
           <div className="bg-slate-50 border border-slate-200 rounded-[1.5rem] p-6 mb-8 relative overflow-hidden group/cr">
-             <div className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-4">Per-Seat Credits — Pooled</div>
+             <div className="text-[9px] font-black text-black uppercase tracking-widest mb-4">Per-Seat Credits — Pooled</div>
              <div className="flex items-baseline gap-2 mb-3">
-               <span className="text-3xl font-black text-slate-900">800</span>
-               <span className="text-[11px] font-black text-gray-500 uppercase tracking-widest">credits/seat/mo</span>
+               <span className="text-3xl font-black text-primary">800</span>
+               <span className="text-[11px] font-black text-black uppercase tracking-widest">credits/seat/mo</span>
              </div>
-             <p className="text-[10px] text-gray-500 leading-relaxed mb-6 font-medium">800 credits/seat, pooled across team members.</p>
+             <p className="text-[10px] text-black leading-relaxed mb-6 font-medium">800 credits/seat, pooled across team members.</p>
              <div className="h-1 bg-slate-200 rounded-full overflow-hidden">
-               <div className="h-full bg-slate-300 w-[65%] rounded-full" />
+               <div className="h-full bg-primary/40 w-[65%] rounded-full" />
              </div>
           </div>
 
@@ -326,28 +324,28 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
         </div>
 
         {/* ENTERPRISE */}
-        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-12 hover:border-slate-300 transition-all flex flex-col min-h-full shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-8 hover:border-black transition-all flex flex-col min-h-full shadow-sm">
           <div className="mb-6">
             <h3 className="text-xl font-black text-slate-900 mb-1">Enterprise</h3>
-            <p className="text-xs text-gray-500 font-medium leading-relaxed">For the most demanding legal teams</p>
+            <p className="text-xs text-black font-medium leading-relaxed">For the most demanding legal teams</p>
           </div>
           <div className="mb-8">
             <div className="flex items-baseline gap-1">
-              <span className="text-3xl font-black text-white tracking-widest uppercase">Custom</span>
+              <span className="text-3xl font-black text-slate-900 tracking-widest uppercase">Custom</span>
             </div>
-            <div className="text-[9px] text-gray-600 uppercase tracking-widest font-black mt-2 h-4">
+            <div className="text-[9px] text-black uppercase tracking-widest font-black mt-2 h-4">
               Annual contract · volume pricing
             </div>
           </div>
 
           <div className="bg-slate-50 border border-slate-200 rounded-[1.5rem] p-6 mb-8 relative overflow-hidden group/cr">
-             <div className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-4">Credits</div>
+             <div className="text-[9px] font-black text-black uppercase tracking-widest mb-4">Credits</div>
              <div className="flex items-baseline gap-2 mb-3">
-               <span className="text-3xl font-black text-slate-900 tracking-widest uppercase">Unlimited</span>
+               <span className="text-3xl font-black text-primary tracking-widest uppercase">Unlimited</span>
              </div>
-             <p className="text-[10px] text-gray-500 leading-relaxed mb-6 font-medium">Unlimited. No credit tracking, no caps. Custom pricing.</p>
-             <div className="h-1 bg-green-500/20 rounded-full overflow-hidden">
-               <div className="h-full bg-green-500/60 w-full rounded-full" />
+             <p className="text-[10px] text-black leading-relaxed mb-6 font-medium">Unlimited. No credit tracking, no caps. Custom pricing.</p>
+             <div className="h-1 bg-primary/20 rounded-full overflow-hidden">
+               <div className="h-full bg-primary/60 w-full rounded-full" />
              </div>
           </div>
 
@@ -391,10 +389,10 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
               </div>
               <div className="text-left">
                 <h3 className="text-lg font-black text-slate-900 uppercase tracking-widest mb-1">How credits work</h3>
-                <p className="text-xs text-gray-400 font-black uppercase tracking-widest">Start free. Scale as you grow.</p>
+                <p className="text-xs text-black font-black uppercase tracking-widest">Start free. Scale as you grow.</p>
               </div>
             </div>
-            <div className="px-6 py-3 bg-white border border-slate-200 rounded-full text-xs font-black tracking-widest text-gray-500 uppercase shadow-inner">
+            <div className="px-6 py-3 bg-white border border-slate-200 rounded-full text-xs font-black tracking-widest text-black uppercase shadow-inner">
                Transparent usage: 1 action = 1–3 credits
             </div>
           </div>
@@ -407,9 +405,9 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
               { label: 'Integration Query', val: '1', unit: 'credit' }
             ].map((item, i) => (
               <div key={i} className="bg-white border border-slate-200 rounded-[2.5rem] p-8 text-center hover:bg-slate-50 transition-all group/item shadow-sm">
-                <div className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-4 leading-tight min-h-[30px]">{item.label}</div>
-                <div className="text-5xl font-black text-slate-900 mb-2 group-hover/item:text-primary transition-colors tracking-tighter">{item.val}</div>
-                <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{item.unit}</div>
+                <div className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-4 leading-tight min-h-[30px]">{item.label}</div>
+                <div className="text-5xl font-black text-primary mb-2 tracking-tighter">{item.val}</div>
+                <div className="text-[10px] font-black text-black uppercase tracking-widest">{item.unit}</div>
               </div>
             ))}
           </div>
@@ -423,55 +421,11 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
              ].map((r, i) => (
                <div key={i} className={`text-left rounded-[2rem] p-8 border ${r.bg} ${r.border} hover:scale-[1.02] transition-transform`}>
                  <div className={`text-[12px] font-black uppercase tracking-[0.15em] mb-4 ${r.color}`}>{r.plan}</div>
-                 <p className="text-[13px] text-slate-600 leading-relaxed font-medium">{r.text}</p>
+                 <p className="text-[13px] text-black leading-relaxed font-medium">{r.text}</p>
                </div>
              ))}
           </div>
         </motion.div>
-
-      {/* TOP-UP SECTION */}
-      <div className="max-w-4xl mx-auto px-6 pb-24">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl font-black text-slate-900 mb-2">Need more credits? Top up anytime.</h2>
-          <p className="text-[13px] text-gray-500 font-medium">Works on any plan. Top-up credits are consumed first and never expire.</p>
-        </div>
-        
-        <div className="bg-amber-400/[0.02] border border-amber-400/10 rounded-2xl p-6 mb-10 flex items-center gap-4">
-           <div className="w-10 h-10 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center shrink-0">
-             <Info className="w-5 h-5 text-amber-500" />
-           </div>
-           <p className="text-sm text-amber-500/80 font-medium leading-relaxed">
-             Top-up credits are consumed <strong className="text-amber-500">first</strong> before your plan credits. They never expire — carry over month to month.
-           </p>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { amt: 50, price: 2, per: '0.04' },
-            { amt: 150, price: 5, per: '0.033', best: true },
-            { amt: 500, price: 14, per: '0.028' },
-            { amt: 1000, price: 25, per: '0.025' }
-          ].map((item, i) => (
-            <div key={i} className={`bg-white border rounded-[2rem] p-8 text-center relative group hover:scale-[1.03] transition-all duration-300 ${item.best ? 'border-amber-400/40 shadow-xl shadow-amber-400/5' : 'border-slate-200 hover:border-primary/40'}`}>
-              {item.best && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-400 text-black text-[9px] font-black uppercase tracking-widest px-4 py-1 rounded-full shadow-lg h-6 flex items-center">
-                  Best Value
-                </div>
-              )}
-              <div className="text-4xl font-black text-slate-900 mb-1">{item.amt}</div>
-              <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6">credits</div>
-              <div className="text-xl font-black text-primary mb-1">${item.price}</div>
-              <div className="text-[10px] text-gray-500 font-bold mb-8">${item.per} / credit</div>
-              <button 
-                onClick={() => openModal(item.amt, item.price)}
-                className="w-full py-3 rounded-xl bg-slate-50 border border-slate-200 font-black uppercase tracking-widest text-[9px] hover:bg-primary hover:text-white hover:border-primary transition-all text-slate-900"
-              >
-                Buy {item.amt} credits
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
 
       {/* SUPPORTING EDUCATION SECTION (90% Rules) */}
       <div className="py-24 border-t border-slate-200 relative">
@@ -483,7 +437,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
               <span>Supporting Education</span>
             </div>
             <h2 className="text-4xl font-black tracking-tight mb-4 text-slate-900">We believe in empowering<br />the next generation</h2>
-            <p className="text-gray-500 text-lg font-medium max-w-2xl mx-auto">
+            <p className="text-black text-lg font-medium max-w-2xl mx-auto">
               The future of law depends on accessible tools. That's why we offer students and academic researchers massive discounts because breakthrough legal work shouldn't be limited by budget.
             </p>
           </div>
@@ -565,14 +519,14 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
         <div className="text-center mb-16">
           <div className="text-primary text-[10px] font-black uppercase tracking-[0.2em] mb-4">Compare Plans</div>
           <h2 className="text-4xl font-black text-slate-900 mb-4">Detailed feature breakdown</h2>
-          <p className="text-gray-500 font-medium">Everything you need to make the right decision for your firm.</p>
+          <p className="text-black font-medium">Everything you need to make the right decision for your firm.</p>
         </div>
 
         <div className="overflow-x-auto rounded-[2rem] border border-slate-200 bg-white shadow-xl">
           <table className="w-full border-collapse min-w-[900px]">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200">
-                <th className="p-8 text-left text-[11px] font-black uppercase tracking-widest text-gray-500">Features</th>
+                <th className="p-8 text-left text-[11px] font-black uppercase tracking-widest text-black">Features</th>
                 <th className="p-8 text-center text-[13px] font-black text-slate-900">Free</th>
                 <th className="p-8 text-center text-[13px] font-black text-primary bg-primary/5 border-x border-slate-200 relative">
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full whitespace-nowrap">Most Popular</div>
@@ -582,56 +536,56 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
                 <th className="p-8 text-center text-[13px] font-black text-slate-900">Enterprise</th>
               </tr>
             </thead>
-            <tbody className="text-[13px] font-medium text-slate-500">
+            <tbody className="text-[13px] font-medium text-black">
               {/* CATEGORY: PRICING */}
-              <tr className="bg-slate-50/50"><td colSpan={5} className="px-8 py-3 text-[10px] font-black uppercase tracking-[0.15em] text-gray-400">Pricing & Billing</td></tr>
+              <tr className="bg-slate-50/50"><td colSpan={5} className="px-8 py-3 text-[10px] font-black uppercase tracking-[0.15em] text-black">Pricing & Billing</td></tr>
               <tr className="border-b border-slate-100">
-                <td className="p-6 ps-8 text-slate-900 font-black">Monthly price</td>
-                <td className="p-6 text-center text-slate-900 font-bold">$0</td>
+                <td className="p-6 ps-8 text-black font-black flex items-center gap-3"><CreditCard className="w-4 h-4 text-primary" /> Monthly price</td>
+                <td className="p-6 text-center text-black font-bold">$0</td>
                 <td className="p-6 text-center text-primary font-black bg-primary/5">$15/mo</td>
-                <td className="p-6 text-center text-slate-900 font-bold">$15/seat/mo</td>
-                <td className="p-6 text-center text-slate-900 font-bold">Custom</td>
+                <td className="p-6 text-center text-black font-bold">$15/seat/mo</td>
+                <td className="p-6 text-center text-black font-bold">Custom</td>
               </tr>
               <tr className="border-b border-slate-100">
-                <td className="p-6 ps-8 text-slate-900 font-black">Annual price (Save 20%)</td>
+                <td className="p-6 ps-8 text-black font-black flex items-center gap-3"><Heart className="w-4 h-4 text-primary" /> Annual price (Save 20%)</td>
                 <td className="p-6 text-center">$0</td>
-                <td className="p-6 text-center text-primary font-black bg-primary/5">$12/mo <span className="text-[10px] text-gray-400 font-bold block">($144/yr)</span></td>
+                <td className="p-6 text-center text-primary font-black bg-primary/5">$12/mo <span className="text-[10px] text-black font-bold block">($144/yr)</span></td>
                 <td className="p-6 text-center">$12/seat/mo</td>
                 <td className="p-6 text-center">Custom</td>
               </tr>
               <tr className="border-b border-white/5">
-                <td className="p-6 ps-8 text-white font-black">Student pricing</td>
+                <td className="p-6 ps-8 text-black font-black flex items-center gap-3"><GraduationCap className="w-4 h-4 text-primary" /> Student pricing</td>
                 <td className="p-6 text-center">—</td>
-                <td className="p-6 text-center text-green-400 font-black bg-primary/5">$1.50/mo <span className="text-[10px] text-gray-600 block">(90% off)</span></td>
+                <td className="p-6 text-center text-primary font-black bg-primary/5">$1.50/mo <span className="text-[10px] text-black block">(90% off)</span></td>
                 <td className="p-6 text-center">—</td>
                 <td className="p-6 text-center">—</td>
               </tr>
 
               {/* CATEGORY: CREDITS */}
-              <tr className="bg-slate-50/50"><td colSpan={5} className="px-8 py-3 text-[10px] font-black uppercase tracking-[0.15em] text-gray-400">Credits & Usage</td></tr>
+              <tr className="bg-slate-50/50"><td colSpan={5} className="px-8 py-3 text-[10px] font-black uppercase tracking-[0.15em] text-black">Credits & Usage</td></tr>
               <tr className="border-b border-slate-100">
-                <td className="p-6 ps-8 text-slate-900 font-black">Credit allocation</td>
-                <td className="p-6 text-center">5 / day</td>
+                <td className="p-6 ps-8 text-black font-black flex items-center gap-3"><Zap className="w-4 h-4 text-primary" /> Credit allocation</td>
+                <td className="p-6 text-center text-primary font-bold">5 / day</td>
                 <td className="p-6 text-center text-primary font-black bg-primary/5">500 / month</td>
-                <td className="p-6 text-center">800 / seat / month</td>
-                <td className="p-6 text-center text-slate-900 font-bold">Unlimited</td>
+                <td className="p-6 text-center text-primary font-bold">800 / seat / month</td>
+                <td className="p-6 text-center text-primary font-bold">Unlimited</td>
               </tr>
               <tr className="border-b border-slate-100">
-                <td className="p-6 ps-8 text-slate-900 font-black">Reset behaviour</td>
+                <td className="p-6 ps-8 text-black font-black flex items-center gap-3"><History className="w-4 h-4 text-primary" /> Reset behaviour</td>
                 <td className="p-6 text-center">Midnight UTC</td>
                 <td className="p-6 text-center bg-primary/5">Billing Cycle</td>
                 <td className="p-6 text-center">Billing Cycle</td>
                 <td className="p-6 text-center">No limits</td>
               </tr>
               <tr className="border-b border-slate-100">
-                <td className="p-6 ps-8 text-slate-900 font-black">Buy top-up credits</td>
+                <td className="p-6 ps-8 text-black font-black flex items-center gap-3"><Shield className="w-4 h-4 text-primary" /> Buy top-up credits</td>
                 <td className="p-6 text-center flex justify-center"><Check className="text-primary w-4 h-4" strokeWidth={3} /></td>
                 <td className="p-6 text-center bg-primary/5"><div className="flex justify-center"><Check className="text-primary w-4 h-4" strokeWidth={3} /></div></td>
                 <td className="p-6 text-center flex justify-center"><Check className="text-primary w-4 h-4" strokeWidth={3} /></td>
                 <td className="p-6 text-center">N/A</td>
               </tr>
               <tr className="border-b border-slate-100">
-                <td className="p-6 ps-8 text-slate-900 font-black">Top-up credits expire</td>
+                <td className="p-6 ps-8 text-black font-black flex items-center gap-3"><History className="w-4 h-4 text-primary" /> Top-up credits expire</td>
                 <td className="p-6 text-center">Never</td>
                 <td className="p-6 text-center bg-primary/5">Never</td>
                 <td className="p-6 text-center">Never</td>
@@ -639,16 +593,16 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
               </tr>
 
               {/* CATEGORY: STORAGE */}
-              <tr className="bg-black/40"><td colSpan={5} className="px-8 py-3 text-[10px] font-black uppercase tracking-[0.15em] text-gray-500">Workspace & Storage</td></tr>
-              <tr className="border-b border-white/5">
-                <td className="p-6 ps-8 text-white font-black">Matter workspaces</td>
+              <tr className="bg-slate-50/50"><td colSpan={5} className="px-8 py-3 text-[10px] font-black uppercase tracking-[0.15em] text-black">Workspace & Storage</td></tr>
+              <tr className="border-b border-slate-100">
+                <td className="p-6 ps-8 text-black font-black flex items-center gap-3"><Users className="w-4 h-4 text-primary" /> Matter workspaces</td>
                 <td className="p-6 text-center">2 Active</td>
                 <td className="p-6 text-center bg-primary/5">Unlimited</td>
                 <td className="p-6 text-center">Unlimited</td>
                 <td className="p-6 text-center">Unlimited</td>
               </tr>
-              <tr className="border-b border-white/5">
-                <td className="p-6 ps-8 text-white font-black">Document Vault storage</td>
+              <tr className="border-b border-slate-100">
+                <td className="p-6 ps-8 text-black font-black flex items-center gap-3"><Server className="w-4 h-4 text-primary" /> Document Vault storage</td>
                 <td className="p-6 text-center">500 MB</td>
                 <td className="p-6 text-center bg-primary/5">5 GB</td>
                 <td className="p-6 text-center">50 GB / seat</td>
@@ -656,27 +610,27 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
               </tr>
 
               {/* CATEGORY: SECURITY */}
-               <tr className="bg-slate-50/50"><td colSpan={5} className="px-8 py-3 text-[10px] font-black uppercase tracking-[0.15em] text-gray-400">Integrations & Security</td></tr>
+               <tr className="bg-slate-50/50"><td colSpan={5} className="px-8 py-3 text-[10px] font-black uppercase tracking-[0.15em] text-black">Integrations & Security</td></tr>
                <tr className="border-b border-slate-100">
-                <td className="p-6 ps-8 text-slate-900 font-black">Google Cal & Email</td>
+                <td className="p-6 ps-8 text-black font-black flex items-center gap-3"><Globe className="w-4 h-4 text-primary" /> Google Cal & Email</td>
                 <td className="p-6 text-center">—</td>
                 <td className="p-6 text-center bg-primary/5 flex justify-center"><Check className="text-primary w-4 h-4" strokeWidth={3} /></td>
-                <td className="p-6 text-center flex justify-center"><Check className="text-slate-400 w-4 h-4" strokeWidth={3} /></td>
-                <td className="p-6 text-center flex justify-center"><Check className="text-green-500 w-4 h-4" strokeWidth={3} /></td>
+                <td className="p-6 text-center flex justify-center"><Check className="text-black w-4 h-4" strokeWidth={3} /></td>
+                <td className="p-6 text-center flex justify-center"><Check className="text-primary w-4 h-4" strokeWidth={3} /></td>
               </tr>
               <tr className="border-b border-slate-100">
-                <td className="p-6 ps-8 text-slate-900 font-black">SSO & SAML 2.0</td>
+                <td className="p-6 ps-8 text-black font-black flex items-center gap-3"><Lock className="w-4 h-4 text-primary" /> SSO & SAML 2.0</td>
                 <td className="p-6 text-center">—</td>
                 <td className="p-6 text-center bg-primary/5">—</td>
                 <td className="p-6 text-center">—</td>
-                <td className="p-6 text-center flex justify-center"><Check className="text-green-500 w-4 h-4" strokeWidth={3} /></td>
+                <td className="p-6 text-center flex justify-center"><Check className="text-primary w-4 h-4" strokeWidth={3} /></td>
               </tr>
               <tr className="border-b border-slate-100">
-                <td className="p-6 ps-8 text-slate-900 font-black">On-premise deployment</td>
+                <td className="p-6 ps-8 text-black font-black flex items-center gap-3"><Building2 className="w-4 h-4 text-primary" /> On-premise deployment</td>
                 <td className="p-6 text-center">—</td>
                 <td className="p-6 text-center bg-primary/5">—</td>
                 <td className="p-6 text-center">—</td>
-                <td className="p-6 text-center flex justify-center"><Check className="text-green-500 w-4 h-4" strokeWidth={3} /></td>
+                <td className="p-6 text-center flex justify-center"><Check className="text-primary w-4 h-4" strokeWidth={3} /></td>
               </tr>
             </tbody>
             <tfoot>
@@ -717,7 +671,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
                   </div>
                   <div>
                     <h2 className="text-2xl font-black text-slate-900 mb-1">Buy credits</h2>
-                    <p className="text-sm text-gray-500 font-medium">Choose an option to continue without interruption</p>
+                    <p className="text-sm text-black font-medium">Choose an option to continue without interruption</p>
                   </div>
                 </div>
                 <button onClick={() => setModalOpen(false)} className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center transition-colors">
@@ -732,7 +686,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
 
               <div className="flex flex-col md:flex-row flex-1">
                 <div className="flex-1 p-8 border-r border-slate-100">
-                  <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6">Top Up Credits</div>
+                  <div className="text-[10px] font-black text-black uppercase tracking-widest mb-6">Top Up Credits</div>
                   <div className="space-y-3 mb-8">
                     {[
                       { amt: 50, price: 2 },
@@ -804,8 +758,8 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
                         <div className="text-lg font-black text-slate-900">Student</div>
                         <div className="text-lg font-black text-primary">$1.50<span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest ml-1">/mo</span></div>
                       </div>
-                      <div className="text-[11px] text-gray-500 font-bold uppercase tracking-widest mb-3">Personal plan · 90% student discount</div>
-                      <div className="text-[10px] text-gray-400 font-medium leading-relaxed">Verify with .edu email · instant access</div>
+                      <div className="text-[11px] text-black font-bold uppercase tracking-widest mb-3">Personal plan · 90% student discount</div>
+                      <div className="text-[10px] text-black font-medium leading-relaxed">Verify with .edu email · instant access</div>
                     </div>
                   </div>
 

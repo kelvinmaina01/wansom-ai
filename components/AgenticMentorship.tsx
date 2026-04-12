@@ -77,8 +77,8 @@ const MENTOR_MODES: MentorMode[] = [
     label: 'Senior Partner',
     description: 'Career advice, ethics, and client management',
     icon: Briefcase,
-    color: 'text-amber-400',
-    bgColor: 'bg-amber-500/10',
+    color: 'text-amber-600',
+    bgColor: 'bg-amber-50',
     greeting: "Good to see you, counsel. I'm here as your senior partner. Whether it's a difficult client situation, an ethical dilemma, or career guidance — let's work through it together. What's on your mind?"
   },
   {
@@ -86,8 +86,8 @@ const MENTOR_MODES: MentorMode[] = [
     label: 'Socratic Tutor',
     description: 'Guided learning through questions & reasoning',
     icon: GraduationCap,
-    color: 'text-blue-400',
-    bgColor: 'bg-blue-500/10',
+    color: 'text-blue-600',
+    bgColor: 'bg-blue-50',
     greeting: "Welcome to our study session. I won't just give you answers — I'll guide you to discover them yourself. Let's sharpen your legal reasoning. What area of African law would you like to explore?"
   },
   {
@@ -95,8 +95,8 @@ const MENTOR_MODES: MentorMode[] = [
     label: 'Mock Judge',
     description: 'Practice oral submissions & cross-examination',
     icon: Gavel,
-    color: 'text-red-400',
-    bgColor: 'bg-red-500/10',
+    color: 'text-red-600',
+    bgColor: 'bg-red-50',
     greeting: "Court is in session. I'll be acting as the presiding judge. You may present your opening statement, practice cross-examination, or make oral submissions. I'll evaluate your arguments, point out weaknesses, and challenge your citations. Counsel, you may proceed."
   }
 ];
