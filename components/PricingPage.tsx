@@ -113,7 +113,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
           className="text-5xl md:text-7xl font-black tracking-tighter mb-6 leading-tight text-slate-900"
         >
           Simple, transparent pricing.<br />
-          <span className="text-black text-3xl font-bold tracking-tight">Start free. Scale as you grow.</span>
+          <span className="text-primary text-3xl font-bold tracking-tight">Start free. Scale as you grow.</span>
         </motion.h1>
 
         <motion.p 
@@ -151,7 +151,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
             />
           </div>
           <div className="flex flex-col items-start translate-y-1">
-            <span className="text-[10px] font-black text-green-400 bg-green-400/10 px-2 py-1 rounded-lg border border-green-400/20 uppercase tracking-widest shadow-sm">
+            <span className="text-[10px] font-bold text-green-500 uppercase tracking-widest">
               Save 20%
             </span>
           </div>
