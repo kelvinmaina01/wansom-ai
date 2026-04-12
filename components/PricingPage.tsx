@@ -17,48 +17,13 @@ import {
   Server, 
   HeadphonesIcon, 
   ArrowRight,
+  Info,
   Users,
   CreditCard,
   History
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
-
-const TypingSubText: React.FC = () => {
-  const fullText = "Start free. Scale as you grow.";
-  const [displayedText, setDisplayedText] = React.useState("");
-  const [index, setIndex] = React.useState(0);
-  const [isDeleting, setIsDeleting] = React.useState(false);
-
-  React.useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (!isDeleting && index < fullText.length) {
-        setDisplayedText(fullText.slice(0, index + 1));
-        setIndex(prev => prev + 1);
-      } else if (isDeleting && index > 0) {
-        setDisplayedText(fullText.slice(0, index - 1));
-        setIndex(prev => prev - 1);
-      } else if (index === fullText.length) {
-        setTimeout(() => setIsDeleting(true), 2000);
-      } else if (index === 0 && isDeleting) {
-        setIsDeleting(false);
-      }
-    }, isDeleting ? 30 : 60);
-
-    return () => clearTimeout(timeout);
-  }, [index, isDeleting]);
-
-  return (
-    <span className="text-primary text-3xl font-bold tracking-tight inline-block min-h-[1.2em]">
-      {displayedText}
-      <motion.span
-        animate={{ opacity: [0, 1, 0] }}
-        transition={{ repeat: Infinity, duration: 0.8 }}
-        className="inline-block w-1 h-[0.8em] bg-primary ml-1 align-middle"
-      />
-    </span>
-  );
-};
 
 interface PricingPageProps {
   onBack: () => void;
@@ -109,10 +74,10 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
 
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-primary/30 overflow-x-hidden pb-24 relative">
-      <div className="fixed inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:48px_48px] pointer-events-none" />
+      <div className="fixed inset-0 bg-[radial-gradient(#cbd5e1_1.5px,transparent_1.5px)] [background-size:48px_48px] pointer-events-none" />
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-xl">
-锋        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <button 
             onClick={onBack}
             className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-black hover:text-primary transition-colors group"
@@ -120,7 +85,11 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             Back to Home
           </button>
-          
+          <div className="flex items-center gap-3">
+             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary/20">
+              <Zap className="w-4 h-4 text-white fill-white" />
+            </div>
+          </div>
           <div className="flex items-center gap-4">
              <button onClick={onGetStarted} className="px-5 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest bg-primary text-white hover:bg-primary-hover transition-all">Start Free →</button>
           </div>
@@ -128,14 +97,24 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
       </nav>
 
       {/* HERO SECTION */}
-      <div className="pt-24 pb-16 text-center px-4 relative">
+      <div className="pt-40 pb-16 text-center px-4 relative">
+        
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-primary text-[10px] font-black uppercase tracking-[0.2em] mb-4"
+        >
+          Pricing
+        </motion.div>
+        
         <motion.h1 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
           className="text-5xl md:text-7xl font-black tracking-tighter mb-6 leading-tight text-slate-900"
         >
           Simple, transparent pricing.<br />
-          <TypingSubText />
+          <span className="text-primary text-3xl font-bold tracking-tight">Start free. Scale as you grow.</span>
         </motion.h1>
 
         <motion.p 
@@ -396,34 +375,86 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
         </div>
       </div>
 
+        {/* BUY CREDITS SECTION - RESTORED */}
+        <div className="py-24 max-w-[1550px] mx-auto px-10 relative z-10">
+          <div className="bg-slate-900 rounded-[3rem] p-16 relative overflow-hidden group shadow-2xl">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 blur-[120px] rounded-full pointer-events-none group-hover:bg-primary/20 transition-all duration-700"></div>
+            
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-12 relative z-10">
+              <div className="max-w-xl">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary font-black text-[10px] uppercase tracking-[0.2em] mb-6 border border-primary/20">
+                  <Zap className="w-3 h-3 fill-current" />
+                  <span>Instant Credit Top-up</span>
+                </div>
+                <h2 className="text-4xl md:text-5xl font-black text-white mb-6">Need more power?</h2>
+                <p className="text-slate-300 text-lg font-medium leading-relaxed">
+                  Purchase standalone credits to supplement your monthly allocation. Top-up credits never expire and roll over indefinitely.
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-6 w-full lg:w-auto">
+                {[
+                  { amt: 50, price: 2 },
+                  { amt: 150, price: 5, best: true },
+                  { amt: 500, price: 14 },
+                  { amt: 1000, price: 25 }
+                ].map((item, i) => (
+                  <button 
+                    key={i}
+                    onClick={() => openModal(item.amt, item.price)}
+                    className={`p-8 rounded-[2.5rem] border transition-all text-center relative group/btn min-w-[180px] ${item.best ? 'bg-primary border-primary shadow-2xl shadow-primary/30 hover:scale-[1.05]' : 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10'}`}
+                  >
+                    {item.best && <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-white text-primary text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full whitespace-nowrap shadow-xl">Best Value</div>}
+                    <div className="text-3xl font-black text-white mb-2">{item.amt}</div>
+                    <div className={`text-[11px] font-black uppercase tracking-widest mb-4 ${item.best ? 'text-white/80' : 'text-slate-500'}`}>Credits</div>
+                    <div className={`text-2xl font-black ${item.best ? 'text-white' : 'text-primary'}`}>${item.price}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* CREDIT USAGE INFO section */}
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-[1400px] mx-auto mb-24 relative z-10"
+          className="max-w-[1550px] mx-auto mb-24 relative z-10"
         >
-          <div className="flex flex-col items-center text-center mb-16 px-6">
-            <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/5 mb-6">
-              <Zap className="w-7 h-7 text-primary" />
+          <div className="bg-slate-50 border border-slate-200 rounded-[3rem] p-12 lg:p-16 relative overflow-hidden group hover:border-primary/20 transition-all duration-500 shadow-sm">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 rounded-full blur-[100px] pointer-events-none group-hover:bg-primary/10 transition-all" />
+          
+          <div className="flex flex-col md:flex-row items-start justify-between gap-8 mb-12">
+            <div className="flex items-center gap-5">
+              <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/5">
+                <Info className="w-7 h-7 text-primary" />
+              </div>
+              <div className="text-left">
+                <h3 className="text-lg font-black text-slate-900 uppercase tracking-widest mb-1">How credits work</h3>
+                <p className="text-xs text-black font-black uppercase tracking-widest">Start free. Scale as you grow.</p>
+              </div>
             </div>
-            <h3 className="text-2xl font-black text-slate-900 uppercase tracking-widest">How credits work</h3>
+            <div className="px-6 py-3 bg-white border border-slate-200 rounded-full text-xs font-black tracking-widest text-black uppercase shadow-inner">
+               Transparent usage: 1 action = 1–3 credits
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 px-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
             {[
               { label: 'AI Chat Response', val: '1', unit: 'credit' },
               { label: 'Document Analysis', val: '2', unit: 'credits' },
               { label: 'Document Draft', val: '3', unit: 'credits' },
               { label: 'Integration Query', val: '1', unit: 'credit' }
             ].map((item, i) => (
-              <div key={i} className="bg-white border border-slate-200 rounded-[2.5rem] p-10 text-center hover:border-primary/30 transition-all group/item shadow-sm">
-                <div className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-5 leading-tight min-h-[30px]">{item.label}</div>
-                <div className="text-6xl font-black text-primary mb-3 tracking-tighter">{item.val}</div>
-                <div className="text-[11px] font-black text-black uppercase tracking-widest">{item.unit}</div>
+              <div key={i} className="bg-white border border-slate-200 rounded-[2.5rem] p-8 text-center hover:bg-slate-50 transition-all group/item shadow-sm">
+                <div className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-4 leading-tight min-h-[30px]">{item.label}</div>
+                <div className="text-5xl font-black text-primary mb-2 tracking-tighter">{item.val}</div>
+                <div className="text-[10px] font-black text-black uppercase tracking-widest">{item.unit}</div>
               </div>
             ))}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
              {[
                { plan: 'Free', color: 'text-blue-400', bg: 'bg-blue-400/5', border: 'border-blue-400/10', text: '5 credits/day. Resets at midnight UTC. Each day starts fresh.' },
                { plan: 'Personal', color: 'text-primary', bg: 'bg-primary/5', border: 'border-primary/10', text: '500 credits/month. No daily reset — use them any time.' },
@@ -436,6 +467,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
                </div>
              ))}
           </div>
+        </div>
         </motion.div>
 
       {/* SUPPORTING EDUCATION SECTION (90% Rules) */}
@@ -507,17 +539,17 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
                    '5 GB Document Storage',
                    'Priority response times'
                  ].map((item, i) => (
-                   <div key={i} className="flex items-center gap-3 text-sm font-black text-black">
-                    <Check className="w-4 h-4 text-primary" strokeWidth={3} />
-                    {item}
-                  </div>
+                   <div key={i} className="flex items-center gap-3 text-sm font-bold text-gray-300">
+                     <Check className="w-4 h-4 text-primary" strokeWidth={3} />
+                     {item}
+                   </div>
                  ))}
               </div>
 
               <button className="w-full py-5 bg-primary text-white rounded-[1.25rem] font-black uppercase tracking-widest text-[12px] shadow-2xl shadow-primary/30 hover:scale-[1.02] transition-all">
                 Verify Student Status
               </button>
-              <p className="text-center text-[10px] text-black font-black uppercase tracking-widest mt-5">
+              <p className="text-center text-[10px] text-gray-600 font-black uppercase tracking-widest mt-5">
                 Instant verification with .edu email
               </p>
             </div>
@@ -526,21 +558,21 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
       </div>
 
       {/* COMPARISON TABLE */}
-      <div className="py-24 px-6 max-w-[1400px] mx-auto relative z-10">
+      <div className="py-24 px-10 max-w-[1550px] mx-auto relative z-10">
         <div className="text-center mb-16">
           <div className="text-primary text-[10px] font-black uppercase tracking-[0.2em] mb-4">Compare Plans</div>
           <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4">Detailed feature breakdown</h2>
           <p className="text-black font-black uppercase tracking-widest text-[10px]">Everything you need to make the right decision for your firm.</p>
         </div>
 
-        <div className="overflow-x-auto rounded-[3rem] border border-slate-200 bg-white shadow-2xl">
-          <table className="w-full border-collapse min-w-[1000px]">
+        <div className="overflow-x-auto rounded-[3rem] border border-slate-200 bg-white shadow-2xl pt-12">
+          <table className="w-full border-collapse min-w-[1100px]">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200">
                 <th className="p-10 text-left text-[11px] font-black uppercase tracking-widest text-black w-1/4">Features</th>
                 <th className="p-10 text-center text-[13px] font-black text-slate-900">Free</th>
                 <th className="p-10 text-center text-[13px] font-black text-primary bg-primary/5 border-x border-slate-200 relative">
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full whitespace-nowrap shadow-lg shadow-primary/20">Most Popular</div>
+                  <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-primary text-white text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full whitespace-nowrap shadow-lg shadow-primary/20">Most Popular</div>
                    Personal
                 </th>
                 <th className="p-10 text-center text-[13px] font-black text-slate-900">Teams</th>
