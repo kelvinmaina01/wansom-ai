@@ -278,7 +278,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
       {/* Features Grid - Redesigned to Fly.io Style (Single Card) */}
       <section id="features" className="py-32 px-6 bg-ai-studio relative overflow-hidden">
         <div className="max-w-[1400px] mx-auto px-4">
-          <div className="relative p-10 md:p-16 rounded-[2.5rem] bg-slate-50 border border-slate-200 overflow-hidden group shadow-xl">
+          <div className="relative p-10 md:p-16 rounded-[2.5rem] bg-slate-50 border border-slate-200 overflow-visible group shadow-xl">
             <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 blur-[120px] rounded-full pointer-events-none group-hover:bg-primary/10 transition-all duration-700"></div>
             
             <div className="flex flex-col lg:flex-row items-center justify-between gap-12">

@@ -73,7 +73,8 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] text-slate-900 font-sans selection:bg-primary/30 overflow-x-hidden pb-24">
+    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-primary/30 overflow-x-hidden pb-24 relative">
+      <div className="fixed inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:32px_32px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-xl">
 锋        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -84,11 +85,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             Back to Home
           </button>
-          <div className="flex items-center gap-3">
-             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary/20">
-              <Zap className="w-4 h-4 text-white fill-white" />
-            </div>
-          </div>
+          
           <div className="flex items-center gap-4">
              <button onClick={onGetStarted} className="px-5 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest bg-primary text-white hover:bg-primary-hover transition-all">Start Free →</button>
           </div>
@@ -96,20 +93,10 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
       </nav>
 
       {/* HERO SECTION */}
-      <div className="pt-40 pb-16 text-center px-4 relative">
-        
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-primary text-[10px] font-black uppercase tracking-[0.2em] mb-4"
-        >
-          Pricing
-        </motion.div>
-        
+      <div className="pt-24 pb-16 text-center px-4 relative">
         <motion.h1 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
           className="text-5xl md:text-7xl font-black tracking-tighter mb-6 leading-tight text-slate-900"
         >
           Simple, transparent pricing.<br />
@@ -374,45 +361,39 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
         </div>
       </div>
 
-        {/* CREDIT USAGE INFO (Analogy Section) - MOVED BELOW PLANS */}
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-6xl mx-auto mb-24 bg-slate-50 border border-slate-200 rounded-[3rem] p-12 lg:p-16 relative overflow-hidden group hover:border-primary/20 transition-all duration-500 shadow-sm"
+          className="max-w-[1400px] mx-auto mb-24 relative z-10"
         >
-          <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 rounded-full blur-[100px] pointer-events-none group-hover:bg-primary/10 transition-all" />
-          
-          <div className="flex flex-col md:flex-row items-start justify-between gap-8 mb-12">
-            <div className="flex items-center gap-5">
-              <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/5">
-                <Info className="w-7 h-7 text-primary" />
-              </div>
-              <div className="text-left">
-                <h3 className="text-lg font-black text-slate-900 uppercase tracking-widest mb-1">How credits work</h3>
-                <p className="text-xs text-black font-black uppercase tracking-widest">Start free. Scale as you grow.</p>
-              </div>
+          <div className="flex flex-col items-center text-center mb-16 px-6">
+            <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/5 mb-6">
+              <Zap className="w-7 h-7 text-primary" />
             </div>
-            <div className="px-6 py-3 bg-white border border-slate-200 rounded-full text-xs font-black tracking-widest text-black uppercase shadow-inner">
-               Transparent usage: 1 action = 1–3 credits
+            <h3 className="text-2xl font-black text-slate-900 uppercase tracking-widest mb-3">How credits work</h3>
+            <p className="text-sm text-black font-black uppercase tracking-widest mb-8">Start free. Scale as you grow.</p>
+            
+            <div className="px-8 py-3 bg-white border border-slate-200 rounded-full text-xs font-black tracking-widest text-black uppercase shadow-sm">
+               Transparent usage: <span className="text-primary">1 action = 1–3 credits</span>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 px-6">
             {[
               { label: 'AI Chat Response', val: '1', unit: 'credit' },
               { label: 'Document Analysis', val: '2', unit: 'credits' },
               { label: 'Document Draft', val: '3', unit: 'credits' },
               { label: 'Integration Query', val: '1', unit: 'credit' }
             ].map((item, i) => (
-              <div key={i} className="bg-white border border-slate-200 rounded-[2.5rem] p-8 text-center hover:bg-slate-50 transition-all group/item shadow-sm">
-                <div className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-4 leading-tight min-h-[30px]">{item.label}</div>
-                <div className="text-5xl font-black text-primary mb-2 tracking-tighter">{item.val}</div>
-                <div className="text-[10px] font-black text-black uppercase tracking-widest">{item.unit}</div>
+              <div key={i} className="bg-white border border-slate-200 rounded-[2.5rem] p-10 text-center hover:border-primary/30 transition-all group/item shadow-sm">
+                <div className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-5 leading-tight min-h-[30px]">{item.label}</div>
+                <div className="text-6xl font-black text-primary mb-3 tracking-tighter">{item.val}</div>
+                <div className="text-[11px] font-black text-black uppercase tracking-widest">{item.unit}</div>
               </div>
             ))}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-6">
              {[
                { plan: 'Free', color: 'text-blue-400', bg: 'bg-blue-400/5', border: 'border-blue-400/10', text: '5 credits/day. Resets at midnight UTC. Each day starts fresh.' },
                { plan: 'Personal', color: 'text-primary', bg: 'bg-primary/5', border: 'border-primary/10', text: '500 credits/month. No daily reset — use them any time.' },
@@ -496,17 +477,17 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
                    '5 GB Document Storage',
                    'Priority response times'
                  ].map((item, i) => (
-                   <div key={i} className="flex items-center gap-3 text-sm font-bold text-gray-300">
-                     <Check className="w-4 h-4 text-primary" strokeWidth={3} />
-                     {item}
-                   </div>
+                   <div key={i} className="flex items-center gap-3 text-sm font-black text-black">
+                    <Check className="w-4 h-4 text-primary" strokeWidth={3} />
+                    {item}
+                  </div>
                  ))}
               </div>
 
               <button className="w-full py-5 bg-primary text-white rounded-[1.25rem] font-black uppercase tracking-widest text-[12px] shadow-2xl shadow-primary/30 hover:scale-[1.02] transition-all">
                 Verify Student Status
               </button>
-              <p className="text-center text-[10px] text-gray-600 font-black uppercase tracking-widest mt-5">
+              <p className="text-center text-[10px] text-black font-black uppercase tracking-widest mt-5">
                 Instant verification with .edu email
               </p>
             </div>
@@ -515,25 +496,25 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
       </div>
 
       {/* COMPARISON TABLE */}
-      <div className="py-24 px-6 max-w-6xl mx-auto relative">
+      <div className="py-24 px-6 max-w-[1400px] mx-auto relative z-10">
         <div className="text-center mb-16">
           <div className="text-primary text-[10px] font-black uppercase tracking-[0.2em] mb-4">Compare Plans</div>
-          <h2 className="text-4xl font-black text-slate-900 mb-4">Detailed feature breakdown</h2>
-          <p className="text-black font-medium">Everything you need to make the right decision for your firm.</p>
+          <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4">Detailed feature breakdown</h2>
+          <p className="text-black font-black uppercase tracking-widest text-[10px]">Everything you need to make the right decision for your firm.</p>
         </div>
 
-        <div className="overflow-x-auto rounded-[2rem] border border-slate-200 bg-white shadow-xl">
-          <table className="w-full border-collapse min-w-[900px]">
+        <div className="overflow-x-auto rounded-[3rem] border border-slate-200 bg-white shadow-2xl">
+          <table className="w-full border-collapse min-w-[1000px]">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200">
-                <th className="p-8 text-left text-[11px] font-black uppercase tracking-widest text-black">Features</th>
-                <th className="p-8 text-center text-[13px] font-black text-slate-900">Free</th>
-                <th className="p-8 text-center text-[13px] font-black text-primary bg-primary/5 border-x border-slate-200 relative">
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full whitespace-nowrap">Most Popular</div>
+                <th className="p-10 text-left text-[11px] font-black uppercase tracking-widest text-black w-1/4">Features</th>
+                <th className="p-10 text-center text-[13px] font-black text-slate-900">Free</th>
+                <th className="p-10 text-center text-[13px] font-black text-primary bg-primary/5 border-x border-slate-200 relative">
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full whitespace-nowrap shadow-lg shadow-primary/20">Most Popular</div>
                    Personal
                 </th>
-                <th className="p-8 text-center text-[13px] font-black text-slate-900">Teams</th>
-                <th className="p-8 text-center text-[13px] font-black text-slate-900">Enterprise</th>
+                <th className="p-10 text-center text-[13px] font-black text-slate-900">Teams</th>
+                <th className="p-10 text-center text-[13px] font-black text-slate-900">Enterprise</th>
               </tr>
             </thead>
             <tbody className="text-[13px] font-medium text-black">
