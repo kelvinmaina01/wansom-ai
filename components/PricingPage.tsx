@@ -807,14 +807,13 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
                         Contact Enterprise Sales
                       </button>
                     </div>
-                  </div>
-               </div>
+                </div>
             </div>
-      {/* PURCHASE SUCCESS MODAL */}
-      <AnimatePresence>
-        {showSuccess && (
-nce>
+          </div>
+        </div>
+      )}
 
+      {/* PURCHASE SUCCESS MODAL */}
       <AnimatePresence>
         {showSuccess && (
           <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
