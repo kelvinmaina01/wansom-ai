@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
+import CheckoutModal from './CheckoutModal';
 
 interface PricingPageProps {
   onBack: () => void;
@@ -38,6 +39,10 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [successData, setSuccessData] = useState({ title: '', sub: '', added: '' });
 
+  // Paystack Checkout Modal state
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [checkoutPlanKey, setCheckoutPlanKey] = useState('');
+
   const navigate = useNavigate();
 
   const openCheckout = (amt?: number, price?: number) => {
@@ -46,26 +51,37 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
     setIsCheckout(true);
   };
 
+  // Map credit amounts to plan keys for CheckoutModal
+  const creditAmtToPlanKey = (amt: number): string => {
+    if (amt <= 50) return 'topup_50';
+    if (amt <= 150) return 'topup_150';
+    if (amt <= 500) return 'topup_500';
+    return 'topup_1000';
+  };
+
   const handleBuyCredits = () => {
-    setSuccessData({
-      title: 'Credits added!',
-      sub: `Your ${selAmt.toLocaleString()} credits are ready to use. They never expire.`,
-      added: `+${selAmt.toLocaleString()}`
-    });
-    setShowSuccess(true);
+    setCheckoutPlanKey(creditAmtToPlanKey(selAmt));
+    setCheckoutOpen(true);
   };
 
   const handleUpgrade = (plan: string, price: number, credits: number) => {
-    setSuccessData({
-      title: `Welcome to ${plan}!`,
-      sub: `You now have ${credits.toLocaleString()} credits/month. No daily reset — use them any time during your billing cycle.`,
-      added: credits.toLocaleString()
-    });
-    setShowSuccess(true);
+    setCheckoutPlanKey(plan.toLowerCase());
+    setCheckoutOpen(true);
   };
 
   const handleSelectUpgrade = (plan: string, price: number, credits: number) => {
     handleUpgrade(plan, price, credits);
+  };
+
+  const handleCheckoutSuccess = (reference: string, credits: number) => {
+    setSuccessData({
+      title: 'Credits added!',
+      sub: `Your ${credits.toLocaleString()} credits are ready to use.`,
+      added: `+${credits.toLocaleString()}`
+    });
+    setShowSuccess(true);
+    setCheckoutOpen(false);
+    setIsCheckout(false);
   };
 
   return (
@@ -243,7 +259,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
              </div>
           </div>
 
-          <button onClick={onGetStarted} className="w-full py-4 rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-[11px] shadow-lg shadow-primary/20 hover:bg-primary-hover transition-all mb-10">
+          <button onClick={() => handleUpgrade('Personal', isAnnual ? 12 : 15, 500)} className="w-full py-4 rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-[11px] shadow-lg shadow-primary/20 hover:bg-primary-hover transition-all mb-10">
             Upgrade Now
           </button>
           
@@ -386,22 +402,22 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
               { amt: '500', price: '14', unit: '0.028', border: 'border-slate-100' },
               { amt: '1,000', price: '25', unit: '0.025', border: 'border-slate-100' }
             ].map((item, i) => (
-              <div key={i} className={`bg-white rounded-[2.5rem] p-10 flex flex-col items-center text-center relative shadow-sm border ${item.border} hover:shadow-xl transition-all duration-300`}>
+              <div key={i} className={`bg-white rounded-[2.5rem] p-6 flex flex-col items-center text-center relative shadow-sm border ${item.border} hover:shadow-xl transition-all duration-300`}>
                 {item.best && (
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full whitespace-nowrap shadow-lg">
                     Best value
                   </div>
                 )}
-                <div className="text-5xl font-black text-slate-900 mb-2">{item.amt}</div>
-                <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-10">CREDITS</div>
+                <div className="text-5xl font-black text-slate-900 mt-2 mb-2">{item.amt}</div>
+                <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">CREDITS</div>
                 
-                <div className="mb-10">
+                <div className="mb-6">
                   <div className="text-3xl font-black text-primary mb-1">${item.price}</div>
                   <div className="text-[10px] font-medium text-slate-400 leading-tight">${item.unit} / credit</div>
                 </div>
 
                 <button 
-                  onClick={() => openCheckout(parseInt(item.amt.replace(',','')), parseInt(item.price))}
+                  onClick={() => { setCheckoutPlanKey(creditAmtToPlanKey(parseInt(item.amt.replace(',','')))); setCheckoutOpen(true); }}
                   className="w-full py-4 bg-slate-900 text-white rounded-xl font-black text-[11px] uppercase tracking-widest hover:bg-black transition-all shadow-lg shadow-slate-200"
                 >
                   Buy {item.amt} credits
@@ -450,12 +466,12 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
              {[
-               { plan: 'Free', color: 'text-blue-400', bg: 'bg-blue-400/5', border: 'border-blue-400/10', text: '5 credits/day. Resets at midnight UTC. Each day starts fresh.' },
-               { plan: 'Personal', color: 'text-primary', bg: 'bg-primary/5', border: 'border-primary/10', text: '500 credits/month. No daily reset — use them any time.' },
-               { plan: 'Teams', color: 'text-purple-400', bg: 'bg-purple-400/5', border: 'border-purple-400/10', text: '800 credits/seat, pooled across team members.' },
-               { plan: 'Enterprise', color: 'text-green-400', bg: 'bg-green-400/5', border: 'border-green-400/10', text: 'Unlimited. No credit tracking, no caps. Custom pricing.' }
+               { plan: 'Free', color: 'text-blue-400', text: '5 credits/day. Resets at midnight UTC. Each day starts fresh.' },
+               { plan: 'Personal', color: 'text-primary', text: '500 credits/month. No daily reset — use them any time.' },
+               { plan: 'Teams', color: 'text-purple-400', text: '800 credits/seat, pooled across team members.' },
+               { plan: 'Enterprise', color: 'text-green-400', text: 'Unlimited. No credit tracking, no caps. Custom pricing.' }
              ].map((r, i) => (
-               <div key={i} className={`text-left rounded-[2rem] p-8 border ${r.bg} ${r.border} hover:scale-[1.02] transition-transform`}>
+               <div key={i} className={`text-left rounded-[2rem] p-8 border bg-white border-slate-200 hover:scale-[1.02] transition-transform`}>
                  <div className={`text-[12px] font-black uppercase tracking-[0.15em] mb-4 ${r.color}`}>{r.plan}</div>
                  <p className="text-[13px] text-black leading-relaxed font-medium">{r.text}</p>
                </div>
@@ -830,6 +846,16 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
           </motion.div>
         </div>
       )}
+
+      {/* Paystack Checkout Modal */}
+      <CheckoutModal
+        isOpen={checkoutOpen}
+        onClose={() => setCheckoutOpen(false)}
+        planKey={checkoutPlanKey}
+        userEmail=""
+        userName=""
+        onSuccess={handleCheckoutSuccess}
+      />
     </div>
   );
 };

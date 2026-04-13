@@ -37,6 +37,7 @@ import { modelDispatcher } from './services/modelDispatcher.js';
 import dashboardRoutes from './routes/dashboard.js';
 import skillsRoutes from './routes/skills.js';
 import analyticsRoutes from './routes/analytics.js';
+import paymentsRoutes, { paystackWebhookHandler } from './routes/payments.js';
 
 // Simple password verification (supports both plain text and bcrypt)
 async function verifyPassword(plainPassword, hashedPassword) {
@@ -125,6 +126,10 @@ app.use('/api/intelligence', authenticate, intelligenceRoutes);
 app.use('/api/dashboard', authenticate, dashboardRoutes);
 app.use('/api/skills', skillsRoutes); // Skills are public (no auth needed for composer)
 app.use('/api/analytics', analyticsRoutes); 
+app.use('/api/payments', authenticate, paymentsRoutes);
+
+// Paystack webhook — NO auth middleware, uses HMAC verification instead
+app.post('/api/webhooks/paystack', express.raw({ type: 'application/json' }), paystackWebhookHandler);
 
 // Request Logging
 app.use((req, res, next) => {
