@@ -213,13 +213,13 @@ const SupportSidebar: React.FC<SupportSidebarProps> = ({
                         <div className="bg-slate-50 p-1.5 rounded-2xl flex items-center gap-1.5 border border-slate-100">
                            <button 
                              onClick={() => setRequestType('issue')}
-                             className={`flex-1 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${requestType === 'issue' ? 'bg-white text-black shadow-sm ring-1 ring-black/5' : 'text-black/40 hover:text-slate-600'}`}
+                             className={`flex-1 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${requestType === 'issue' ? 'bg-white text-black shadow-sm ring-1 ring-black/5' : 'text-black/60 hover:text-black font-bold'}`}
                            >
                               Report an issue
                            </button>
                            <button 
                              onClick={() => setRequestType('feedback')}
-                             className={`flex-1 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${requestType === 'feedback' ? 'bg-white text-black shadow-sm ring-1 ring-black/5' : 'text-black/40 hover:text-slate-600'}`}
+                             className={`flex-1 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${requestType === 'feedback' ? 'bg-white text-black shadow-sm ring-1 ring-black/5' : 'text-black/60 hover:text-black font-bold'}`}
                            >
                               Share feedback
                            </button>
@@ -227,7 +227,7 @@ const SupportSidebar: React.FC<SupportSidebarProps> = ({
 
                         <div className="space-y-5">
                           {/* AI-Powered Message Area */}
-                          <div className="relative group">
+                          <div className="border-2 border-black rounded-[2.5rem] bg-white p-8 flex flex-col min-h-[280px] group transition-all focus-within:ring-8 focus-within:ring-primary/5">
                             <textarea
                               ref={textareaRef}
                               value={message}
@@ -236,10 +236,10 @@ const SupportSidebar: React.FC<SupportSidebarProps> = ({
                                 adjustHeight();
                               }}
                               placeholder={requestType === 'issue' ? "Describe the issue... Our AI will classify and route this automatically." : "Share your thoughts with our team..."}
-                              className="w-full min-h-[120px] max-h-[300px] bg-white border-2 border-black rounded-[2rem] p-8 text-sm focus:outline-none focus:border-primary transition-all resize-none font-bold placeholder:text-black/20 leading-relaxed shadow-sm scrollbar-hide"
+                              className="w-full flex-1 bg-transparent border-none focus:outline-none focus:ring-0 p-0 text-sm font-bold placeholder:text-black/20 leading-relaxed resize-none break-words overflow-y-auto scrollbar-hide"
                             />
                             
-                            <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between pointer-events-none">
+                            <div className="flex items-center justify-between pt-6 border-t border-black/5 mt-4">
                                 <input 
                                   type="file" 
                                   ref={fileInputRef} 
@@ -250,7 +250,7 @@ const SupportSidebar: React.FC<SupportSidebarProps> = ({
                                   type="button"
                                   onClick={() => fileInputRef.current?.click()}
                                   disabled={isUploading}
-                                  className={`p-3 bg-white border-2 border-black rounded-xl transition-all pointer-events-auto active:scale-95 shadow-sm group ${attachmentUrl ? 'bg-red-50 border-primary text-primary' : 'text-black hover:bg-black hover:text-white'}`}
+                                  className={`p-3 bg-white border-2 border-black rounded-xl transition-all active:scale-95 shadow-sm group relative ${attachmentUrl ? 'bg-red-50 border-primary text-primary' : 'text-black hover:bg-black hover:text-white'}`}
                                 >
                                    {isUploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Paperclip className="w-5 h-5" />}
                                    {attachmentUrl && <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-600 rounded-full animate-pulse" />}
@@ -282,7 +282,7 @@ const SupportSidebar: React.FC<SupportSidebarProps> = ({
                                   }
                                 }}
                                 disabled={!message || isSubmitting}
-                                className="px-8 py-4 bg-black text-white text-[12px] font-black uppercase tracking-[0.2em] rounded-2xl shadow-2xl shadow-black/10 hover:shadow-primary/30 hover:bg-primary transition-all active:scale-95 disabled:opacity-50 flex items-center gap-3 pointer-events-auto"
+                                className="px-8 py-4 bg-black text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl shadow-xl hover:bg-primary transition-all active:scale-95 disabled:opacity-50 flex items-center gap-3"
                               >
                                 {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                                   <>
