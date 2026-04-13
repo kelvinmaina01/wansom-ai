@@ -226,15 +226,7 @@ const ContextualSidebar: React.FC<ContextualSidebarProps> = ({
             { label: 'Billing station', icon: <CreditCard className="w-5 h-5" /> },
           ]
         };
-      case AppView.AGENTIC_MENTORSHIP:
-        return {
-          title: 'Amani Mentorship',
-          sections: [
-            { label: 'Start session', active: true, icon: <Zap className="w-5 h-5" /> },
-            { label: 'Cross-exam drills', icon: <Shield className="w-5 h-5" /> },
-            { label: 'Session history', icon: <History className="w-5 h-5" /> },
-          ]
-        };
+
       case AppView.JUDICIAL_ANALYTICS:
         return {
           title: 'Judicial Intel',

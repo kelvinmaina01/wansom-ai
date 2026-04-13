@@ -7,7 +7,6 @@ import {
   Scale,
   Blocks,
   Landmark,
-  Trophy,
   Library,
   PanelLeftClose,
   PanelLeftOpen,
@@ -83,12 +82,7 @@ const GlobalRail: React.FC<GlobalRailProps> = ({
           onClick={() => onViewChange(AppView.INTEGRATIONS)}
           label="Integrations"
         />
-        <RailItem 
-          icon={<Trophy className="w-7 h-7" />} 
-          active={currentView === AppView.AGENTIC_MENTORSHIP}
-          onClick={() => onViewChange(AppView.AGENTIC_MENTORSHIP)}
-          label="Mentorship"
-        />
+
         <RailItem 
           icon={<Library className="w-7 h-7" />} 
           active={currentView === AppView.LIBRARY}

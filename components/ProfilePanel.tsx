@@ -15,7 +15,8 @@ import {
   LogOut,
   Zap,
   Sparkles,
-  ChevronRight
+  ChevronRight,
+  ShieldAlert
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { apiClient } from '../lib/apiClient';
@@ -24,6 +25,7 @@ interface ProfilePageProps {
   isOpen: boolean;
   onClose: () => void;
   onOpenSettings: () => void;
+  onOpenSupport: (category?: string) => void;
   user: {
     name: string;
     email: string;
@@ -278,13 +280,22 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose, onOpenSettings, user
                 </span>
               </div>
             </div>
-            <button
-              onClick={onOpenSettings}
-              className="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 border border-white/10"
-            >
-              <Settings className="w-3.5 h-3.5" />
-              Edit Profile
-            </button>
+            <div className="flex flex-col sm:flex-row items-center gap-3">
+              <button
+                onClick={() => onOpenSupport('Security')}
+                className="px-5 py-2.5 bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 border border-red-500/20 group/vuln shadow-lg shadow-red-500/5"
+              >
+                <ShieldAlert className="w-3.5 h-3.5 group-hover/vuln:animate-pulse" />
+                Report Vulnerability
+              </button>
+              <button
+                onClick={onOpenSettings}
+                className="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 border border-white/10 shadow-lg"
+              >
+                <Settings className="w-3.5 h-3.5" />
+                Edit Profile
+              </button>
+            </div>
           </div>
           {/* Decorative */}
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500 rounded-full blur-[80px] opacity-10 translate-y-1/2 -translate-x-1/4"></div>

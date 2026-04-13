@@ -138,100 +138,33 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
   const [activeIntegration, setActiveIntegration] = useState<IntegrationItem | null>(null);
   const [disconnectingId, setDisconnectingId] = useState<string | null>(null);
   
-  // Sovereignty State
-  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
-  const [isMembersModalOpen, setIsMembersModalOpen] = useState(false);
-  const [inviteToken, setInviteToken] = useState<string | null>(null);
-  const [members, setMembers] = useState<any[]>([]);
-  const [loadingSovereignty, setLoadingSovereignty] = useState(false);
-
   useEffect(() => {
-    // 1. Check for OAuth callback tokens in the URL
     const searchParams = new URLSearchParams(window.location.search);
     const providerParam = searchParams.get('provider');
     const access_token = searchParams.get('access_token');
     const refresh_token = searchParams.get('refresh_token');
 
     if (providerParam && access_token) {
-      // 2. We just returned from a successful OAuth flow.
-      // Save it properly via POST /callback
       apiClient.post(`/api/integrations/${providerParam}/callback`, { 
         access_token, 
         refresh_token,
         code: 'oauth_success' 
       }).then((res) => {
         if (res.ok) {
-          // 3. Clean up the URL securely so tokens don't sit in the address bar
           window.history.replaceState({}, document.title, window.location.pathname);
-          // 4. Force a refresh in the parent state so 'connectedIds' updates instantly
           onToggle(providerParam);
         }
       });
     }
   }, [onToggle]);
 
-  const fetchMembers = async () => {
-    if (!workspaceId) return;
-    setLoadingSovereignty(true);
-    try {
-      const res = await apiClient.get(`/api/workspaces/${workspaceId}/members`);
-      if (res.ok) {
-        const data = await res.json();
-        setMembers(data.members || []);
-      }
-    } catch (e) {
-      console.error('Error fetching members:', e);
-    } finally {
-      setLoadingSovereignty(false);
-    }
-  };
-
-  const generateInviteLink = async () => {
-    if (!workspaceId) return;
-    setLoadingSovereignty(true);
-    try {
-      const res = await apiClient.post(`/api/workspaces/${workspaceId}/invite`, {
-        role: 'viewer'
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setInviteToken(data.inviteLink);
-        setIsInviteModalOpen(true);
-      }
-    } catch (e) {
-      console.error('Error generating invite:', e);
-    } finally {
-      setLoadingSovereignty(false);
-    }
-  };
-
-  const updateMemberRole = async (memberId: string, newRole: string) => {
-    try {
-       const res = await apiClient.patch(`/api/workspaces/members/${memberId}`, { role: newRole });
-       if (res.ok) fetchMembers();
-    } catch (e) {
-       console.error('Failed to update role', e);
-    }
-  };
-
-  const removeMember = async (memberId: string) => {
-    if (!window.confirm('Are you sure you want to remove this member?')) return;
-    try {
-       const res = await apiClient.fetch(`/api/workspaces/members/${memberId}`, { method: 'DELETE' });
-       if (res.ok) fetchMembers();
-    } catch (e) {
-       console.error('Failed to remove member', e);
-    }
-  };
-
   const toggleConnection = async (item: IntegrationItem) => {
     if (connectedIds.has(item.id)) {
-      // Handle Disconnect
       try {
         setDisconnectingId(item.id);
         const res = await apiClient.fetch(`/api/integrations/${item.id}`, { method: 'DELETE' });
         if (res.ok) {
-          onToggle(item.id); // This will refresh the connection list in App.tsx
+          onToggle(item.id);
         }
       } catch (e) {
         console.error('Failed to disconnect', e);
@@ -295,7 +228,6 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                 </motion.p>
               </div>
 
-              {/* Categories Grid */}
               <div className="space-y-20">
                 {INTEGRATION_CATEGORIES.map((category, catIdx) => (
                   <div key={category.title}>
@@ -376,9 +308,6 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                               )}
                             </button>
                           </div>
-
-                          {/* Subtle hover accent */}
-
                         </motion.div>
                       ))}
                     </div>
@@ -386,50 +315,9 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                 ))}
               </div>
 
-              {/* Data Management & Collaboration section */}
-              <div className="mt-32 p-8 bg-gray-50 rounded-[2rem] border border-gray-100">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-                  <div>
-                    <h3 className="text-sm font-bold text-black mb-1 flex items-center gap-2">
-                      <RefreshCw className="w-4 h-4 text-gray-500" />
-                      Intelligence Sovereignty
-                    </h3>
-                    <p className="text-xs text-gray-400 font-medium">Manage your zero-persistence data connections and team access.</p>
-                  </div>
-                  
-                  <div className="flex flex-wrap items-center gap-3">
-                    <button 
-                      onClick={() => alert('Audit logs are generated in real-time. Contact your system admin for the full export.')}
-                      className="px-5 py-2.5 bg-white border border-black rounded-[17px] text-xs font-bold transition-all flex items-center gap-2 text-black hover:bg-black hover:text-white"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      Audit Log
-                    </button>
-                    <button 
-                      onClick={generateInviteLink}
-                      disabled={loadingSovereignty}
-                      className="px-5 py-2.5 bg-white border border-black rounded-[17px] text-xs font-bold transition-all flex items-center gap-2 text-black hover:bg-black hover:text-white disabled:opacity-50"
-                    >
-                      <Link className="w-3.5 h-3.5" />
-                      {loadingSovereignty ? 'Generating...' : 'Invite link'}
-                    </button>
-                    <button 
-                      onClick={() => { setIsMembersModalOpen(true); fetchMembers(); }}
-                      className="px-6 py-2.5 bg-black text-white rounded-[17px] text-xs font-bold transition-all flex items-center gap-2 hover:bg-red-600"
-                    >
-                      <UserPlus className="w-3.5 h-3.5" />
-                      Manage Members
-                    </button>
-                  </div>
-                </div>
-              </div>
-
               <div className="mt-20">
                 <div className="max-w-7xl mx-auto bg-black rounded-[17px] p-8 lg:p-12 relative overflow-hidden border border-black">
-
                   <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                    
-                    {/* Left Column: Request Connector */}
                     <div className="flex flex-col gap-6 text-center lg:text-left">
                       <div>
                         <h2 className="text-4xl font-bold text-white mb-6 tracking-tight font-display">Need a custom MCP connector?</h2>
@@ -449,7 +337,6 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                       </div>
                     </div>
 
-                    {/* Right Column: Compliance Badges */}
                     <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-end gap-12 lg:border-l border-white/10 lg:pl-16">
                       <div className="flex items-center gap-6 group">
                         <div className="w-24 h-24 shrink-0 bg-white/5 rounded-full flex flex-col items-center justify-center border-2 border-white/20 group-hover:border-red-600 transition-all duration-300">
@@ -478,7 +365,6 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
                   </div>
                 </div>
               </div>
-
             </motion.div>
           ) : (
             <motion.div
@@ -497,192 +383,14 @@ const Integrations: React.FC<IntegrationsProps> = ({ connectedIds, onToggle, wor
         </AnimatePresence>
       </div>
 
-        <AnimatePresence>
-          {isRequestFormOpen && (
-            <ConnectorRequestForm 
-              onClose={() => setIsRequestFormOpen(false)} 
-              userEmail={""} 
-            />
-          )}
-
-          {/* Invite Modal */}
-          {isInviteModalOpen && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/5">
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="bg-white w-full max-w-md rounded-[17px] p-8 border border-black relative"
-              >
-                <button 
-                  onClick={() => setIsInviteModalOpen(false)}
-                  className="absolute top-6 right-6 p-2 text-gray-400 hover:text-black transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-                <div className="flex flex-col items-center text-center">
-                   <div className="w-16 h-16 bg-black rounded-[17px] flex items-center justify-center mb-6">
-                      <Link className="w-8 h-8 text-white" />
-                   </div>
-                   <h3 className="text-2xl font-bold text-black mb-2">Workspace Invite Link</h3>
-                   <p className="text-gray-500 mb-8">Share this link with your team. Only workspace owners can approve entry requests.</p>
-
-                   <div className="w-full bg-gray-50 p-4 rounded-xl border border-gray-100 flex items-center gap-3 mb-8 overflow-hidden">
-                      <span className="text-xs font-mono text-gray-400 truncate flex-1">{inviteToken}</span>
-                      <button 
-                        onClick={() => {
-                          navigator.clipboard.writeText(inviteToken || '');
-                          alert('Copied to clipboard!');
-                        }}
-                        className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                      >
-                         <Download className="w-4 h-4" />
-                      </button>
-                   </div>
-
-                   <button 
-                     onClick={() => setIsInviteModalOpen(false)}
-                     className="w-full py-4 bg-black text-white rounded-[17px] font-bold text-sm hover:bg-red-600 transition-all"
-                   >
-                     Done
-                   </button>
-                </div>
-              </motion.div>
-            </div>
-          )}
-
-          {/* Members Management Modal -> Full Page Experience */}
-          {isMembersModalOpen && (
-            <div className="fixed inset-0 z-[100] bg-white flex flex-col">
-              <motion.div 
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                className="flex-1 flex flex-col h-full"
-              >
-                {/* Full Page Header */}
-                <div className="border-b border-black bg-white sticky top-0 z-10 px-8 py-6">
-                  <div className="max-w-5xl mx-auto flex items-center justify-between">
-                    <div className="flex items-center gap-6">
-                      <button 
-                        onClick={() => setIsMembersModalOpen(false)}
-                        className="p-3 bg-white border border-black hover:bg-black hover:text-white rounded-[17px] transition-all"
-                      >
-                        <ChevronLeft className="w-6 h-6" />
-                      </button>
-                      <div>
-                        <div className="flex items-center gap-3 mb-1">
-                          <h3 className="text-3xl font-black text-black tracking-tighter font-display">Workspace Intelligence</h3>
-                          <span className="px-3 py-1 bg-black text-white text-[10px] font-bold rounded-[17px]">Owner Control</span>
-                        </div>
-                        <p className="text-gray-400 font-medium text-sm">Manage team seats, resource mapping, and security roles.</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                       <button 
-                         onClick={() => { setIsMembersModalOpen(false); setIsInviteModalOpen(true); }}
-                         className="px-6 py-3 bg-black text-white rounded-[17px] text-[10px] font-bold transition-all flex items-center gap-2 hover:bg-red-600"
-                       >
-                         <UserPlus className="w-4 h-4" />
-                         Invite Team
-                       </button>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Content Area - Flattened Layout (Items sit on page, not a card) */}
-                <div className="flex-1 overflow-y-auto bg-white">
-                  <div className="max-w-5xl mx-auto py-16 px-8">
-                    
-                    {/* Header for Items */}
-                    <div className="flex items-center justify-between mb-8 px-4">
-                       <h4 className="text-xs font-black text-black uppercase tracking-widest flex items-center gap-3">
-                          <Users className="w-4 h-4 text-primary" />
-                          Active Team Members
-                       </h4>
-                       <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{members.length} seats occupied</span>
-                    </div>
-
-                    {/* Member Items List (Sitting on page) */}
-                    <div className="space-y-4">
-                      {members.map((member) => (
-                        <div key={member.id} className="flex items-center justify-between p-8 bg-white border border-black rounded-[17px] hover:border-red-600 transition-all group">
-                          <div className="flex items-center gap-6">
-                             <div className="w-16 h-16 rounded-[17px] bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200">
-                                {member.profile.profile_avatar_url ? (
-                                  <img src={member.profile.profile_avatar_url} alt="" className="w-full h-full object-cover" />
-                                ) : (
-                                  <span className="text-black text-xl font-black">{member.profile.profile_name.charAt(0)}</span>
-                                )}
-                             </div>
-                             <div>
-                                <h4 className="text-xl font-bold text-black mb-1">{member.profile.profile_name}</h4>
-                                <p className="text-sm text-gray-400 font-medium">{member.profile.profile_email}</p>
-                             </div>
-                          </div>
-
-                          <div className="flex items-center gap-8">
-                             <div className="flex flex-col items-end gap-1">
-                                <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">Security Role</span>
-                                <select 
-                                  value={member.role}
-                                  onChange={(e) => updateMemberRole(member.id, e.target.value)}
-                                  className="bg-white border border-black rounded-[17px] text-xs font-bold py-2 px-4 focus:outline-none focus:border-red-600 transition-colors cursor-pointer"
-                                >
-                                  <option value="admin">Admin</option>
-                                  <option value="editor">Editor</option>
-                                  <option value="viewer">Viewer</option>
-                                </select>
-                             </div>
-                             
-                             <button 
-                               onClick={() => removeMember(member.id)}
-                               className="w-12 h-12 flex items-center justify-center bg-white border border-black text-black hover:bg-red-600 hover:text-white hover:border-red-600 rounded-[17px] transition-all"
-                               title="Revoke Access"
-                             >
-                                <Trash2 className="w-5 h-5" />
-                             </button>
-                          </div>
-                        </div>
-                      ))}
-                      
-                      {members.length === 0 && (
-                         <div className="py-32 text-center flex flex-col items-center border-2 border-dashed border-gray-100 rounded-[3rem]">
-                            <div className="w-20 h-20 bg-gray-100/50 rounded-full flex items-center justify-center mb-6">
-                               <Users className="w-10 h-10 text-gray-200" />
-                            </div>
-                            <p className="text-gray-400 font-medium italic mb-2">Your intelligence workspace is currently isolated.</p>
-                            <p className="text-xs text-gray-300 font-medium max-w-xs mb-8">Nobody else has access to this workspace. Invite your law firm partners to start collaborating.</p>
-                            <button 
-                              onClick={() => { setIsMembersModalOpen(false); setIsInviteModalOpen(true); }}
-                              className="px-8 py-4 bg-black text-white rounded-[17px] text-[10px] font-bold transition-all hover:bg-red-600"
-                            >
-                              Generate Invite Link →
-                            </button>
-                         </div>
-                      )}
-                    </div>
-
-                    {/* Audit Log / Additional Sections Directly on page */}
-                    <div className="mt-16 bg-black rounded-[17px] border border-white/10 relative overflow-hidden">
-                      <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10 p-12">
-                         <div className="max-w-xl">
-                            <h4 className="text-3xl font-bold text-white mb-4 font-display uppercase tracking-tight">Sovereignty Audit Log</h4>
-                            <p className="text-gray-400 text-sm leading-relaxed font-sans font-medium">
-                               Inspect every permission change and invitation issued in this workspace. Detailed logging ensures compliance and zero-persistence verification across your legal environment.
-                            </p>
-                         </div>
-                         <button className="whitespace-nowrap px-10 py-5 bg-white text-black rounded-[17px] text-[10px] font-bold transition-all hover:bg-red-600 hover:text-white">
-                            Inspect Audit Trails
-                         </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
+      <AnimatePresence>
+        {isRequestFormOpen && (
+          <ConnectorRequestForm 
+            onClose={() => setIsRequestFormOpen(false)} 
+            userEmail={""} 
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

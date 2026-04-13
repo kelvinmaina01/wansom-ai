@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   X, 
@@ -27,12 +27,27 @@ interface SupportSidebarProps {
   isOpen: boolean;
   onClose: () => void;
   userName: string;
+  initialCategory?: string;
+  initialTab?: 'home' | 'messages';
 }
 
-const SupportSidebar: React.FC<SupportSidebarProps> = ({ isOpen, onClose, userName }) => {
-  const [activeTab, setActiveTab] = useState<'home' | 'messages'>('home');
+const SupportSidebar: React.FC<SupportSidebarProps> = ({ 
+  isOpen, 
+  onClose, 
+  userName,
+  initialCategory = 'General',
+  initialTab = 'home'
+}) => {
+  const [activeTab, setActiveTab] = useState<'home' | 'messages'>(initialTab);
   const [message, setMessage] = useState('');
-  const [category, setCategory] = useState('General');
+  const [category, setCategory] = useState(initialCategory);
+
+  useEffect(() => {
+    if (isOpen) {
+      setActiveTab(initialTab);
+      setCategory(initialCategory);
+    }
+  }, [isOpen, initialCategory, initialTab]);
   const [requestType, setRequestType] = useState<'issue' | 'feedback'>('issue');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);

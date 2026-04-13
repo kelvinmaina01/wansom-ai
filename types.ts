@@ -9,7 +9,6 @@ export enum AppView {
   SETTINGS = 'settings',
   HISTORY = 'history',
   PROFILE = 'profile',
-  AGENTIC_MENTORSHIP = 'agentic-mentorship',
   LIBRARY = 'library',
   CASE_MANAGEMENT = 'case-management',
   DOCUMENT_INSIGHTS = 'document-insights',

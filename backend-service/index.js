@@ -26,7 +26,7 @@ import { createClient } from '@supabase/supabase-js';
 import { CounselAgent } from './agents/counselAgent.js';
 import { DrafterAgent } from './agents/drafterAgent.js';
 import { UXGeneratorAgent } from './agents/uxGeneratorAgent.js';
-import { AmaniAgent } from './agents/amaniAgent.js';
+
 import logger from './utils/logger.js';
 import { sendWelcomeEmail } from './utils/welcomeEmail.js';
 import knowledgeRoutes from './routes/knowledge.js';
@@ -372,7 +372,7 @@ app.post('/api/user/onboarding', authenticate, async (req, res) => {
 const counselAgent = new CounselAgent();
 const drafterAgent = new DrafterAgent();
 const uxGeneratorAgent = new UXGeneratorAgent();
-const amaniAgent = new AmaniAgent();
+
 
 // File upload config
 const upload = multer({ dest: 'uploads/' });
@@ -611,36 +611,8 @@ app.get('/api/chats/:id/messages', authenticate, async (req, res) => {
     }
 });
 
-// 1.5. Mentorship Chat Proxy
-app.post('/api/mentorship/chat', authenticate, async (req, res) => {
-    try {
-        const { mode, chatHistory, message } = req.body;
-        if (!mode || !message) {
-            return res.status(400).json({ error: "Mode and message required" });
-        }
+// (REMOVED Mentorship Routes)
 
-        const response = await amaniAgent.processMessage(mode, chatHistory || [], message);
-        res.json({ reply: response.text });
-    } catch (error) {
-        console.error("Mentorship chat error:", error);
-        res.status(500).json({ error: "Mentorship process failed" });
-    }
-});
-
-app.post('/api/mentorship/evaluate', authenticate, async (req, res) => {
-    try {
-        const { chatHistory } = req.body;
-        if (!chatHistory || chatHistory.length === 0) {
-            return res.status(400).json({ error: "Chat history required for evaluation" });
-        }
-
-        const evaluation = await amaniAgent.evaluateTranscript(chatHistory);
-        res.json(evaluation);
-    } catch (error) {
-        console.error("Mentorship evaluation error:", error);
-        res.status(500).json({ error: "Evaluation failed" });
-    }
-});
 
 // 2. Judicial Analytics Proxy
 app.get('/api/analytics/judges', async (req, res) => {

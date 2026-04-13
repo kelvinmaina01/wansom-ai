@@ -22,7 +22,7 @@ import JudicialAnalytics from './components/JudicialAnalytics';
 import Integrations from './components/Integrations';
 import PlaceholderView from './components/PlaceholderView';
 import ProfilePage from './components/ProfilePanel';
-import AgenticMentorship from './components/AgenticMentorship';
+
 import LibraryPage from './components/LibraryPage';
 import CaseManager from './components/CaseManager';
 import DocumentInsights from './components/DocumentInsights';
@@ -78,7 +78,7 @@ const ROUTE_TO_VIEW: Record<string, AppView> = {
   'settings': AppView.SETTINGS,
   'history': AppView.HISTORY,
   'profile': AppView.PROFILE,
-  'agentic-mentorship': AppView.AGENTIC_MENTORSHIP,
+
   'library': AppView.LIBRARY,
   'case-management': AppView.CASE_MANAGEMENT,
   'insights': AppView.DOCUMENT_INSIGHTS,
@@ -97,7 +97,7 @@ const VIEW_TO_ROUTE: Record<string, string> = {
   [AppView.SETTINGS]: 'settings',
   [AppView.HISTORY]: 'history',
   [AppView.PROFILE]: 'profile',
-  [AppView.AGENTIC_MENTORSHIP]: 'agentic-mentorship',
+
   [AppView.LIBRARY]: 'library',
   [AppView.CASE_MANAGEMENT]: 'case-management',
   [AppView.DOCUMENT_INSIGHTS]: 'insights',
@@ -170,6 +170,7 @@ const AppLayout: React.FC<{ supabaseUser: User | null; activeWorkspace: any }> =
   // Notification State
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const [supportOptions, setSupportOptions] = useState<{ category?: string; tab?: 'home' | 'messages' }>({});
   const [notifications, setNotifications] = useState<Notification[]>(MOCK_NOTIFICATIONS);
 
   const user = {
@@ -246,8 +247,7 @@ const AppLayout: React.FC<{ supabaseUser: User | null; activeWorkspace: any }> =
         return <Settings />;
       case AppView.HISTORY:
         return <PlaceholderView title="History" />;
-      case AppView.AGENTIC_MENTORSHIP:
-        return <AgenticMentorship user={user} />;
+
       case AppView.LIBRARY:
         return <LibraryPage />;
       case AppView.PROJECT_NEW:
@@ -260,6 +260,10 @@ const AppLayout: React.FC<{ supabaseUser: User | null; activeWorkspace: any }> =
             isOpen={true}
             onClose={() => navigate(-1)}
             onOpenSettings={() => navigate('/app/settings')}
+            onOpenSupport={(cat) => {
+              setSupportOptions({ category: cat, tab: 'messages' });
+              setIsSupportOpen(true);
+            }}
             user={user}
           />
         );
@@ -394,8 +398,13 @@ const AppLayout: React.FC<{ supabaseUser: User | null; activeWorkspace: any }> =
       
       <SupportSidebar 
         isOpen={isSupportOpen}
-        onClose={() => setIsSupportOpen(false)}
+        onClose={() => {
+          setIsSupportOpen(false);
+          setSupportOptions({});
+        }}
         userName={user.name}
+        initialCategory={supportOptions.category}
+        initialTab={supportOptions.tab}
       />
     </div>
   );
