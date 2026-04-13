@@ -141,19 +141,19 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
             <div className="flex items-center justify-between relative z-10">
               <div>
-                <div className="text-[12px] font-bold text-white/40 uppercase tracking-widest mb-1.5">You're purchasing</div>
-                <div className="text-2xl font-black text-white mb-1.5">{plan.name}</div>
-                <div className="text-[14px] text-white/50 font-medium">{plan.description}</div>
+                <div className="text-[12px] font-black text-primary/80 uppercase tracking-widest mb-1.5 opacity-90">You're purchasing</div>
+                <div className="text-3xl font-black text-white mb-1.5">{plan.name}</div>
+                <div className="text-[15px] text-white/80 font-semibold">{plan.description}</div>
               </div>
               <div className="text-right">
                 <div className="flex items-start gap-1 justify-end">
-                  <span className="text-[12px] text-white/50 font-bold mt-1">{currentCurrency.symbol}</span>
-                  <div className="text-3xl font-extrabold text-white">
+                  <span className="text-[13px] text-primary font-black mt-1">{currentCurrency.symbol}</span>
+                  <div className="text-4xl font-extrabold text-white">
                     {convertedAmount.toLocaleString(undefined, { minimumFractionDigits: currentCurrency.code === 'USD' ? 2 : 0, maximumFractionDigits: 2 })}
                   </div>
                 </div>
-                <div className="text-[13px] font-semibold text-white/40">{currentCurrency.code}</div>
-                <div className="text-[11px] text-white/30 mt-0.5">
+                <div className="text-[14px] font-black text-primary/90">{currentCurrency.code}</div>
+                <div className="text-[12px] text-white/40 font-bold mt-0.5">
                   {plan.interval === 'one-time' ? 'one-time' : 'per month'}
                 </div>
               </div>
@@ -371,11 +371,12 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                                 : 'border-slate-200 hover:border-primary hover:bg-slate-50'
                             }`}
                           >
-                            <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-white border border-slate-100 p-1 flex-shrink-0">
+                            <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-white border border-slate-100 p-2 flex-shrink-0 shadow-sm">
                               <img 
-                                src={p.key === 'mpesa' ? "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/M-PESA_logo-01.svg/512px-M-PESA_logo-01.svg.png" : p.key === 'mtn' ? "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/MTN_Logo.svg/512px-MTN_Logo.svg.png" : "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Airtel_logo.svg/512px-Airtel_logo.svg.png"} 
+                                src={p.key === 'mpesa' ? "https://storage.googleapis.com/stateless-m-pesa-africa/2021/04/e7a57a3e-m-pesa-logo.png" : p.key === 'mtn' ? "https://download.logo.wine/logo/MTN_Group/MTN_Group-Logo.wine.png" : "https://download.logo.wine/logo/Airtel_India/Airtel_India-Logo.wine.png"} 
                                 alt={p.name} 
                                 className="w-full h-full object-contain"
+                                onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${p.name}&background=${p.color.replace('#','')}&color=fff&bold=true`; }}
                               />
                             </div>
                             <div className="flex-1 min-w-0">

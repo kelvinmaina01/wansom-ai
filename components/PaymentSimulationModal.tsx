@@ -142,32 +142,32 @@ const PaymentSimulationModal: React.FC<PaymentSimulationModalProps> = ({
                 
                 <div className="space-y-6">
                    <div>
-                     <label className="block text-[11px] font-extrabold text-gray-500 uppercase tracking-widest mb-3">Card Number</label>
+                     <label className="block text-[11px] font-extrabold text-primary uppercase tracking-widest mb-3">Card Number</label>
                      <input 
                        type="text" 
                        placeholder="0000 0000 0000 0000"
-                       className="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl text-[15px] font-mono tracking-widest focus:border-blue-500 outline-none transition-colors"
+                       className="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl text-[15px] font-mono tracking-widest focus:border-primary outline-none transition-colors"
                        value={cardNumber}
                        onChange={e => setCardNumber(e.target.value)}
                      />
                    </div>
                    <div className="grid grid-cols-2 gap-5">
                      <div>
-                       <label className="block text-[11px] font-extrabold text-gray-500 uppercase tracking-widest mb-3">Expiry Date</label>
+                       <label className="block text-[11px] font-extrabold text-primary uppercase tracking-widest mb-3">Expiry Date</label>
                        <input 
                          type="text" 
                          placeholder="MM / YY"
-                         className="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl text-[15px] focus:border-blue-500 outline-none transition-colors"
+                         className="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl text-[15px] focus:border-primary outline-none transition-colors"
                          value={expiry}
                          onChange={e => setExpiry(e.target.value)}
                        />
                      </div>
                      <div>
-                       <label className="block text-[11px] font-extrabold text-gray-500 uppercase tracking-widest mb-3">CVV</label>
+                       <label className="block text-[11px] font-extrabold text-primary uppercase tracking-widest mb-3">CVV</label>
                        <input 
                          type="text" 
                          placeholder="123"
-                         className="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl text-[15px] focus:border-blue-500 outline-none transition-colors"
+                         className="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl text-[15px] focus:border-primary outline-none transition-colors"
                          value={cvv}
                          onChange={e => setCvv(e.target.value)}
                        />
