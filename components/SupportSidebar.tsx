@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   X, 
@@ -51,6 +51,47 @@ const SupportSidebar: React.FC<SupportSidebarProps> = ({
   const [requestType, setRequestType] = useState<'issue' | 'feedback'>('issue');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [attachmentUrl, setAttachmentUrl] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const adjustHeight = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${Math.min(textarea.scrollHeight, 300)}px`;
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `support/${fileName}`;
+
+      const { data, error } = await supabase.storage
+        .from('support-attachments')
+        .upload(filePath, file);
+
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('support-attachments')
+        .getPublicUrl(filePath);
+
+      setAttachmentUrl(publicUrl);
+    } catch (err) {
+      console.error('Upload failed:', err);
+      alert('Failed to upload attachment. Please try again.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const handleOpenVulnerability = () => {
     setCategory('Security');
@@ -87,7 +128,7 @@ const SupportSidebar: React.FC<SupportSidebarProps> = ({
                 onClick={onClose}
                 className="absolute top-6 right-6 p-2 hover:bg-black/5 rounded-full transition-colors"
               >
-                <X className="w-5 h-5 text-gray-400" />
+                <X className="w-5 h-5 text-black" />
               </button>
 
               <div className="space-y-2 relative">
@@ -104,7 +145,7 @@ const SupportSidebar: React.FC<SupportSidebarProps> = ({
                 <h1 className="text-4xl font-bold text-black flex items-center gap-3">
                   Hi {userName} <HandMetal className="w-8 h-8 text-yellow-400 animate-bounce" />
                 </h1>
-                <p className="text-4xl font-bold text-gray-400">How can we help?</p>
+                <p className="text-4xl font-bold text-black opacity-30">How can we help?</p>
               </div>
             </div>
 
@@ -138,17 +179,17 @@ const SupportSidebar: React.FC<SupportSidebarProps> = ({
                       >
                         <div className="flex items-center gap-4">
                           <span className="text-xl">{res.emoji}</span>
-                          <span className="font-semibold text-gray-700 tracking-tight">{res.title}</span>
+                          <span className="font-semibold text-black/50 tracking-tight">{res.title}</span>
                         </div>
-                        <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-primary transition-colors" />
+                        <ChevronRight className="w-5 h-5 text-black/40 group-hover:text-primary transition-colors" />
                       </motion.a>
                     ))}
 
                     <div className="mt-8 pt-8 border-t border-gray-50">
-                      <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest text-center mb-6">Recent Conversations</p>
+                      <p className="text-[10px] font-black text-black/40 uppercase tracking-widest text-center mb-6">Recent Conversations</p>
                       <div className="bg-gray-50/50 border border-gray-100 rounded-2xl p-6 text-center space-y-3">
-                        <MessageSquare className="w-8 h-8 text-gray-200 mx-auto" />
-                        <p className="text-sm text-gray-400 font-medium">No active support tickets.</p>
+                        <MessageSquare className="w-8 h-8 text-black/20 mx-auto" />
+                        <p className="text-sm text-black font-medium">No active support tickets.</p>
                         <button 
                           onClick={() => setActiveTab('messages')}
                           className="text-xs font-bold text-primary hover:underline"
@@ -172,13 +213,13 @@ const SupportSidebar: React.FC<SupportSidebarProps> = ({
                         <div className="bg-slate-50 p-1.5 rounded-2xl flex items-center gap-1.5 border border-slate-100">
                            <button 
                              onClick={() => setRequestType('issue')}
-                             className={`flex-1 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${requestType === 'issue' ? 'bg-white text-black shadow-sm ring-1 ring-black/5' : 'text-slate-400 hover:text-slate-600'}`}
+                             className={`flex-1 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${requestType === 'issue' ? 'bg-white text-black shadow-sm ring-1 ring-black/5' : 'text-black/40 hover:text-slate-600'}`}
                            >
                               Report an issue
                            </button>
                            <button 
                              onClick={() => setRequestType('feedback')}
-                             className={`flex-1 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${requestType === 'feedback' ? 'bg-white text-black shadow-sm ring-1 ring-black/5' : 'text-slate-400 hover:text-slate-600'}`}
+                             className={`flex-1 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${requestType === 'feedback' ? 'bg-white text-black shadow-sm ring-1 ring-black/5' : 'text-black/40 hover:text-slate-600'}`}
                            >
                               Share feedback
                            </button>
@@ -188,16 +229,32 @@ const SupportSidebar: React.FC<SupportSidebarProps> = ({
                           {/* AI-Powered Message Area */}
                           <div className="relative group">
                             <textarea
+                              ref={textareaRef}
                               value={message}
-                              onChange={(e) => setMessage(e.target.value)}
+                              onChange={(e) => {
+                                setMessage(e.target.value);
+                                adjustHeight();
+                              }}
                               placeholder={requestType === 'issue' ? "Describe the issue... Our AI will classify and route this automatically." : "Share your thoughts with our team..."}
-                              className="w-full h-72 bg-slate-50 border border-slate-100 rounded-[2.5rem] p-8 text-sm focus:outline-none focus:ring-8 focus:ring-primary/5 focus:border-primary/20 transition-all resize-none font-medium placeholder:text-slate-300 leading-relaxed shadow-inner"
+                              className="w-full min-h-[120px] max-h-[300px] bg-white border-2 border-black rounded-[2rem] p-8 text-sm focus:outline-none focus:border-primary transition-all resize-none font-bold placeholder:text-black/20 leading-relaxed shadow-sm scrollbar-hide"
                             />
                             
                             <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between pointer-events-none">
-                               <button className="p-3 bg-white border border-slate-100 rounded-xl text-slate-400 hover:text-primary transition-all pointer-events-auto active:scale-95 shadow-sm">
-                                  <Paperclip className="w-5 h-5" />
-                               </button>
+                                <input 
+                                  type="file" 
+                                  ref={fileInputRef} 
+                                  onChange={handleFileUpload} 
+                                  className="hidden" 
+                                />
+                                <button 
+                                  type="button"
+                                  onClick={() => fileInputRef.current?.click()}
+                                  disabled={isUploading}
+                                  className={`p-3 bg-white border-2 border-black rounded-xl transition-all pointer-events-auto active:scale-95 shadow-sm group ${attachmentUrl ? 'bg-red-50 border-primary text-primary' : 'text-black hover:bg-black hover:text-white'}`}
+                                >
+                                   {isUploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Paperclip className="w-5 h-5" />}
+                                   {attachmentUrl && <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-600 rounded-full animate-pulse" />}
+                                </button>
 
                                <button
                                 onClick={async () => {
@@ -210,9 +267,10 @@ const SupportSidebar: React.FC<SupportSidebarProps> = ({
                                       user_email: user?.email || '',
                                       user_name: userName,
                                       message: message,
-                                      category: category, // Pre-filled 'Security' if from vuln link, else 'General'
+                                      category: category,
                                       request_type: requestType,
-                                      is_ai_classified: false // Signal Kockpit to classify
+                                      attachment_url: attachmentUrl,
+                                      is_ai_classified: false
                                     });
                                     if (error) throw error;
                                     setIsSuccess(true);
@@ -229,13 +287,13 @@ const SupportSidebar: React.FC<SupportSidebarProps> = ({
                                 {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                                   <>
                                     <Send className="w-4 h-4" />
-                                    <span>Transmitting Message</span>
+                                    <span>Send</span>
                                   </>
                                 )}
                               </button>
                             </div>
                           </div>
-                          <p className="px-4 text-[9px] font-bold text-slate-300 uppercase tracking-widest text-center">
+                          <p className="px-4 text-[9px] font-bold text-black opacity-40 uppercase tracking-widest text-center">
                              Categorization & Priority will be assigned automatically by Lawlify AI
                           </p>
                         </div>
@@ -247,7 +305,7 @@ const SupportSidebar: React.FC<SupportSidebarProps> = ({
                         </div>
                         <div>
                           <h3 className="text-2xl font-bold text-black">Message Sent!</h3>
-                          <p className="text-sm text-gray-500 mt-2 max-w-[250px]">Thank you for reaching out. Our team has been notified and will respond via email shortly.</p>
+                          <p className="text-sm text-black font-bold mt-2 max-w-[250px]">Thank you for reaching out. Our team has been notified and will respond via email shortly.</p>
                         </div>
                         <button 
                           onClick={() => {
@@ -269,9 +327,9 @@ const SupportSidebar: React.FC<SupportSidebarProps> = ({
             <div className="p-4 border-t border-gray-50 flex items-center justify-around bg-white/80 backdrop-blur-md">
               <button 
                 onClick={() => setActiveTab('home')}
-                className={`flex flex-col items-center gap-1 group transition-colors ${activeTab === 'home' ? 'text-primary' : 'text-gray-400 hover:text-gray-600'}`}
+                className={`flex flex-col items-center gap-1 group transition-colors ${activeTab === 'home' ? 'text-primary' : 'text-black/40 hover:text-black'}`}
               >
-                <div className={`p-2 rounded-xl transition-colors ${activeTab === 'home' ? 'bg-primary/10' : 'bg-transparent group-hover:bg-gray-50'}`}>
+                <div className={`p-2 rounded-xl transition-colors ${activeTab === 'home' ? 'bg-primary/10' : 'bg-transparent group-hover:bg-red-50'}`}>
                   <Home className="w-6 h-6" />
                 </div>
                 <span className="text-[10px] font-black uppercase tracking-tighter">Home</span>
@@ -279,9 +337,9 @@ const SupportSidebar: React.FC<SupportSidebarProps> = ({
               
               <button 
                 onClick={() => setActiveTab('messages')}
-                className={`flex flex-col items-center gap-1 group transition-colors ${activeTab === 'messages' ? 'text-primary' : 'text-gray-400 hover:text-gray-600'}`}
+                className={`flex flex-col items-center gap-1 group transition-colors ${activeTab === 'messages' ? 'text-primary' : 'text-black/40 hover:text-black'}`}
               >
-                <div className={`p-2 rounded-xl transition-colors ${activeTab === 'messages' ? 'bg-primary/10' : 'bg-transparent group-hover:bg-gray-50'}`}>
+                <div className={`p-2 rounded-xl transition-colors ${activeTab === 'messages' ? 'bg-primary/10' : 'bg-transparent group-hover:bg-red-50'}`}>
                   <MessageSquare className="w-6 h-6" />
                 </div>
                 <span className="text-[10px] font-black uppercase tracking-tighter">Messages</span>
