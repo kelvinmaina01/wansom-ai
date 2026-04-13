@@ -119,7 +119,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.93, opacity: 0, y: 14 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative w-[96vw] md:w-[60vw] lg:w-[50vw] max-w-[1200px] max-h-[95vh] h-auto flex flex-col bg-white rounded-3xl overflow-y-auto shadow-2xl scrollbar-hide"
+          className="relative w-[96vw] md:w-[60vw] lg:w-[50vw] max-w-[1200px] max-h-[95vh] h-auto flex flex-col bg-white rounded-3xl overflow-y-auto shadow-2xl scrollbar-thin"
           style={{ boxShadow: '0 32px 80px rgba(0,0,0,.2), 0 0 0 1px rgba(0,0,0,.04)' }}
         >
           {/* ── HEADER ── */}

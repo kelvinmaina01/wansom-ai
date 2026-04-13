@@ -62,7 +62,7 @@ const PaymentSimulationModal: React.FC<PaymentSimulationModalProps> = ({
           initial={{ scale: 0.9, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
-          className="relative w-[96vw] md:w-[70vw] lg:w-[50vw] max-w-[1200px] max-h-[95vh] h-auto flex flex-col md:flex-row bg-white rounded-3xl overflow-y-auto shadow-2xl scrollbar-hide"
+          className="relative w-[96vw] md:w-[70vw] lg:w-[50vw] max-w-[1200px] max-h-[95vh] h-auto flex flex-col md:flex-row bg-white rounded-3xl overflow-y-auto shadow-2xl scrollbar-thin"
         >
           {/* Left Panel (Summary) */}
           <div className="w-full md:w-[220px] bg-[#011b33] text-white p-6 md:p-8 flex flex-col justify-between border-b md:border-b-0 md:border-r border-white/10 relative overflow-hidden flex-shrink-0">
