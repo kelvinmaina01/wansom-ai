@@ -224,9 +224,8 @@ const EnterpriseBooking: React.FC = () => {
       <div className="relative z-10 max-w-[1440px] mx-auto px-6 pt-16 pb-24">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-4 leading-tight text-slate-900">
-            Book Your Private<br />
-            <span className="text-primary font-bold">Lawlify Demo</span>
+          <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-4 leading-tight text-slate-900 whitespace-nowrap">
+            Book Your Private <span className="text-primary font-bold">Lawlify Demo</span>
           </h1>
           <p className="text-black text-xl font-medium max-w-2xl mx-auto">
             Get a live walkthrough tailored to your firm's workflow. Our legal AI consultants will show you exactly how Lawlify transforms your practice.
