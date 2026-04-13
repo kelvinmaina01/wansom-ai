@@ -150,7 +150,8 @@ const SupportSidebar: React.FC<SupportSidebarProps> = ({ isOpen, onClose, userNa
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     className="h-full flex flex-col pt-4"
-                        {!isSuccess ? (
+                  >
+                    {!isSuccess ? (
                       <div className="space-y-6">
                         {/* Intent Toggles */}
                         <div className="bg-slate-50 p-1.5 rounded-2xl flex items-center gap-1.5 border border-slate-100">
@@ -224,7 +225,7 @@ const SupportSidebar: React.FC<SupportSidebarProps> = ({ isOpen, onClose, userNa
                           </p>
                         </div>
                       </div>
-                    ) : (           ) : (
+                    ) : (
                       <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6">
                         <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center">
                           <ShieldCheck className="w-10 h-10 text-green-500" />
