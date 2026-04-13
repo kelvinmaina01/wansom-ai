@@ -62,10 +62,10 @@ const PaymentSimulationModal: React.FC<PaymentSimulationModalProps> = ({
           initial={{ scale: 0.9, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
-          className="relative w-[96vw] md:w-[70vw] lg:w-[50vw] max-w-[1200px] bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row"
+          className="relative w-[96vw] md:w-[70vw] lg:w-[50vw] max-w-[1200px] max-h-[95vh] h-auto flex flex-col md:flex-row bg-white rounded-3xl overflow-y-auto shadow-2xl scrollbar-hide"
         >
           {/* Left Panel (Summary) */}
-          <div className="w-full md:w-[220px] bg-[#011b33] text-white p-8 flex flex-col justify-between border-b md:border-b-0 md:border-r border-white/10 relative overflow-hidden">
+          <div className="w-full md:w-[220px] bg-[#011b33] text-white p-6 md:p-8 flex flex-col justify-between border-b md:border-b-0 md:border-r border-white/10 relative overflow-hidden flex-shrink-0">
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10" />
             <div className="relative z-10">
                <div className="flex items-center gap-2 mb-8">
@@ -89,7 +89,7 @@ const PaymentSimulationModal: React.FC<PaymentSimulationModalProps> = ({
           </div>
 
           {/* Right Panel (Actions) */}
-          <div className="flex-1 bg-white p-10 relative min-h-[480px] flex flex-col">
+          <div className="flex-1 bg-white p-6 md:p-10 relative min-h-[400px] md:min-h-[480px] flex flex-col">
             <button 
               onClick={onClose}
               className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full transition-colors"

@@ -119,11 +119,11 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.93, opacity: 0, y: 14 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative w-[96vw] md:w-[60vw] lg:w-[50vw] max-w-[1200px] bg-white rounded-3xl overflow-hidden shadow-2xl"
+          className="relative w-[96vw] md:w-[60vw] lg:w-[50vw] max-w-[1200px] max-h-[95vh] h-auto flex flex-col bg-white rounded-3xl overflow-y-auto shadow-2xl scrollbar-hide"
           style={{ boxShadow: '0 32px 80px rgba(0,0,0,.2), 0 0 0 1px rgba(0,0,0,.04)' }}
         >
           {/* ── HEADER ── */}
-          <div className="bg-slate-900 px-10 pt-10 pb-10 relative overflow-hidden">
+          <div className="bg-slate-900 px-6 md:px-10 pt-8 md:pt-10 pb-8 md:pb-10 relative overflow-hidden flex-shrink-0">
             <div className="absolute -top-8 -right-8 w-28 h-28 rounded-full bg-primary/12 pointer-events-none" />
             <div className="absolute -bottom-5 left-5 w-20 h-20 rounded-full bg-primary/6 pointer-events-none" />
 
@@ -161,7 +161,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
           </div>
 
           {/* Credits strip */}
-          <div className="bg-primary/12 border-t border-primary/20 px-10 py-3.5 flex items-center gap-3">
+          <div className="bg-primary/12 border-t border-primary/20 px-6 md:px-10 py-3 flex items-center gap-3 flex-shrink-0">
             <div className="w-2 h-2 rounded-full bg-primary flex-shrink-0 shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
             <span className="text-[12.5px] text-slate-600 font-medium tracking-wide">
               <strong className="text-slate-900 font-extrabold">{plan.credits} {plan.creditsLabel}</strong> added to your account immediately after payment
@@ -170,7 +170,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
           {/* ── STEP NAV ── */}
           {checkout.step !== 'success' && checkout.step !== 'failed' && (
-            <div className="flex items-center gap-0 px-10 pt-6 border-b border-slate-100">
+            <div className="flex items-center gap-0 px-6 md:px-10 pt-6 border-b border-slate-100 flex-shrink-0 bg-white sticky top-0 z-10">
               {[
                 { num: 1, label: 'Contact', step: 'contact' },
                 { num: 2, label: 'Payment', step: 'payment' },
@@ -199,7 +199,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
           )}
 
           {/* ── BODY ── */}
-          <div className="px-10 py-8 relative">
+          <div className="px-6 md:px-10 py-6 md:py-8 relative">
             <AnimatePresence mode="wait">
 
               {/* ═══ STEP 1: CONTACT ═══ */}
