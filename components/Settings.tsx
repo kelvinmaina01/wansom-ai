@@ -12,17 +12,14 @@ import {
   LogOut,
   AlertTriangle,
   Trash2,
-  RefreshCw,
-  Plug,
-  ExternalLink,
-  Download,
-  Link,
-  UserPlus,
-  X
+  History,
+  Sparkles,
+  Plus,
+  Receipt
 } from 'lucide-react';
 import { UserSettings } from '../types';
 import { supabase } from '../lib/supabase';
-import PaymentSimulationModal from './PaymentSimulationModal';
+import CheckoutModal from './CheckoutModal';
 
 const INITIAL_SETTINGS: UserSettings = {
   profile: {
@@ -59,7 +56,9 @@ const INITIAL_SETTINGS: UserSettings = {
   },
   billing: {
     plan: 'Free',
-    nextBillingDate: new Date()
+    nextBillingDate: new Date(),
+    creditsBalance: 5,
+    planAllocation: 5
   },
   integrations: {}
 };
@@ -99,91 +98,114 @@ const Settings: React.FC = () => {
   const [passwordData, setPasswordData] = useState({ new: '', confirm: '' });
   const [passwordStatus, setPasswordStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
   const [isPasswordFormOpen, setIsPasswordFormOpen] = useState(false);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [checkoutPlanKey, setCheckoutPlanKey] = useState('personal');
+  const [transactions, setTransactions] = useState<any[]>([]);
   const [activeToast, setActiveToast] = useState<{ title: string; message: string } | null>(null);
 
-  useEffect(() => {
-    const fetchSettings = async () => {
-      setIsLoading(true);
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+  const fetchSettings = async () => {
+    setIsLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-        const { data, error } = await supabase
-          .from('user_settings')
-          .select('*')
-          .eq('id', user.id)
-          .maybeSingle();
+      const { data, error } = await supabase
+        .from('user_settings')
+        .select('*')
+        .eq('id', user.id)
+        .maybeSingle();
 
-        if (error) throw error;
+      if (error) throw error;
 
-        if (data) {
-            const loadedSettings = {
-              profile: {
-                name: data.profile_name || user.user_metadata?.full_name || user.email?.split('@')[0] || '',
-                email: data.profile_email || user.email || '',
-                phone: data.profile_phone || '',
-                firmName: data.profile_firm_name || '',
-                avatarUrl: data.profile_avatar_url || user.user_metadata?.avatar_url || ''
-              },
-              appearance: (data.appearance as 'light' | 'dark' | 'system') || 'light',
-              fontSize: (data.font_size as 'small' | 'medium' | 'large') || 'medium',
-              notifications: {
-                email: data.notifications_email ?? true,
-                push: data.notifications_push ?? true,
-                sms: data.notifications_sms ?? false,
-                whatsapp: data.notifications_whatsapp ?? false,
-                securityAlerts: data.notifications_security_alerts ?? true,
-                billingAlerts: data.notifications_billing_alerts ?? true,
-                productUpdates: data.notifications_product_updates ?? true,
-                aiDraftComplete: data.notifications_ai_draft_complete ?? true,
-                aiInsightReady: data.notifications_ai_insight_ready ?? true,
-                commentsMentions: data.notifications_comments_mentions ?? true,
-                workspaceInvitations: data.notifications_workspace_invitations ?? true,
-                caseDeadlines: data.notifications_case_deadlines ?? true,
-                digest: data.notifications_digest || 'daily',
-                quietHours: data.notifications_quiet_hours || { enabled: false, start: '22:00', end: '07:00' }
-              },
-              security: {
-                twoFactorEnabled: data.security_two_factor_enabled ?? false
-              },
-              billing: {
-                plan: data.billing_plan || 'Free',
-                nextBillingDate: data.billing_next_date ? new Date(data.billing_next_date) : new Date()
-              },
-              integrations: data.integrations || {}
-            };
-            setSettings(loadedSettings);
-            setDatabaseSettings(loadedSettings);
-        } else {
-          // Initialize with metadata if no record exists
-            const defaultSetup = {
-              profile: {
-                name: user.user_metadata?.full_name || user.email?.split('@')[0] || '',
-                email: user.email || '',
-                phone: '',
-                firmName: '',
-                avatarUrl: user.user_metadata?.avatar_url || ''
-              },
-              appearance: 'light' as const,
-              fontSize: 'medium' as const,
-              notifications: { ...INITIAL_SETTINGS.notifications },
-              security: { ...INITIAL_SETTINGS.security },
-              billing: { ...INITIAL_SETTINGS.billing },
-              integrations: {}
-            };
-            setSettings(defaultSetup);
-            setDatabaseSettings(defaultSetup);
-        }
-      } catch (err) {
-        console.error('Error fetching settings:', err);
-      } finally {
-        setIsLoading(false);
+      if (data) {
+          const loadedSettings = {
+            profile: {
+              name: data.profile_name || user.user_metadata?.full_name || user.email?.split('@')[0] || '',
+              email: data.profile_email || user.email || '',
+              phone: data.profile_phone || '',
+              firmName: data.profile_firm_name || '',
+              avatarUrl: data.profile_avatar_url || user.user_metadata?.avatar_url || ''
+            },
+            appearance: (data.appearance as 'light' | 'dark' | 'system') || 'light',
+            fontSize: (data.font_size as 'small' | 'medium' | 'large') || 'medium',
+            notifications: {
+              email: data.notifications_email ?? true,
+              push: data.notifications_push ?? true,
+              sms: data.notifications_sms ?? false,
+              whatsapp: data.notifications_whatsapp ?? false,
+              securityAlerts: data.notifications_security_alerts ?? true,
+              billingAlerts: data.notifications_billing_alerts ?? true,
+              productUpdates: data.notifications_product_updates ?? true,
+              aiDraftComplete: data.notifications_ai_draft_complete ?? true,
+              aiInsightReady: data.notifications_ai_insight_ready ?? true,
+              commentsMentions: data.notifications_comments_mentions ?? true,
+              workspaceInvitations: data.notifications_workspace_invitations ?? true,
+              caseDeadlines: data.notifications_case_deadlines ?? true,
+              digest: data.notifications_digest || 'daily',
+              quietHours: data.notifications_quiet_hours || { enabled: false, start: '22:00', end: '07:00' }
+            },
+            security: {
+              twoFactorEnabled: data.security_two_factor_enabled ?? false
+            },
+            billing: {
+              plan: data.billing_plan as any || 'Free',
+              nextBillingDate: data.plan_expires_at ? new Date(data.plan_expires_at) : new Date(),
+              creditsBalance: data.credits_balance || 0,
+              planAllocation: data.credits_plan_allocation || 5
+            },
+            integrations: data.integrations || {}
+          };
+          setSettings(loadedSettings);
+          setDatabaseSettings(loadedSettings);
+      } else {
+          const defaultSetup = {
+            profile: {
+              name: user.user_metadata?.full_name || user.email?.split('@')[0] || '',
+              email: user.email || '',
+              phone: '',
+              firmName: '',
+              avatarUrl: user.user_metadata?.avatar_url || ''
+            },
+            appearance: 'light' as const,
+            fontSize: 'medium' as const,
+            notifications: { ...INITIAL_SETTINGS.notifications },
+            security: { ...INITIAL_SETTINGS.security },
+            billing: { ...INITIAL_SETTINGS.billing },
+            integrations: {}
+          };
+          setSettings(defaultSetup);
+          setDatabaseSettings(defaultSetup);
       }
-    };
+    } catch (err) {
+      console.error('Error fetching settings:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchSettings();
   }, []);
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: txns } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(10);
+      
+      if (txns) setTransactions(txns);
+    };
+
+    if (activeTab === 'billing') {
+      fetchTransactions();
+    }
+  }, [activeTab]);
 
   const handleSave = async () => {
     setSaveStatus('saving');
@@ -548,62 +570,127 @@ const Settings: React.FC = () => {
                 )}
 
                 {activeTab === 'billing' && (
-                  <div className="space-y-6">
-                    <h2 className="text-xl font-bold text-black mb-6">Billing & Subscription</h2>
-
-                    <div className="bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white p-8 rounded-[2rem] shadow-2xl shadow-black/20 relative overflow-hidden mb-8">
-                      <div className="relative z-10">
-                        <div className="flex justify-between items-start mb-8">
-                          <div>
-                            <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Current Plan</p>
-                            <h3 className="text-3xl font-bold text-white">Pro Plan</h3>
-                          </div>
-                          <span className="px-3 py-1.5 bg-green-500/20 backdrop-blur-md rounded-full text-xs font-bold border border-green-400/20 text-green-400 flex items-center gap-1.5">
-                            <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
-                            Active
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2 text-sm font-medium text-gray-300">
-                            <CreditCard className="w-4 h-4" />
-                            Next billing date: <span className="text-white font-bold">{settings.billing.nextBillingDate.toLocaleDateString()}</span>
-                          </div>
-                          <button 
-                            onClick={() => setIsPaymentModalOpen(true)}
-                            className="px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-lg text-xs font-bold transition-colors"
-                          >
-                            Upgrade Plan
-                          </button>
-                        </div>
-                      </div>
-                      <div className="absolute top-0 right-0 w-64 h-64 bg-primary rounded-full blur-[100px] opacity-30 -translate-y-1/2 translate-x-1/2"></div>
-                      <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500 rounded-full blur-[80px] opacity-10 translate-y-1/2 -translate-x-1/4"></div>
+                  <div className="space-y-8">
+                    <div className="flex items-center justify-between mb-2">
+                       <h2 className="text-xl font-bold text-black border-l-4 border-primary pl-4">Billing & Subscription</h2>
+                       <div className="px-4 py-1.5 bg-primary/5 border border-primary/10 rounded-full flex items-center gap-2">
+                          <Sparkles className="w-3 h-3 text-primary" />
+                          <span className="text-[10px] font-black text-primary uppercase tracking-widest">Premium Access</span>
+                       </div>
                     </div>
 
-                    <div className="space-y-4">
-                      <h3 className="text-sm font-bold text-black uppercase tracking-widest mb-2">Payment Methods</h3>
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-6 bg-gray-200 rounded flex items-center justify-center text-[8px] font-bold text-gray-500">VISA</div>
-                          <div>
-                            <p className="text-sm font-bold text-black">•••• •••• •••• 4242</p>
-                            <p className="text-xs text-gray-400">Expires 12/25</p>
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+                       <div className="lg:col-span-12 relative overflow-hidden bg-slate-900 rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center justify-between gap-8 group">
+                          {/* Background Glow */}
+                          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_20%,rgba(239,68,68,0.2),transparent_50%)]" />
+                          <div className="absolute bottom-0 right-0 w-[40%] h-full bg-[radial-gradient(circle_at_80%_80%,rgba(239,68,68,0.1),transparent_50%)]" />
+
+                          <div className="relative z-10">
+                             <div className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-3">Active Subscription</div>
+                             <h3 className="text-5xl font-black text-white mb-6 flex items-baseline gap-2">
+                               {settings.billing.plan} <span className="text-primary text-xl font-bold">Plan</span>
+                             </h3>
+                             <div className="flex flex-wrap items-center gap-6">
+                                <div className="flex items-center gap-3">
+                                   <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+                                      <Zap className="w-5 h-5 text-primary" />
+                                   </div>
+                                   <div>
+                                      <div className="text-[18px] font-black text-white tracking-tight">{settings.billing.creditsBalance.toLocaleString()}</div>
+                                      <div className="text-[9px] font-black text-white/40 uppercase tracking-widest">Credits Remaining</div>
+                                   </div>
+                                </div>
+                                <div className="w-px h-10 bg-white/10 hidden md:block" />
+                                <div className="flex items-center gap-3 text-white/60">
+                                   <Clock className="w-5 h-5" />
+                                   <div>
+                                      <div className="text-[14px] font-bold text-white">{settings.billing.nextBillingDate.toLocaleDateString()}</div>
+                                      <div className="text-[9px] font-black text-white/40 uppercase tracking-widest">Next Renewal</div>
+                                   </div>
+                                </div>
+                             </div>
                           </div>
-                        </div>
-                        <button 
-                          onClick={() => setIsPaymentModalOpen(true)}
-                          className="text-xs font-bold text-primary hover:text-primary-hover"
-                        >
-                          Edit
-                        </button>
-                      </div>
-                      <button 
-                        onClick={() => setIsPaymentModalOpen(true)}
-                        className="w-full py-3 border border-dashed border-gray-300 rounded-xl text-xs font-bold text-gray-500 hover:text-black hover:border-gray-400 transition-colors flex items-center justify-center gap-2"
-                      >
-                        <CreditCard className="w-4 h-4" />
-                        Add Payment Method
-                      </button>
+
+                          <div className="relative z-10 flex flex-col gap-3 w-full md:w-auto">
+                             <button 
+                               onClick={() => { setCheckoutPlanKey('personal'); setIsCheckoutOpen(true); }}
+                               className="px-8 py-4 bg-primary text-white text-[11px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-3"
+                             >
+                               <Sparkles className="w-4 h-4 fill-current" />
+                               Manage / Upgrade
+                             </button>
+                             <button className="px-8 py-4 bg-white/5 border border-white/10 text-white/60 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-white/10 transition-all text-center">
+                               Cancel Subscription
+                             </button>
+                          </div>
+                       </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                       <div className="bg-white border-2 border-slate-100 rounded-[2.5rem] p-8 shadow-sm">
+                          <div className="flex items-center justify-between mb-8">
+                             <h4 className="text-sm font-black text-black uppercase tracking-widest flex items-center gap-3">
+                                <CreditCard className="w-4 h-4 text-primary" />
+                                Payment Methods
+                             </h4>
+                             <button onClick={() => { setCheckoutPlanKey('topup_150'); setIsCheckoutOpen(true); }} className="p-2 hover:bg-slate-50 rounded-lg transition-all text-primary">
+                                <Plus className="w-5 h-5" />
+                             </button>
+                          </div>
+                          
+                          <div className="space-y-4">
+                             <div className="flex items-center justify-between p-5 bg-slate-50 rounded-2xl border border-slate-100 group hover:border-primary/20 transition-all">
+                                <div className="flex items-center gap-4">
+                                   <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center border border-slate-100 p-2">
+                                      <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="w-full h-full object-contain" />
+                                   </div>
+                                   <div>
+                                      <p className="text-sm font-black text-black tracking-tight">•••• •••• •••• 4242</p>
+                                      <p className="text-[10px] font-black text-slate-400">EXPIRES 12/26</p>
+                                   </div>
+                                </div>
+                                <div className="text-[9px] font-black text-primary uppercase tracking-widest px-2 py-1 bg-primary/10 rounded-lg">Default</div>
+                             </div>
+                             <p className="text-[10px] text-slate-400 text-center font-medium mt-6">Securely managed by Paystack. Lawlify never stores your raw card data.</p>
+                          </div>
+                       </div>
+
+                       <div className="bg-white border-2 border-slate-100 rounded-[2.5rem] p-8 shadow-sm flex flex-col">
+                          <div className="flex items-center justify-between mb-8">
+                             <h4 className="text-sm font-black text-black uppercase tracking-widest flex items-center gap-3">
+                                <History className="w-4 h-4 text-primary" />
+                                Recent Activity
+                             </h4>
+                             <button className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline transition-all">View All</button>
+                          </div>
+                          
+                          <div className="flex-1 space-y-4">
+                             {transactions.length > 0 ? (
+                               transactions.map((txn, idx) => (
+                                 <div key={idx} className="flex items-center justify-between py-3 border-b border-slate-50 last:border-0 group">
+                                    <div className="flex items-center gap-3">
+                                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${txn.status === 'success' ? 'bg-emerald-50 text-emerald-500' : 'bg-red-50 text-red-500'}`}>
+                                          <Receipt className="w-5 h-5" />
+                                       </div>
+                                       <div>
+                                          <div className="text-[13px] font-black text-black tracking-tight group-hover:text-primary transition-colors">{txn.plan_name}</div>
+                                          <div className="text-[10px] font-bold text-slate-400 capitalize">{new Date(txn.created_at).toLocaleDateString()} · {txn.payment_method}</div>
+                                       </div>
+                                    </div>
+                                    <div className="text-right">
+                                       <div className="text-[14px] font-black text-black">{(txn.amount / 100).toLocaleString(undefined, { style: 'currency', currency: txn.currency })}</div>
+                                       <div className={`text-[9px] font-black uppercase tracking-widest ${txn.status === 'success' ? 'text-emerald-500' : 'text-red-500'}`}>{txn.status}</div>
+                                    </div>
+                                 </div>
+                               ))
+                             ) : (
+                               <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-slate-50 rounded-3xl">
+                                  <Receipt className="w-10 h-10 text-slate-200 mb-3" />
+                                  <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">No transaction history found</p>
+                               </div>
+                             )}
+                          </div>
+                       </div>
                     </div>
                   </div>
                 )}
@@ -774,6 +861,20 @@ const Settings: React.FC = () => {
                 )}
               </motion.div>
             </AnimatePresence>
+
+            {/* Modal Components */}
+            <CheckoutModal
+              isOpen={isCheckoutOpen}
+              onClose={() => setIsCheckoutOpen(false)}
+              planKey={checkoutPlanKey}
+              userEmail={settings.profile.email}
+              userName={settings.profile.name}
+              userPhone={settings.profile.phone}
+              onSuccess={() => {
+                fetchSettings();
+                showToast('Success', 'Your plan has been updated successfully!');
+              }}
+            />
 
             {/* Global Save Section */}
             {['profile', 'notifications', 'security', 'integrations'].includes(activeTab) && (

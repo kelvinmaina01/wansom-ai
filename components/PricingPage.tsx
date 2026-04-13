@@ -32,6 +32,38 @@ interface PricingPageProps {
   onGetStarted: () => void;
 }
 
+const TypingText: React.FC<{ text: string }> = ({ text }) => {
+  const [displayedText, setDisplayedText] = useState('');
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    if (index < text.length) {
+      const timeout = setTimeout(() => {
+        setDisplayedText(prev => prev + text[index]);
+        setIndex(prev => prev + 1);
+      }, 70); // Slightly faster than 100ms for a "snappy" feel
+      return () => clearTimeout(timeout);
+    } else {
+      const timeout = setTimeout(() => {
+        setDisplayedText('');
+        setIndex(0);
+      }, 2500); // Hold the full message for 2.5s before restarting
+      return () => clearTimeout(timeout);
+    }
+  }, [index, text]);
+
+  return (
+    <span className="relative inline-block min-h-[1.2em]">
+      {displayedText}
+      <motion.span 
+        animate={{ opacity: [1, 0, 1] }}
+        transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+        className="inline-block ml-0.5 w-[2px] h-[0.9em] bg-primary align-middle"
+      />
+    </span>
+  );
+};
+
 const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
   const [isAnnual, setIsAnnual] = useState(true);
   const [isCheckout, setIsCheckout] = useState(false);
@@ -128,7 +160,9 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
           className="text-5xl md:text-7xl font-black tracking-tighter mb-6 leading-tight text-slate-900"
         >
           Simple, transparent pricing.<br />
-          <span className="text-primary text-3xl font-bold tracking-tight">Start free. Scale as you grow.</span>
+          <span className="text-primary text-3xl font-bold tracking-tight">
+            <TypingText text="Start free. Scale as you grow." />
+          </span>
         </motion.h1>
 
         <motion.p 

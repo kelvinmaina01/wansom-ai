@@ -12,7 +12,10 @@ import {
   Settings,
   Briefcase,
   ArrowLeft,
-  LogOut
+  LogOut,
+  Zap,
+  Sparkles,
+  ChevronRight
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { apiClient } from '../lib/apiClient';
@@ -284,9 +287,62 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose, onOpenSettings, user
             </button>
           </div>
           {/* Decorative */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-red-500 rounded-full blur-[100px] opacity-20 -translate-y-1/2 translate-x-1/2"></div>
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500 rounded-full blur-[80px] opacity-10 translate-y-1/2 -translate-x-1/4"></div>
         </div>
+
+        {/* Credit Usage Card — Whispr Flow Inspired */}
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-[#fdfcf7] border border-[#f5f1e3] rounded-[2rem] p-8 mb-8 shadow-sm group hover:shadow-md transition-all"
+        >
+           <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                 <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center border border-[#ece7d6]">
+                    <Zap className="w-5 h-5 text-purple-600 fill-purple-600" />
+                 </div>
+                 <div>
+                    <h3 className="text-base font-black text-slate-800 tracking-tight">
+                       {profileData?.billing_plan || 'Free'} <span className="text-slate-400 font-bold ml-1">Credits</span>
+                    </h3>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Usage this period</p>
+                 </div>
+              </div>
+              <div className="text-right">
+                 <div className="text-[18px] font-black text-slate-800">
+                    {((profileData?.credits_plan_allocation || 5) - (profileData?.credits_balance || 0)).toLocaleString()}
+                    <span className="text-slate-300 mx-1">/</span>
+                    <span className="text-slate-400 font-bold">{(profileData?.credits_plan_allocation || 5).toLocaleString()}</span>
+                 </div>
+                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Credits consumed</p>
+              </div>
+           </div>
+
+           {/* Purple Progress Bar */}
+           <div className="relative w-full h-3 bg-white border border-[#ece7d6] rounded-full overflow-hidden mb-6 p-[2px]">
+              <motion.div 
+                initial={{ width: 0 }}
+                animate={{ width: `${Math.min(100, (((profileData?.credits_plan_allocation || 5) - (profileData?.credits_balance || 0)) / (profileData?.credits_plan_allocation || 5)) * 100)}%` }}
+                transition={{ duration: 1.5, ease: "circOut" }}
+                className="h-full bg-gradient-to-r from-purple-500 to-purple-400 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.3)]"
+              />
+           </div>
+
+           <div className="flex items-center justify-between">
+              <button 
+                onClick={onOpenSettings}
+                className="px-6 py-3 bg-slate-900 hover:bg-black text-white text-[11px] font-black uppercase tracking-widest rounded-xl transition-all shadow-lg active:scale-95 flex items-center gap-2"
+              >
+                 Upgrade for local limits
+                 <ChevronRight className="w-3 h-3 text-purple-400" />
+              </button>
+              <div className="text-[10px] font-bold text-slate-400 flex items-center gap-2">
+                 <Sparkles className="w-3 h-3 text-amber-400" />
+                 Limits reset Monthly · Midnight UTC
+              </div>
+           </div>
+        </motion.div>
 
         {/* Quick Info Grid */}
         <div className="grid grid-cols-2 gap-4 mb-8">

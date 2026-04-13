@@ -13,7 +13,13 @@ import {
   ChevronRight,
   HandMetal,
   Send,
-  Loader2
+  Loader2,
+  Paperclip,
+  ChevronDown,
+  Bug,
+  CreditCard,
+  User,
+  ShieldCheck as ShieldCheckIcon
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -26,8 +32,16 @@ interface SupportSidebarProps {
 const SupportSidebar: React.FC<SupportSidebarProps> = ({ isOpen, onClose, userName }) => {
   const [activeTab, setActiveTab] = useState<'home' | 'messages'>('home');
   const [message, setMessage] = useState('');
+  const [category, setCategory] = useState('General');
+  const [requestType, setRequestType] = useState<'issue' | 'feedback'>('issue');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  const handleOpenVulnerability = () => {
+    setCategory('Security');
+    setRequestType('issue');
+    setActiveTab('messages');
+  };
 
   const resources = [
     { title: 'Visit our Help Center', icon: BookOpen, emoji: '📚', color: 'text-blue-500', href: 'https://help.lawlify.ai' },
@@ -99,13 +113,19 @@ const SupportSidebar: React.FC<SupportSidebarProps> = ({ isOpen, onClose, userNa
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.05 }}
+                        onClick={(e) => {
+                          if (res.title === 'Reporting a Vulnerability') {
+                            e.preventDefault();
+                            handleOpenVulnerability();
+                          }
+                        }}
                         className="group flex items-center justify-between p-5 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md hover:border-primary/20 transition-all active:scale-[0.99]"
                       >
                         <div className="flex items-center gap-4">
                           <span className="text-xl">{res.emoji}</span>
                           <span className="font-semibold text-gray-700 tracking-tight">{res.title}</span>
                         </div>
-                        <ExternalLink className="w-5 h-5 text-gray-300 group-hover:text-primary transition-colors" />
+                        <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-primary transition-colors" />
                       </motion.a>
                     ))}
 
@@ -130,59 +150,81 @@ const SupportSidebar: React.FC<SupportSidebarProps> = ({ isOpen, onClose, userNa
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     className="h-full flex flex-col pt-4"
-                  >
-                    {!isSuccess ? (
+                        {!isSuccess ? (
                       <div className="space-y-6">
-                        <div className="text-center space-y-2">
-                          <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                            <MessageSquare className="w-6 h-6 text-primary" />
-                          </div>
-                          <h3 className="text-xl font-bold text-black">New Message</h3>
-                          <p className="text-sm text-gray-500">Send us a message and we'll get back to you as soon as possible.</p>
+                        {/* Intent Toggles */}
+                        <div className="bg-slate-50 p-1.5 rounded-2xl flex items-center gap-1.5 border border-slate-100">
+                           <button 
+                             onClick={() => setRequestType('issue')}
+                             className={`flex-1 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${requestType === 'issue' ? 'bg-white text-black shadow-sm ring-1 ring-black/5' : 'text-slate-400 hover:text-slate-600'}`}
+                           >
+                              Report an issue
+                           </button>
+                           <button 
+                             onClick={() => setRequestType('feedback')}
+                             className={`flex-1 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${requestType === 'feedback' ? 'bg-white text-black shadow-sm ring-1 ring-black/5' : 'text-slate-400 hover:text-slate-600'}`}
+                           >
+                              Share feedback
+                           </button>
                         </div>
 
-                        <div className="space-y-4">
-                          <textarea
-                            value={message}
-                            onChange={(e) => setMessage(e.target.value)}
-                            placeholder="How can we help you today?"
-                            className="w-full h-40 bg-gray-50 border border-gray-100 rounded-2xl p-4 text-sm focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary/20 transition-all resize-none"
-                          />
-                          <button
-                            onClick={async () => {
-                              if (!message) return;
-                              setIsSubmitting(true);
-                              try {
-                                const { data: { user } } = await supabase.auth.getUser();
-                                const { error } = await supabase.from('support_messages').insert({
-                                  user_id: user?.id,
-                                  user_email: user?.email || '',
-                                  user_name: userName,
-                                  message: message,
-                                });
-                                if (error) throw error;
-                                setIsSuccess(true);
-                                setMessage('');
-                              } catch (err) {
-                                console.error('Error sending message:', err);
-                                alert('Failed to send message.');
-                              } finally {
-                                setIsSubmitting(false);
-                              }
-                            }}
-                            disabled={!message || isSubmitting}
-                            className="w-full bg-black text-white py-4 rounded-xl font-bold shadow-xl shadow-black/10 hover:shadow-black/20 hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
-                          >
-                            {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-                            Send Response
-                          </button>
-                          <div className="flex items-center justify-center gap-2 text-[10px] font-bold text-gray-300 uppercase tracking-widest">
-                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                            Response time: usually under 2 hours
+                        <div className="space-y-5">
+                          {/* AI-Powered Message Area */}
+                          <div className="relative group">
+                            <textarea
+                              value={message}
+                              onChange={(e) => setMessage(e.target.value)}
+                              placeholder={requestType === 'issue' ? "Describe the issue... Our AI will classify and route this automatically." : "Share your thoughts with our team..."}
+                              className="w-full h-72 bg-slate-50 border border-slate-100 rounded-[2.5rem] p-8 text-sm focus:outline-none focus:ring-8 focus:ring-primary/5 focus:border-primary/20 transition-all resize-none font-medium placeholder:text-slate-300 leading-relaxed shadow-inner"
+                            />
+                            
+                            <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between pointer-events-none">
+                               <button className="p-3 bg-white border border-slate-100 rounded-xl text-slate-400 hover:text-primary transition-all pointer-events-auto active:scale-95 shadow-sm">
+                                  <Paperclip className="w-5 h-5" />
+                               </button>
+
+                               <button
+                                onClick={async () => {
+                                  if (!message) return;
+                                  setIsSubmitting(true);
+                                  try {
+                                    const { data: { user } } = await supabase.auth.getUser();
+                                    const { error } = await supabase.from('support_messages').insert({
+                                      user_id: user?.id,
+                                      user_email: user?.email || '',
+                                      user_name: userName,
+                                      message: message,
+                                      category: category, // Pre-filled 'Security' if from vuln link, else 'General'
+                                      request_type: requestType,
+                                      is_ai_classified: false // Signal Kockpit to classify
+                                    });
+                                    if (error) throw error;
+                                    setIsSuccess(true);
+                                    setMessage('');
+                                  } catch (err) {
+                                    console.error('Error sending message:', err);
+                                  } finally {
+                                    setIsSubmitting(false);
+                                  }
+                                }}
+                                disabled={!message || isSubmitting}
+                                className="px-8 py-4 bg-black text-white text-[12px] font-black uppercase tracking-[0.2em] rounded-2xl shadow-2xl shadow-black/10 hover:shadow-primary/30 hover:bg-primary transition-all active:scale-95 disabled:opacity-50 flex items-center gap-3 pointer-events-auto"
+                              >
+                                {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : (
+                                  <>
+                                    <Send className="w-4 h-4" />
+                                    <span>Transmitting Message</span>
+                                  </>
+                                )}
+                              </button>
+                            </div>
                           </div>
+                          <p className="px-4 text-[9px] font-bold text-slate-300 uppercase tracking-widest text-center">
+                             Categorization & Priority will be assigned automatically by Lawlify AI
+                          </p>
                         </div>
                       </div>
-                    ) : (
+                    ) : (           ) : (
                       <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6">
                         <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center">
                           <ShieldCheck className="w-10 h-10 text-green-500" />

@@ -126,6 +126,8 @@ export interface UserSettings {
   billing: {
     plan: 'Free' | 'Pro' | 'Enterprise';
     nextBillingDate: Date;
+    creditsBalance: number;
+    planAllocation: number;
   };
   integrations: {
     [key: string]: boolean;

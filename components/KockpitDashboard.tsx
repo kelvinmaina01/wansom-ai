@@ -740,12 +740,25 @@ const SupportManager = () => {
           <div key={msg.id} className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-pink-500/30 transition-all group">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-pink-500/10 flex items-center justify-center text-pink-500 font-bold border border-pink-500/20">
-                  {msg.user_name?.charAt(0) || msg.user_email?.charAt(0) || '?'}
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold border ${msg.category === 'Security' ? 'bg-red-500/10 text-red-500 border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.2)]' : 'bg-pink-500/10 text-pink-500 border-pink-500/20'}`}>
+                  {msg.category === 'Security' ? <ShieldAlert className="w-6 h-6 animate-pulse" /> : (msg.user_name?.charAt(0) || msg.user_email?.charAt(0) || '?')}
                 </div>
                 <div>
-                  <div className="font-bold text-white">{msg.user_name || 'Anonymous User'}</div>
-                  <div className="text-xs text-gray-500">{msg.user_email || 'No email'}</div>
+                  <div className="flex items-center gap-2">
+                    <div className="font-bold text-white">{msg.user_name || 'Anonymous User'}</div>
+                    {msg.request_type === 'feedback' && (
+                      <span className="px-2 py-0.5 bg-blue-500/10 text-blue-500 rounded text-[9px] font-black uppercase tracking-widest border border-blue-500/10">Feedback</span>
+                    )}
+                  </div>
+                  <div className="text-xs text-gray-500 font-medium flex items-center gap-1.5">
+                    {msg.user_email || 'No email'}
+                    {!msg.is_ai_classified && (
+                       <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-purple-500/10 text-purple-400 rounded-full text-[8px] font-black uppercase tracking-tighter border border-purple-500/10">
+                          <Sparkles className="w-2 h-2" />
+                          Classifying
+                       </span>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="text-right">
@@ -766,6 +779,14 @@ const SupportManager = () => {
                   msg.status === 'pending' ? 'bg-yellow-500/20 text-yellow-500' : 'bg-green-500/20 text-green-500'
                 }`}>
                   {msg.status}
+                </span>
+                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest border flex items-center gap-1.5 ${
+                   msg.category === 'Security' ? 'bg-red-600/20 text-red-500 border-red-500/30 shadow-[0_0_10px_rgba(239,68,68,0.1)]' : 
+                   msg.category === 'Billing' ? 'bg-emerald-500/20 text-emerald-500 border-emerald-500/30' :
+                   'bg-white/10 text-gray-400 border-white/10'
+                }`}>
+                  {msg.is_ai_classified && <Sparkles className="w-3 h-3 text-purple-400" />}
+                  {msg.category || 'General'}
                 </span>
                 <span className="text-[10px] text-gray-500 font-bold uppercase tracking-tighter">ID: {msg.id?.slice(0, 8) || 'N/A'}</span>
               </div>
