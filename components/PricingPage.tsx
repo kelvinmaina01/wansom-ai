@@ -143,7 +143,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
       </nav>
 
       {/* HERO SECTION */}
-      <div className="pt-20 pb-8 text-center px-4 relative">
+      <div className="pt-12 pb-4 text-center px-4 relative">
         
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
@@ -210,7 +210,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
       </div>
 
       {/* PRICING GRID */}
-      <div className="max-w-[1550px] mx-auto px-6 pt-6 pb-24 grid grid-cols-1 md:grid-cols-4 gap-12 items-start relative z-10">
+      <div className="max-w-[1550px] mx-auto px-6 pt-2 pb-16 grid grid-cols-1 md:grid-cols-4 gap-8 items-start relative z-10">
         {/* FREE */}
         <div className="bg-white border border-slate-200 rounded-[2.5rem] p-8 hover:border-black transition-all flex flex-col min-h-full shadow-sm">
           <div className="mb-6">
@@ -470,31 +470,32 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
           <div className="bg-white border-2 border-black rounded-[2rem] overflow-hidden shadow-2xl flex flex-col lg:flex-row min-h-[400px]">
             
             {/* Left Panel: Action Costs */}
-            <div className="lg:w-[45%] bg-primary p-8 lg:p-10 relative overflow-hidden flex flex-col justify-center">
-              <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.1),transparent_50%)]" />
+            <div className="lg:w-[45%] bg-primary p-6 relative overflow-hidden flex flex-col justify-center border-b lg:border-b-0 lg:border-r-2 border-black">
               <div className="relative z-10">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 rounded-full text-white font-black text-[10px] uppercase tracking-[0.2em] mb-8 border border-white/30">
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-white text-primary font-black text-[10px] uppercase tracking-[0.2em] mb-4 border-2 border-black">
                   <Zap className="w-3.5 h-3.5 fill-current" />
                   <span>Transparent Usage</span>
                 </div>
-                <h3 className="text-4xl font-black text-white mb-6 tracking-tight leading-tight">1 action = <br /><span className="text-white tracking-tighter">1–3 credits</span></h3>
-                <p className="text-white text-sm font-medium leading-relaxed max-w-sm mb-12">
+                <h3 className="text-3xl font-black text-white mb-3 tracking-tight leading-tight">1 action = <br /><span className="text-white tracking-tighter">1–3 credits</span></h3>
+                <p className="text-white text-sm font-medium leading-relaxed max-w-sm mb-6">
                   No hidden fees. Every automated legal action is weighted by complexity. You only pay for what you use.
                 </p>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3">
                   {[
                     { label: 'AI Chat', val: '1', icon: MessageSquare },
                     { label: 'Analysis', val: '2', icon: Shield },
                     { label: 'Drafting', val: '3', icon: Zap },
                     { label: 'Queries', val: '1', icon: Globe }
                   ].map((item, i) => (
-                    <div key={i} className="bg-white/10 border border-white/20 rounded-2xl p-6 hover:bg-white/20 transition-all group">
-                      <div className="flex items-center justify-between mb-4">
-                        <item.icon className="w-5 h-5 text-white" />
-                        <span className="text-2xl font-black text-white">{item.val}</span>
+                    <div key={i} className="bg-white border-2 border-black p-4 transition-all group flex items-center justify-between shadow-[2px_2px_0px_#000]">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <item.icon className="w-4 h-4 text-primary" />
+                          <div className="text-[10px] font-black text-black uppercase tracking-widest">{item.label}</div>
+                        </div>
                       </div>
-                      <div className="text-[10px] font-black text-white/60 uppercase tracking-widest">{item.label}</div>
+                      <span className="text-2xl font-black text-primary">{item.val}</span>
                     </div>
                   ))}
                 </div>
@@ -502,24 +503,24 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
             </div>
 
             {/* Right Panel: Plan Cycle Logic */}
-            <div className="flex-1 p-8 lg:p-10 flex flex-col justify-center bg-white">
-              <div className="text-[12px] font-black text-primary uppercase tracking-[0.2em] mb-12">Cycle & Reset Logic</div>
+            <div className="flex-1 p-6 flex flex-col justify-center bg-white">
+              <div className="text-[12px] font-black text-black border-2 border-black inline-block self-start px-3 py-1 uppercase tracking-[0.2em] mb-6">Cycle & Reset Logic</div>
               
-              <div className="space-y-10">
+              <div className="space-y-6">
                 {[
-                  { plan: 'Free Plan', reset: 'Midnight UTC', text: 'Daily 5 credits reset. Each day starts fresh at 00:00 UTC.', dot: 'bg-primary' },
-                  { plan: 'Personal', reset: 'Monthly Cycle', text: '500 credits available instantly. No daily reset—use them as needed.', dot: 'bg-primary' },
-                  { plan: 'Teams', reset: 'Pooled Monthly', text: '800 credits/seat added to a shared team pool. Flexible firm-wide usage.', dot: 'bg-primary' },
-                  { plan: 'Enterprise', reset: 'Unlimited', text: 'Zero tracking. Zero caps. Dedicated high-performance lane.', dot: 'bg-green-600' }
+                  { plan: 'Free Plan', reset: 'Midnight UTC', text: 'Daily 5 credits reset. Each day starts fresh.', dot: 'text-black' },
+                  { plan: 'Personal', reset: 'Monthly Cycle', text: '500 credits available instantly. No daily reset.', dot: 'text-primary' },
+                  { plan: 'Teams', reset: 'Pooled Monthly', text: '800 credits/seat added to a shared team pool.', dot: 'text-black' },
+                  { plan: 'Enterprise', reset: 'Unlimited', text: 'Zero tracking. Zero caps. High-performance lane.', dot: 'text-primary' }
                 ].map((item, i) => (
-                  <div key={i} className={`flex items-start gap-8 group`}>
-                    <div className="w-1.5 h-16 rounded-full bg-primary/10 relative shrink-0 mt-1">
-                      <div className={`absolute top-0 left-0 w-full h-full ${item.dot} opacity-10 group-hover:opacity-100 transition-opacity rounded-full`} />
+                  <div key={i} className="flex items-start gap-4 group">
+                    <div className="mt-1">
+                      <Check className={`w-4 h-4 ${item.dot} stroke-[4px]`} />
                     </div>
                     <div>
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="text-[11px] font-black text-black uppercase tracking-widest">{item.plan}</span>
-                        <div className={`text-[9px] font-black px-2 py-0.5 rounded ${item.dot} bg-opacity-10 text-black border border-black/10`}>{item.reset}</div>
+                      <div className="flex items-center gap-3 mb-1">
+                        <span className={`text-[11px] font-black ${item.dot} uppercase tracking-widest`}>{item.plan}</span>
+                        <div className={`text-[9px] font-black px-2 py-0.5 border-2 border-black text-black uppercase`}>{item.reset}</div>
                       </div>
                       <p className="text-[14px] text-black font-medium leading-relaxed max-w-lg">{item.text}</p>
                     </div>
