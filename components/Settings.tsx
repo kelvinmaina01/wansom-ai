@@ -15,7 +15,14 @@ import {
   History,
   Sparkles,
   Plus,
-  Receipt
+  Receipt,
+  Plug,
+  RefreshCw,
+  Download,
+  Link,
+  UserPlus,
+  Zap,
+  Clock
 } from 'lucide-react';
 import { UserSettings } from '../types';
 import { supabase } from '../lib/supabase';
