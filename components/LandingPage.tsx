@@ -906,7 +906,7 @@ const FeatureCard = ({ icon, title, description, color }: { icon: React.ReactNod
 };
 
 const SolutionCard = ({ title, icon: Icon }: { title: string, icon: React.ElementType }) => (
-  <div className="p-8 rounded-3xl bg-white border border-white/10 hover:bg-primary transition-all duration-500 cursor-default group flex flex-col items-center gap-6 text-center shadow-xl hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-2">
+  <div className="p-8 rounded-3xl bg-white border border-slate-200 hover:bg-primary transition-all duration-500 cursor-default group flex flex-col items-center gap-6 text-center shadow-md hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-2">
     <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-white/20 group-hover:text-white transition-all duration-500 shadow-lg shadow-primary/5">
       <Icon className="w-8 h-8" />
     </div>
@@ -949,7 +949,7 @@ const AnimatedStatCard = ({ value, label }: { value: string, label: string }) =>
   }, [numericValue, isInView]);
 
   return (
-    <div ref={ref} className="p-8 rounded-3xl bg-white/5 border border-white/10 text-center hover:bg-white/10 transition-colors relative overflow-hidden group">
+    <div ref={ref} className="p-8 rounded-3xl bg-white border border-slate-200 text-center hover:border-primary/40 transition-all relative overflow-hidden group shadow-md">
       <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       <div className="text-4xl md:text-5xl font-black text-primary mb-2 tracking-tighter relative z-10 transition-transform duration-300 group-hover:scale-105">
         {numericValue > 0 ? count : ''}{numericValue > 0 ? suffix : value}
@@ -976,7 +976,7 @@ const SecurityItem = ({ icon, title, description, delay = 0 }: { icon: React.Rea
       ease: "easeInOut",
       delay: delay
     }}
-    className="flex gap-6 p-8 rounded-3xl bg-white/5 border border-white/10 hover:border-white/20 transition-all group cursor-pointer"
+    className="flex gap-6 p-8 rounded-3xl bg-white border border-slate-200 hover:border-primary/30 transition-all group cursor-pointer shadow-md hover:shadow-xl"
   >
     <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
       {icon}
