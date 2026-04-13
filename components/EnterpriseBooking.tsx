@@ -168,11 +168,11 @@ const EnterpriseBooking: React.FC = () => {
   // ── Success Screen ──
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center p-6" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #f1f5f9 1px, transparent 0)', backgroundSize: '40px 40px' }}>
+      <div className="min-h-screen bg-white bg-grid flex items-center justify-center p-6">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="relative z-10 max-w-xl w-full text-center p-12 bg-white border border-slate-200 rounded-[3rem] shadow-2xl"
+          className="relative z-10 max-w-xl w-full text-center p-12 bg-white border-2 border-black rounded-[3rem] shadow-2xl"
         >
           <div className="w-24 h-24 rounded-full bg-primary/10 border-2 border-primary flex items-center justify-center mx-auto mb-8 shadow-xl">
             <CheckCircle className="w-12 h-12 text-primary" />
@@ -198,7 +198,7 @@ const EnterpriseBooking: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white text-black font-sans overflow-x-hidden relative">
+    <div className="min-h-screen bg-white bg-grid text-black font-sans overflow-x-hidden relative">
       {/* Nav */}
       <nav className="relative z-20 border-b border-slate-100 bg-white/60 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -221,22 +221,22 @@ const EnterpriseBooking: React.FC = () => {
         </div>
       </nav>
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6 pt-16 pb-24">
-      <div className="relative z-10 max-w-5xl mx-auto px-6 pt-16 pb-24">
+      <div className="relative z-10 max-w-[1440px] mx-auto px-6 pt-16 pb-24">
         {/* Header */}
-        <div className="text-center mb-14">
-          <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-4 leading-tight text-slate-900">
+        <div className="text-center mb-16">
+          <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-4 leading-tight text-slate-900">
             Book Your Private<br />
-            <span className="text-primary">Lawlify Demo</span>
+            <span className="text-primary font-bold">Lawlify Demo</span>
           </h1>
           <p className="text-black text-xl font-medium max-w-2xl mx-auto">
             Get a live walkthrough tailored to your firm's workflow. Our legal AI consultants will show you exactly how Lawlify transforms your practice.
           </p>
         </div>
 
-        <div className="space-y-12">
-          {/* Info Cards Side-by-Side */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
+          
+          {/* Left Sidebar: Info Cards */}
+          <div className="lg:w-1/3 flex flex-col gap-6">
             <div className="p-8 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-center">
               <h3 className="font-black text-slate-900 mb-6 text-xl">What's Included</h3>
               <div className="space-y-3">
@@ -256,7 +256,7 @@ const EnterpriseBooking: React.FC = () => {
             </div>
 
             <div className="p-8 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-center items-center text-center">
-              <div className="w-20 h-20 rounded-2xl bg-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/20 mb-6">
+              <div className="w-20 h-20 rounded-2xl bg-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/20 mb-6 font-bold">
                 <Scale className="w-10 h-10 text-white" />
               </div>
               <div>
@@ -286,8 +286,9 @@ const EnterpriseBooking: React.FC = () => {
             </div>
           </div>
 
-          <div className="w-full">
-            <div className="p-10 rounded-2xl bg-white border border-slate-200 shadow-xl relative overflow-hidden">
+          {/* Right: Booking Card */}
+          <div className="lg:w-2/3 w-full">
+            <div className="p-10 rounded-[2.5rem] bg-white border-2 border-black shadow-2xl relative overflow-hidden">
               
               <StepIndicator current={step} />
 
@@ -314,9 +315,9 @@ const EnterpriseBooking: React.FC = () => {
                       </button>
                     </div>
 
-                    <div className="border border-slate-200 rounded-[2rem] overflow-hidden bg-white shadow-sm">
+                    <div className="border border-slate-300 rounded-[2.5rem] overflow-hidden bg-white shadow-sm">
                       {/* Day headers */}
-                      <div className="grid grid-cols-7 border-b border-slate-100 bg-slate-50/50">
+                      <div className="grid grid-cols-7 border-b border-slate-200 bg-slate-50/50">
                         {DAYS_OF_WEEK.map(d => (
                           <div key={d} className="text-center text-[11px] font-black text-black uppercase tracking-widest py-4">
                             {d}
@@ -326,7 +327,7 @@ const EnterpriseBooking: React.FC = () => {
 
                       {/* Day grid */}
                       <div className="grid grid-cols-7">
-                        {Array.from({ length: firstDay }).map((_, i) => <div key={`empty-${i}`} className="bg-slate-50/30 border-r border-b border-slate-100 h-24" />)}
+                        {Array.from({ length: firstDay }).map((_, i) => <div key={`empty-${i}`} className="bg-slate-50/30 border-r border-b border-slate-200 h-24" />)}
 
                         {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => {
                           const unavailable = isWeekend(day) || isPast(day);
@@ -339,7 +340,7 @@ const EnterpriseBooking: React.FC = () => {
                               disabled={unavailable}
                               className={`
                                 h-24 flex flex-col items-center justify-center text-lg font-bold transition-all relative
-                                border-r border-b border-slate-100
+                                border-r border-b border-slate-300
                                 ${selected
                                   ? 'bg-primary text-white shadow-inner z-10'
                                   : unavailable
@@ -355,7 +356,7 @@ const EnterpriseBooking: React.FC = () => {
                             </button>
                           );
                         })}
-                        {Array.from({ length: (7 - ((firstDay + daysInMonth) % 7)) % 7 }).map((_, i) => <div key={`empty-end-${i}`} className="bg-white border-b border-slate-100 h-24" />)}
+                        {Array.from({ length: (7 - ((firstDay + daysInMonth) % 7)) % 7 }).map((_, i) => <div key={`empty-end-${i}`} className="bg-white border-b border-slate-200 h-24" />)}
                       </div>
                     </div>
 
@@ -503,7 +504,6 @@ const EnterpriseBooking: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
       </div>
     </div>
   );

@@ -142,7 +142,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
   };
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-primary/30">
+    <div className="min-h-screen bg-white bg-grid text-slate-900 font-sans selection:bg-primary/30">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">

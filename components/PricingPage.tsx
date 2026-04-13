@@ -118,7 +118,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
   };
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-primary/30 overflow-x-hidden pb-24 relative">
+    <div className="min-h-screen bg-white bg-grid text-slate-900 font-sans selection:bg-primary/30 overflow-x-hidden pb-24 relative">
       { !isCheckout && (
         <>
       {/* Navigation */}
