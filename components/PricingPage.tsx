@@ -40,11 +40,10 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
 
   const navigate = useNavigate();
 
-  const openModal = (amt?: number, price?: number) => {
-      setSelAmt(amt);
-      setSelPrice(price);
-    }
-    setModalOpen(true);
+  const openCheckout = (amt?: number, price?: number) => {
+    setSelAmt(amt || 150);
+    setSelPrice(price || 5);
+    setIsCheckout(true);
   };
 
   const handleBuyCredits = () => {
@@ -53,7 +52,6 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
       sub: `Your ${selAmt.toLocaleString()} credits are ready to use. They never expire.`,
       added: `+${selAmt.toLocaleString()}`
     });
-    setModalOpen(false);
     setShowSuccess(true);
   };
 
@@ -63,7 +61,6 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
       sub: `You now have ${credits.toLocaleString()} credits/month. No daily reset — use them any time during your billing cycle.`,
       added: credits.toLocaleString()
     });
-    setModalOpen(false);
     setShowSuccess(true);
   };
 
@@ -375,20 +372,11 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
         </div>
       </div>
 
-        {/* BUY CREDITS SECTION - PIXEL PERFECT REPLICATION */}
+        {/* BUY CREDITS SECTION */}
         <div className="py-24 max-w-[1550px] mx-auto px-10 relative z-10">
-          <div className="text-left mb-10">
+          <div className="text-center mb-16">
             <h2 className="text-4xl font-black text-slate-900 mb-3 tracking-tight">Need more credits? Top up anytime.</h2>
-            <p className="text-slate-500 font-medium text-lg">Works on any plan. Top-up credits are consumed first and never expire.</p>
-          </div>
-
-          <div className="bg-orange-50/50 border border-orange-200/60 rounded-2xl p-6 mb-12 flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-white border border-orange-200 flex items-center justify-center shrink-0 shadow-sm">
-               <Info className="w-5 h-5 text-orange-600" />
-            </div>
-            <p className="text-sm text-orange-900 leading-relaxed font-medium">
-              Top-up credits are consumed <span className="font-black">first</span> before your plan credits. They never expire — carry over month to month.
-            </p>
+            <p className="text-primary font-black text-lg uppercase tracking-widest text-sm">Works on any plan. Top-up credits are consumed first and never expire.</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -413,7 +401,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
                 </div>
 
                 <button 
-                  onClick={() => openModal(parseInt(item.amt.replace(',','')), parseInt(item.price))}
+                  onClick={() => openCheckout(parseInt(item.amt.replace(',','')), parseInt(item.price))}
                   className="w-full py-4 bg-slate-900 text-white rounded-xl font-black text-[11px] uppercase tracking-widest hover:bg-black transition-all shadow-lg shadow-slate-200"
                 >
                   Buy {item.amt} credits
@@ -423,14 +411,12 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
           </div>
         </div>
 
-        {/* CREDIT USAGE INFO section */}
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           className="max-w-[1550px] mx-auto mb-24 relative z-10"
         >
-          <div className="bg-slate-50 border border-slate-200 rounded-[3rem] p-12 lg:p-16 relative overflow-hidden group hover:border-primary/20 transition-all duration-500 shadow-sm">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 rounded-full blur-[100px] pointer-events-none group-hover:bg-primary/10 transition-all" />
+          <div className="bg-white border border-slate-200 rounded-[3rem] p-12 lg:p-16 relative overflow-hidden group hover:border-primary/20 transition-all duration-500 shadow-sm">
           
           <div className="flex flex-col md:flex-row items-start justify-between gap-8 mb-12">
             <div className="flex items-center gap-5">
@@ -480,7 +466,6 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
 
       {/* SUPPORTING EDUCATION SECTION (90% Rules) */}
       <div className="py-24 border-t border-slate-200 relative">
-        <div className="absolute inset-0 bg-primary/5 blur-[120px] pointer-events-none" />
         <div className="max-w-6xl mx-auto px-6 relative z-10">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary font-black text-[10px] uppercase tracking-[0.2em] mb-6 border border-primary/20">
@@ -528,8 +513,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
             </div>
 
             {/* Right: Verification Card */}
-            <div className="lg:w-[440px] bg-slate-50 p-12 lg:p-16 flex flex-col justify-center border-l border-slate-200 relative">
-              <div className="absolute top-0 right-0 w-48 h-48 bg-primary/20 blur-[60px] rounded-full pointer-events-none" />
+            <div className="lg:w-[440px] bg-white p-12 lg:p-16 flex flex-col justify-center border-l border-slate-200 relative">
               
               <div className="mb-8">
                 <div className="flex items-baseline gap-2 mb-2">
@@ -699,8 +683,8 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
       </>
       )}
 
-      {isCheckout && (
-        <div className="min-h-screen bg-white text-slate-900 pt-32 pb-24 relative z-[100]">
+      {isCheckout && !showSuccess && (
+        <div className="min-h-screen bg-white text-slate-900 pt-32 pb-24 relative">
           <div className="max-w-[1550px] mx-auto px-10">
             <div className="flex items-center justify-between mb-16">
               <button 
@@ -811,38 +795,44 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack, onGetStarted }) => {
             </div>
           </div>
         </div>
+      </div>
       )}
 
-      {/* PURCHASE SUCCESS MODAL */}
-      <AnimatePresence>
-        {showSuccess && (
-          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-white/80 backdrop-blur-3xl" />
-            <motion.div 
-               initial={{ scale: 0.9, opacity: 0 }} 
-               animate={{ scale: 1, opacity: 1 }}
-               exit={{ scale: 0.9, opacity: 0 }}
-               className="relative bg-white border border-slate-200 rounded-[3rem] p-12 w-[420px] text-center shadow-2xl"
-            >
-               <div className="w-20 h-20 rounded-full bg-green-500/10 border-2 border-green-500/30 flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-green-500/10">
-                 <Check className="w-10 h-10 text-green-500" strokeWidth={3} />
-               </div>
-               <h2 className="text-2xl font-black text-slate-900 mb-4">{successData.title}</h2>
-               <p className="text-gray-500 text-sm font-medium leading-relaxed mb-8">{successData.sub}</p>
-               <div className="text-5xl font-black text-green-500 mb-2">{successData.added}</div>
-               <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-10">credits added to your account</div>
-               <button 
-                onClick={() => setShowSuccess(false)}
-                className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-[12px] hover:bg-black transition-all"
-               >
-                 Continue working →
-               </button>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      {showSuccess && (
+        <div className="min-h-screen bg-white flex items-center justify-center p-6 pb-24">
+          <motion.div 
+            initial={{ scale: 0.95, opacity: 0 }} 
+            animate={{ scale: 1, opacity: 1 }}
+            className="max-w-xl w-full text-center p-12 bg-white border border-slate-200 rounded-[3rem] shadow-sm"
+          >
+            <div className="w-24 h-24 rounded-full bg-green-500/10 border-2 border-green-500/30 flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-green-500/10">
+              <Check className="w-12 h-12 text-green-500" strokeWidth={3} />
+            </div>
+            <h2 className="text-3xl font-black text-slate-900 mb-4">{successData.title}</h2>
+            <p className="text-black text-lg font-medium leading-relaxed mb-8">{successData.sub}</p>
+            <div className="text-6xl font-black text-primary mb-2 tracking-tighter">{successData.added}</div>
+            <div className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-12">Credits updated successfully</div>
+            
+            <div className="space-y-4">
+              <button 
+                onClick={() => {setShowSuccess(false); setIsCheckout(false)}}
+                className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-[13px] hover:bg-black transition-all shadow-xl shadow-slate-200"
+              >
+                Return to Dashboard →
+              </button>
+              <button 
+                onClick={onBack}
+                className="w-full py-4 bg-white text-slate-400 border border-slate-200 rounded-2xl font-bold uppercase tracking-widest text-[11px] hover:text-black hover:border-black transition-all"
+              >
+                Back to Home
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default PricingPage;
+

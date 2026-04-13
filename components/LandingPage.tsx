@@ -142,7 +142,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
   };
 
   return (
-    <div className="min-h-screen bg-ai-studio text-slate-900 font-sans selection:bg-primary/30">
+    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-primary/30">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -178,7 +178,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
        {/* Hero Section */}
       <section className="relative pt-40 pb-20 px-6 overflow-hidden">
         <div className="max-w-7xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/20 text-[10px] font-bold tracking-widest uppercase text-primary mb-8 animate-fade-in">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200 text-[10px] font-bold tracking-widest uppercase text-primary mb-8 animate-fade-in">
             <Scale className="w-3 h-3" />
             Next-Gen Legal Intelligence for East Africa
           </div>
@@ -210,8 +210,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
 
           {/* Dashboard Preview Mockup */}
           <div className="mt-24 relative max-w-6xl mx-auto">
-            <div className="relative bg-white rounded-[2.5rem] border border-slate-200 shadow-2xl overflow-hidden aspect-[16/10] group">
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-200/20 pointer-events-none"></div>
+            <div className="relative bg-white rounded-2xl border border-slate-200 shadow-2xl overflow-hidden aspect-[16/10] group">
               <img
                 src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=2070&auto=format&fit=crop"
                 alt="Lawlify Professional Dashboard"
@@ -241,8 +240,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
         </div>
       </section>
 
-      {/* Adopted By Section - Enhanced for Visibility */}
-      <section className="py-16 border-y border-slate-200 bg-slate-50 overflow-hidden relative z-20">
+      {/* Adopted By Section */}
+      <section className="py-16 border-y border-slate-200 bg-white overflow-hidden relative z-20">
         <div className="max-w-7xl mx-auto px-6 mb-10">
           <p className="text-center text-xs font-black tracking-[0.3em] uppercase text-black">
             Trusted by leading legal minds across Africa
@@ -276,10 +275,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
       </section>
 
       {/* Features Grid - Redesigned to Fly.io Style (Single Card) */}
-      <section id="features" className="py-32 px-6 bg-ai-studio relative overflow-hidden">
+      <section id="features" className="py-32 px-6 bg-white relative overflow-hidden">
         <div className="max-w-[1400px] mx-auto px-4">
-          <div className="relative p-10 md:p-16 rounded-[2.5rem] bg-slate-50 border border-slate-200 overflow-visible group shadow-xl">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 blur-[120px] rounded-full pointer-events-none group-hover:bg-primary/10 transition-all duration-700"></div>
+          <div className="relative p-10 md:p-16 rounded-2xl bg-white border border-slate-200 overflow-visible group shadow-xl">
             
             <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
               {/* Left Side: Text Content */}
@@ -339,8 +337,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
       </section>
 
       {/* Solutions Section */}
-      {/* Solutions Section */}
-      <section id="solutions" className="py-32 px-6 bg-slate-50/50 border-y border-slate-200">
+      <section id="solutions" className="py-32 px-6 bg-white border-y border-slate-200">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
             <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-6 text-slate-900">Solutions for every practice.</h2>
@@ -386,11 +383,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
       </section>
 
        {/* Security Section */}
-      <section id="security" className="py-32 px-6 bg-slate-50 border-t border-slate-200">
+      <section id="security" className="py-32 px-6 bg-white border-t border-slate-200">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-bold tracking-widest uppercase text-primary mb-8">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200 text-[10px] font-bold tracking-widest uppercase text-primary mb-8">
                 <ShieldCheck className="w-3 h-3" />
                 Enterprise-Grade Security
               </div>
@@ -480,10 +477,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
 
       {/* Education Support Section */}
       <section className="relative py-24 px-6 border-t border-slate-200 bg-white">
-        <div className="absolute inset-0 bg-primary/5 blur-[100px] pointer-events-none"></div>
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/5 rounded-full text-primary font-bold text-[10px] uppercase tracking-widest mb-6 border border-primary/20">
+            <div className="inline-flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-full text-primary font-bold text-[10px] uppercase tracking-widest mb-6">
               <Heart className="w-3 h-3" />
               <span>Supporting Education</span>
             </div>
@@ -493,7 +489,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
             </p>
           </div>
 
-          <div className="bg-slate-50 p-2 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-200 flex flex-col md:flex-row overflow-hidden">
+          <div className="bg-white p-2 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-200 flex flex-col md:flex-row overflow-hidden">
             {/* Left Panel: Discounts List */}
             <div className="flex-1 p-10 space-y-8">
               <div className="flex gap-6 group">
@@ -528,8 +524,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
             </div>
 
             {/* Right Panel: Verification Card */}
-            <div className="w-full md:w-[400px] bg-white rounded-[2rem] p-10 flex flex-col justify-center border border-slate-200 relative overflow-hidden shadow-xl">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-[50px] rounded-full pointer-events-none"></div>
+            <div className="w-full md:w-[400px] bg-white rounded-2xl p-10 flex flex-col justify-center border border-slate-200 relative overflow-hidden shadow-xl">
 
               <div className="mb-6 relative z-10">
                 <div className="flex items-baseline gap-2">
@@ -561,10 +556,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
       </section>
 
       {/* Enterprise Section */}
-      <section className="py-32 px-6 bg-slate-50 border-y border-slate-200">
+      <section className="py-32 px-6 bg-white border-y border-slate-200">
         <div className="max-w-7xl mx-auto">
-          <div className="p-12 md:p-20 rounded-[3rem] bg-slate-900 border border-white/10 relative overflow-hidden group shadow-2xl">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-primary/20 blur-[120px] rounded-full pointer-events-none group-hover:bg-primary/30 transition-all duration-700"></div>
+          <div className="p-12 md:p-20 rounded-2xl bg-slate-900 border border-white/10 relative overflow-hidden group shadow-2xl">
             
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div>
@@ -732,8 +726,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPricingClick })
           </div>
 
           <div className="w-full md:w-[420px] shrink-0">
-            <div className="bg-[#111111] border border-white/10 rounded-[2.5rem] p-12 text-center relative group overflow-hidden shadow-2xl">
-              <div className="absolute inset-0 bg-primary/5 blur-[100px] rounded-full pointer-events-none group-hover:bg-primary/10 transition-all duration-700"></div>
+            <div className="bg-[#111111] border border-white/10 rounded-2xl p-12 text-center relative group overflow-hidden shadow-2xl">
               <div className="w-20 h-20 bg-primary rounded-[1.5rem] flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-primary/30 relative z-10">
                 <Scale className="w-10 h-10 text-white" />
               </div>

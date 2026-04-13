@@ -198,7 +198,7 @@ const EnterpriseBooking: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white text-black font-sans overflow-x-hidden relative" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #f1f5f9 1px, transparent 0)', backgroundSize: '40px 40px' }}>
+    <div className="min-h-screen bg-white text-black font-sans overflow-x-hidden relative">
       {/* Nav */}
       <nav className="relative z-20 border-b border-slate-100 bg-white/60 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -235,19 +235,19 @@ const EnterpriseBooking: React.FC = () => {
         </div>
 
         <div className="space-y-12">
-          {/* Horizontal Info Strips */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-8 rounded-[2.5rem] bg-white border border-slate-200 shadow-sm flex flex-col justify-center">
+          {/* Info Cards Side-by-Side */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="p-8 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-center">
               <h3 className="font-black text-slate-900 mb-6 text-xl">What's Included</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-3">
                 {[
                   { icon: Sparkles, label: '45-min live AI demonstration', color: 'text-primary' },
-                  { icon: Shield, label: 'Security & compliance walkthrough', color: 'text-blue-500' },
-                  { icon: Zap, label: 'Custom workflow mapping', color: 'text-orange-500' },
-                  { icon: Globe, label: 'Jurisdiction-specific legal tools', color: 'text-green-600' },
-                  { icon: Users, label: 'Team onboarding roadmap', color: 'text-purple-600' },
+                  { icon: Shield, label: 'Security & compliance walkthrough', color: 'text-primary' },
+                  { icon: Zap, label: 'Custom workflow mapping', color: 'text-primary' },
+                  { icon: Globe, label: 'Jurisdiction-specific legal tools', color: 'text-primary' },
+                  { icon: Users, label: 'Team onboarding roadmap', color: 'text-primary' },
                 ].map(({ icon: Icon, label, color }, i) => (
-                  <div key={i} className="flex items-center gap-3 text-sm font-bold text-black">
+                  <div key={i} className="flex items-center gap-3 text-[13px] font-bold text-black">
                     <Icon className={`w-4 h-4 shrink-0 ${color}`} strokeWidth={3} />
                     {label}
                   </div>
@@ -255,41 +255,39 @@ const EnterpriseBooking: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex flex-col gap-6">
-              <div className="p-8 rounded-[2.5rem] bg-primary/5 border border-primary/10 flex items-center justify-between">
-                <div className="flex items-center gap-6">
-                  <div className="w-16 h-16 rounded-3xl bg-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/20">
-                    <Scale className="w-8 h-8 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-black text-slate-900 text-lg mb-0.5">Hosted by</p>
-                    <p className="text-black text-sm font-bold">Lawlify Legal AI Team</p>
-                    <p className="text-primary text-[10px] font-black mt-1 uppercase tracking-[0.2em]">Enterprise Specialists</p>
-                  </div>
+            <div className="p-8 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-center items-center text-center">
+              <div className="w-20 h-20 rounded-2xl bg-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/20 mb-6">
+                <Scale className="w-10 h-10 text-white" />
+              </div>
+              <div>
+                <p className="font-black text-slate-900 text-xl mb-1">Hosted by</p>
+                <p className="text-black text-sm font-bold">Lawlify Legal AI Team</p>
+                <div className="mt-2 inline-block px-3 py-1 bg-primary/10 rounded-full">
+                  <p className="text-primary text-[10px] font-black uppercase tracking-[0.2em]">Enterprise Specialists</p>
                 </div>
               </div>
+            </div>
 
-              <div className="p-8 rounded-[2.5rem] bg-slate-50 border border-slate-200 flex items-center justify-between">
-                 <div>
-                    <h3 className="font-black text-slate-900 text-lg mb-1">Prefer to talk right now?</h3>
-                    <p className="text-black text-sm font-medium">Speak directly with our Enterprise Team.</p>
-                 </div>
-                 <div className="flex items-center gap-3">
-                    <a href="tel:+254200000000" className="w-12 h-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-black hover:text-primary transition-all shadow-sm">
-                      <Phone className="w-5 h-5" />
-                    </a>
-                    <a href="https://wa.me/254700000000" target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-2xl bg-[#25D366]/10 border border-[#25D366]/20 flex items-center justify-center text-[#25D366] hover:bg-[#25D366]/20 transition-all shadow-sm">
-                      <MessageCircle className="w-5 h-5" />
-                    </a>
-                 </div>
-              </div>
+            <div className="p-8 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-center">
+               <div className="mb-6">
+                  <h3 className="font-black text-slate-900 text-xl mb-1">Prefer to talk right now?</h3>
+                  <p className="text-black text-sm font-medium">Speak directly with our Enterprise Team.</p>
+               </div>
+               <div className="flex flex-col gap-3">
+                  <a href="tel:+254200000000" className="w-full h-14 rounded-xl bg-white border border-slate-200 flex items-center justify-center gap-3 text-black font-black uppercase text-[11px] tracking-widest hover:text-primary hover:border-primary transition-all shadow-sm">
+                    <Phone className="w-4 h-4" />
+                    Call Sales
+                  </a>
+                  <a href="https://wa.me/254700000000" target="_blank" rel="noopener noreferrer" className="w-full h-14 rounded-xl bg-white border border-slate-200 flex items-center justify-center gap-3 text-black font-black uppercase text-[11px] tracking-widest hover:text-[#25D366] hover:border-[#25D366] transition-all shadow-sm">
+                    <MessageCircle className="w-4 h-4" />
+                    WhatsApp
+                  </a>
+               </div>
             </div>
           </div>
 
-          {/* Booking Widget (Stretched) */}
           <div className="w-full">
-            <div className="p-10 rounded-[3rem] bg-white border border-slate-200 shadow-xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-slate-50 rounded-full blur-[80px] -mr-32 -mt-32 pointer-events-none" />
+            <div className="p-10 rounded-2xl bg-white border border-slate-200 shadow-xl relative overflow-hidden">
               
               <StepIndicator current={step} />
 
@@ -345,7 +343,7 @@ const EnterpriseBooking: React.FC = () => {
                                 ${selected
                                   ? 'bg-primary text-white shadow-inner z-10'
                                   : unavailable
-                                    ? 'bg-slate-50/50 text-slate-300 cursor-not-allowed'
+                                    ? 'bg-white text-slate-400/20 cursor-not-allowed'
                                     : 'bg-white text-slate-900 hover:bg-primary/5 hover:text-primary cursor-pointer'
                                 }
                               `}
@@ -357,7 +355,7 @@ const EnterpriseBooking: React.FC = () => {
                             </button>
                           );
                         })}
-                        {Array.from({ length: (7 - ((firstDay + daysInMonth) % 7)) % 7 }).map((_, i) => <div key={`empty-end-${i}`} className="bg-slate-50/30 border-b border-slate-100 h-24" />)}
+                        {Array.from({ length: (7 - ((firstDay + daysInMonth) % 7)) % 7 }).map((_, i) => <div key={`empty-end-${i}`} className="bg-white border-b border-slate-100 h-24" />)}
                       </div>
                     </div>
 
