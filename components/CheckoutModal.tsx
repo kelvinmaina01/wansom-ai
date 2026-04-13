@@ -119,7 +119,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.93, opacity: 0, y: 14 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative w-[640px] max-w-[96vw] bg-white rounded-3xl overflow-hidden shadow-2xl"
+          className="relative w-[96vw] md:w-[60vw] lg:w-[50vw] max-w-[1200px] bg-white rounded-3xl overflow-hidden shadow-2xl"
           style={{ boxShadow: '0 32px 80px rgba(0,0,0,.2), 0 0 0 1px rgba(0,0,0,.04)' }}
         >
           {/* ── HEADER ── */}
@@ -134,7 +134,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 </div>
                 <span className="text-xl font-bold tracking-tighter text-white">Lawlify AI</span>
               </div>
-              <div className="text-[9px] font-bold bg-white/8 border border-white/12 text-white/40 px-2 py-0.5 rounded-full tracking-wide uppercase">
+              <div className="text-[10px] font-black bg-white/10 border border-white/20 text-white/60 px-3 py-1 rounded-full tracking-wider uppercase mr-8">
                 Secured by Paystack
               </div>
             </div>
@@ -356,7 +356,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   {checkout.paymentMethod === 'mobile_money' && (
                     <div className="mb-6">
                       <div className="text-[12px] font-black text-slate-800 mb-3 uppercase tracking-wider">Select your provider</div>
-                      <div className="space-y-3 mb-5">
+                      <div className="grid grid-cols-2 gap-3 mb-5">
                         {[
                           { key: 'mpesa', flag: '🇰🇪', name: 'M-Pesa', sub: 'Safaricom · Kenya', color: '#00a650' },
                           { key: 'mtn', flag: '🇺🇬', name: 'MTN Mobile Money', sub: 'MTN · Uganda', color: '#ff6600' },
@@ -371,7 +371,13 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                                 : 'border-slate-200 hover:border-primary hover:bg-slate-50'
                             }`}
                           >
-                            <div className="w-10 h-10 rounded-lg flex items-center justify-center text-xl flex-shrink-0" style={{ background: p.color }}>{p.flag}</div>
+                            <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-white border border-slate-100 p-1 flex-shrink-0">
+                              <img 
+                                src={p.key === 'mpesa' ? "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/M-PESA_logo-01.svg/512px-M-PESA_logo-01.svg.png" : p.key === 'mtn' ? "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/MTN_Logo.svg/512px-MTN_Logo.svg.png" : "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Airtel_logo.svg/512px-Airtel_logo.svg.png"} 
+                                alt={p.name} 
+                                className="w-full h-full object-contain"
+                              />
+                            </div>
                             <div className="flex-1 min-w-0">
                               <div className="text-sm font-extrabold text-slate-900">{p.name}</div>
                               <div className="text-[11px] font-medium text-slate-500 mt-0.5">{p.sub}</div>
@@ -582,9 +588,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
           {checkout.step !== 'processing' && (
             <button
               onClick={handleClose}
-              className="absolute top-4 right-4 p-2 text-white/30 hover:text-white/70 transition-colors rounded-full hover:bg-white/10 z-20"
+              className="absolute top-6 right-6 p-2.5 text-white/40 hover:text-white transition-all rounded-full hover:bg-white/10 z-30"
             >
-              <X className="w-5 h-5" />
+              <X className="w-6 h-6" />
             </button>
           )}
         </motion.div>

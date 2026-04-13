@@ -62,7 +62,7 @@ const PaymentSimulationModal: React.FC<PaymentSimulationModalProps> = ({
           initial={{ scale: 0.9, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
-          className="relative w-full max-w-2xl bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row"
+          className="relative w-[96vw] md:w-[70vw] lg:w-[50vw] max-w-[1200px] bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row"
         >
           {/* Left Panel (Summary) */}
           <div className="w-full md:w-[220px] bg-[#011b33] text-white p-8 flex flex-col justify-between border-b md:border-b-0 md:border-r border-white/10 relative overflow-hidden">
@@ -99,8 +99,8 @@ const PaymentSimulationModal: React.FC<PaymentSimulationModalProps> = ({
 
             {step === 'method' && (
               <div className="flex-1 flex flex-col">
-                <h3 className="text-xl font-black mb-8 text-[#011b33]">Choose payment method</h3>
-                <div className="space-y-4">
+                <h3 className="text-2xl font-black mb-8 text-[#011b33]">Choose payment method</h3>
+                <div className="grid grid-cols-2 gap-4">
                    <button 
                      onClick={() => setStep('card')}
                      className="w-full flex items-center justify-between p-5 bg-gray-50 border-2 border-gray-100 rounded-xl hover:border-blue-500 transition-all group"
@@ -138,7 +138,7 @@ const PaymentSimulationModal: React.FC<PaymentSimulationModalProps> = ({
                   <ArrowLeft className="w-4 h-4" />
                   Change payment method
                 </button>
-                <h3 className="text-xl font-black mb-8 text-[#011b33]">Enter your card details</h3>
+                <h3 className="text-2xl font-black mb-8 text-[#011b33]">Enter card details</h3>
                 
                 <div className="space-y-6">
                    <div>
