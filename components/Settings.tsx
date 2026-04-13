@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   User,
   Bell,
@@ -22,7 +22,12 @@ import {
   Link,
   UserPlus,
   Zap,
-  Clock
+  Clock,
+  X,
+  ArrowLeft,
+  CheckCircle2,
+  AlertCircle,
+  BookOpen
 } from 'lucide-react';
 import { UserSettings } from '../types';
 import { supabase } from '../lib/supabase';
@@ -109,6 +114,7 @@ const Settings: React.FC = () => {
   const [checkoutPlanKey, setCheckoutPlanKey] = useState('personal');
   const [transactions, setTransactions] = useState<any[]>([]);
   const [activeToast, setActiveToast] = useState<{ title: string; message: string } | null>(null);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   const fetchSettings = async () => {
     setIsLoading(true);
@@ -949,18 +955,35 @@ const Settings: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Simulated Billing Modal */}
-      <PaymentSimulationModal 
-        isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
-        onSuccess={() => {
-          showToast('Payment Method Added', 'Successfully updated your billing credentials.');
-          setSettings(prev => ({ ...prev, billing: { ...prev.billing, plan: 'Pro' } }));
-        }}
-        amount={49000}
-        currency="NGN"
-        email={settings.profile.email || "user@lawlify.ai"}
-      />
+    </div>
+  );
+};
+
+// Simple Internal Mock for missing component to prevent crash
+const PaymentSimulationModal: React.FC<any> = ({ isOpen, onClose, onSuccess, amount, currency, email }) => {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl text-center"
+      >
+        <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+          <CreditCard className="w-8 h-8" />
+        </div>
+        <h3 className="text-xl font-bold text-black mb-2">Simulated Payment</h3>
+        <p className="text-sm text-gray-400 mb-8">Processing payment for <span className="text-black font-bold">{email}</span></p>
+        <div className="flex gap-4">
+          <button onClick={onClose} className="flex-1 py-3 text-sm font-bold text-gray-500 hover:text-black transition-colors">Cancel</button>
+          <button 
+            onClick={() => { onSuccess(); onClose(); }}
+            className="flex-1 py-3 bg-black text-white rounded-xl text-sm font-bold shadow-lg"
+          >
+            Confirm
+          </button>
+        </div>
+      </motion.div>
     </div>
   );
 };
