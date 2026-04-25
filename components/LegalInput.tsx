@@ -244,9 +244,9 @@ const LegalInput: React.FC<LegalInputProps> = ({
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   key={item.id} 
-                  className="w-6 h-6 rounded-full border border-black bg-red-600 p-1 shadow-sm active-tunnel-glow"
+                  className="w-6 h-6 rounded-full border border-gray-100 bg-white p-1 shadow-sm active-tunnel-glow"
                 >
-                  <img src={item.icon} alt="" className="w-full h-full object-contain brightness-0 invert" />
+                  <img src={item.icon} alt="" className="w-full h-full object-contain" />
                 </motion.div>
               ))}
             </div>
@@ -522,7 +522,7 @@ const LegalInput: React.FC<LegalInputProps> = ({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="-mt-[2px] mx-0 bg-white border-2 border-t-0 border-[#F0F0F0] hover:border-red-200 rounded-b-[2.5rem] p-5 px-10 flex items-center justify-between relative z-0 transition-colors duration-500 group backdrop-blur-none"
+            className="-mt-[2px] mx-0 border-2 border-t-0 border-[#F0F0F0] hover:border-red-200 rounded-b-[2.5rem] p-5 px-10 flex items-center justify-between relative z-0 transition-colors duration-500 group backdrop-blur-none"
           >
             <div 
                className="flex items-center gap-6 hover:opacity-70 transition-opacity cursor-pointer flex-1"
@@ -551,15 +551,15 @@ const LegalInput: React.FC<LegalInputProps> = ({
                  {allIntegrations.slice(0, 4).map((item, idx) => (
                    <motion.div 
                      key={item.id} 
-                     className="w-11 h-11 rounded-full border-[3px] border-black bg-red-600 flex items-center justify-center p-2 shadow-xl relative transition-transform hover:scale-110 hover:z-20"
+                     className="w-11 h-11 rounded-full border-[3px] border-gray-100 bg-white flex items-center justify-center p-2 shadow-xl relative transition-transform hover:scale-110 hover:z-20"
                      style={{ zIndex: idx === 0 ? 40 : idx === 1 ? 30 : idx === 2 ? 20 : 10 }}
                      title={`Connect ${item.name}`}
                    >
-                     <img src={item.icon} alt="" className="w-full h-full object-contain brightness-0 invert" />
+                     <img src={item.icon} alt="" className="w-full h-full object-contain" />
                    </motion.div>
                  ))}
                  {allIntegrations.length > 4 && (
-                   <div className="w-11 h-11 rounded-full border-[3px] border-black bg-red-600 flex items-center justify-center text-[10px] font-black text-white shadow-xl relative z-0">
+                   <div className="w-11 h-11 rounded-full border-[3px] border-gray-100 bg-white flex items-center justify-center text-[10px] font-black text-black shadow-xl relative z-0">
                      + {allIntegrations.length - 4}
                    </div>
                  )}

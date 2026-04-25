@@ -171,10 +171,12 @@ const LegalResponse: React.FC<LegalResponseProps> = ({
 
         {/* 4. Streaming Text Content */}
         {message.content && (
-          <StreamingText
-            content={message.content}
-            isStreaming={!!message.isGenerating}
-          />
+          <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 mb-4 animate-in fade-in slide-in-from-bottom-2">
+            <StreamingText
+              content={message.content}
+              isStreaming={!!message.isGenerating}
+            />
+          </div>
         )}
 
         {/* 5. Answer Cards */}
