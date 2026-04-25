@@ -63,7 +63,7 @@ h1,h2,h3,h4,h5,h6 { font-family: var(--font); color: inherit; }
 
 /* ── DOTS BACKGROUND ── */
 .bg-dots {
-  background-image: radial-gradient(#ef4444 1px, transparent 1px);
+  /* background-image: radial-gradient(#ef4444 1px, transparent 1px); */
   background-size: 24px 24px;
 }
 

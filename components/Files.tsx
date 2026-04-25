@@ -389,7 +389,7 @@ const Files: React.FC = () => {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto bg-[#fafafa] bg-dots p-8 h-full">
+    <div className="flex-1 overflow-y-auto bg-white bg-dots p-8 h-full">
       <div className="max-w-7xl mx-auto space-y-8">
 
         {/* Header & Overview */}

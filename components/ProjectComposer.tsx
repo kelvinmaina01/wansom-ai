@@ -245,7 +245,7 @@ const ProjectComposer: React.FC = () => {
   const activeConnectors = ALL_CONNECTORS.filter(c => connectedIds.has(c.id));
 
   return (
-    <div className="flex-1 bg-[#FAFAFA] bg-dots flex flex-col h-full relative overflow-hidden">
+    <div className="flex-1 bg-white bg-dots flex flex-col h-full relative overflow-hidden">
 
       {/* Sidebar */}
       <div className="absolute left-0 top-0 bottom-0 w-80 bg-[#F5F5EE] border-r border-gray-200/50 p-12 hidden lg:flex flex-col">

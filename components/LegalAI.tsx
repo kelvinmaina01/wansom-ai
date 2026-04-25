@@ -720,7 +720,7 @@ const LegalAI: React.FC<LegalAIProps> = ({
   }, [messages.length, messages[messages.length - 1]?.content, thoughts.length, scrollToBottom]);
 
   const renderActiveChats = () => (
-    <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative bg-[#fafafa]/80 backdrop-blur-xl bg-dots no-scrollbar">
+    <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative bg-white backdrop-blur-xl bg-dots no-scrollbar">
       {/* Mode Toggle Button Moved to LegalInput */}
 
         <div 
@@ -1026,7 +1026,7 @@ const LegalAI: React.FC<LegalAIProps> = ({
   );
 
   const renderSavedPrompts = () => (
-    <div className="flex-1 p-8 overflow-y-auto no-scrollbar bg-[#fafafa] bg-dots">
+    <div className="flex-1 p-8 overflow-y-auto no-scrollbar bg-white bg-dots">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-12">
           <div>
@@ -1079,7 +1079,7 @@ const LegalAI: React.FC<LegalAIProps> = ({
   );
 
   const renderPersonaLibrary = () => (
-    <div className="flex-1 p-8 overflow-y-auto no-scrollbar bg-[#fafafa] bg-dots">
+    <div className="flex-1 p-8 overflow-y-auto no-scrollbar bg-white bg-dots">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-12">
           <div>
@@ -1118,7 +1118,7 @@ const LegalAI: React.FC<LegalAIProps> = ({
   );
 
   const renderDrafts = () => (
-    <div className="flex-1 p-8 overflow-y-auto no-scrollbar bg-[#fafafa] bg-dots">
+    <div className="flex-1 p-8 overflow-y-auto no-scrollbar bg-white bg-dots">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-12">
           <div>
@@ -1167,7 +1167,7 @@ const LegalAI: React.FC<LegalAIProps> = ({
   );
 
   const renderHistory = () => (
-    <div className="flex-1 p-8 overflow-y-auto no-scrollbar bg-[#fafafa] bg-dots">
+    <div className="flex-1 p-8 overflow-y-auto no-scrollbar bg-white bg-dots">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-12">
           <div>
