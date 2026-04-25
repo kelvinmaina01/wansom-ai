@@ -137,7 +137,7 @@
         "document upload", "analyse this document", "review this contract", "summarise this judgment", "what does this say", "find clause", "rewrite this section", "add a paragraph", "check for risks", "what jurisdiction", "read", "edit", "summarise", "extract intelligence", "contract", "judgment", "filing", "document"
       ],
       "auto_load_with_docs": true
-    }
+    },
     {
       "id": "intelligence-judicial",
       "path": "public/intelligence/judicial-intelligence/SKILL.md",
