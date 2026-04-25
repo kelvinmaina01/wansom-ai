@@ -744,6 +744,57 @@ app.post('/api/files/upload', authenticate, upload.single('document'), async (re
     }
 });
 
+// Save generated content (HTML) as a file in Vault
+app.post('/api/files/save-content', authenticate, async (req, res) => {
+    try {
+        const { title, content, type = 'document' } = req.body;
+        const userId = req.user.id;
+
+        if (!content || !title) {
+            return res.status(400).json({ error: "Title and content are required" });
+        }
+
+        if (!supabase) throw new Error("Supabase client not initialized");
+
+        // 1. Upload to Supabase Storage
+        const fileName = `${Date.now()}-${title.replace(/\s+/g, '_')}.html`;
+        const storagePath = `${userId}/generated/${fileName}`;
+        const buffer = Buffer.from(content, 'utf-8');
+
+        const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('legal-documents')
+            .upload(storagePath, buffer, {
+                contentType: 'text/html',
+                upsert: true
+            });
+
+        if (uploadError) throw uploadError;
+
+        // 2. Insert metadata into Database
+        const { data: fileData, error: dbError } = await supabase
+            .from('files')
+            .insert([{
+                user_id: userId,
+                name: title,
+                size: buffer.length,
+                type: 'html',
+                uploaded_by: 'Lawlify AI',
+                storage_path: storagePath,
+                status: 'completed',
+                metadata: { artifact_type: type }
+            }])
+            .select()
+            .single();
+
+        if (dbError) throw dbError;
+
+        res.json({ success: true, file: fileData, message: "Artifact saved to Vault" });
+    } catch (error) {
+        logger.error("Save content error:", error.message);
+        res.status(500).json({ error: "Failed to save artifact" });
+    }
+});
+
 // 4. Folder Management
 app.get('/api/folders', authenticate, async (req, res) => {
     try {

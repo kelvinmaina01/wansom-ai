@@ -319,11 +319,28 @@ const ArtifactCanvas: React.FC<ArtifactCanvasProps> = ({
                 placeholder="Tell AI how to edit this document…"
                 value={aiEditInput}
                 onChange={(e) => setAiEditInput(e.target.value)}
-                onKeyDown={(e) => {
+                onKeyDown={async (e) => {
                   if (e.key === 'Enter' && aiEditInput.trim()) {
                     setIsAiEditing(true);
-                    // TODO: send to backend for AI editing
-                    setTimeout(() => setIsAiEditing(false), 2000);
+                    try {
+                      const { apiClient } = await import('../lib/apiClient');
+                      const res = await apiClient.post('/api/intelligence/edit-artifact', {
+                        content,
+                        title,
+                        instruction: aiEditInput
+                      });
+                      const data = await res.json();
+                      if (data.success) {
+                        onContentChange(data.editedHtml);
+                        setAiEditInput('');
+                      } else {
+                        console.error('AI Edit failed:', data.error);
+                      }
+                    } catch (err) {
+                      console.error('AI Edit request error:', err);
+                    } finally {
+                      setIsAiEditing(false);
+                    }
                   }
                 }}
                 className="flex-1 bg-transparent outline-none text-sm text-gray-700 placeholder:text-gray-400"

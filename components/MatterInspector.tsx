@@ -40,6 +40,9 @@ const MatterInspector: React.FC<MatterInspectorProps> = ({
 }) => {
   const [fileCount, setFileCount] = useState<number | null>(null);
   const [loadingFiles, setLoadingFiles] = useState(false);
+  const [isEditingProject, setIsEditingProject] = useState(false);
+  const [editTitle, setEditTitle] = useState('');
+  const [editDesc, setEditDesc] = useState('');
 
   // ─── Fetch real file count for this project ────────────────────────────────
   useEffect(() => {
@@ -210,22 +213,68 @@ const MatterInspector: React.FC<MatterInspectorProps> = ({
           </div>
         </div>
 
-        {/* Footer Actions */}
-        <div className="pt-10 border-t border-gray-50 flex items-center justify-between">
-          <button
-            onClick={() => alert('Project Settings panel coming soon.')}
-            className="flex items-center gap-2 text-[10px] font-black text-gray-300 hover:text-black transition-all uppercase tracking-widest"
-          >
-            <Settings className="w-4 h-4" />
-            Project Settings
-          </button>
-          <button
-            onClick={() => alert('Activity Log will load the full audit trail for this project.')}
-            className="flex items-center gap-2 text-[10px] font-black text-gray-300 hover:text-black transition-all uppercase tracking-widest"
-          >
-            <Info className="w-4 h-4" />
-            Activity Log
-          </button>
+        {/* Project Settings / Footer Actions */}
+        <div className="pt-10 border-t border-gray-50 space-y-6">
+          {isEditingProject ? (
+            <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
+              <input 
+                value={editTitle}
+                onChange={e => setEditTitle(e.target.value)}
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm font-bold focus:outline-none focus:border-black"
+                placeholder="Matter Title"
+              />
+              <textarea 
+                value={editDesc}
+                onChange={e => setEditDesc(e.target.value)}
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-xs font-medium focus:outline-none focus:border-black h-24"
+                placeholder="Description"
+              />
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => setIsEditingProject(false)}
+                  className="flex-1 py-2 bg-gray-100 text-gray-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-200 transition-all"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={async () => {
+                    const { error } = await supabase
+                      .from('cases')
+                      .update({ title: editTitle, description: editDesc })
+                      .eq('id', project.id);
+                    if (!error) {
+                      setIsEditingProject(false);
+                      // In a real app we'd refresh the parent state here
+                    }
+                  }}
+                  className="flex-1 py-2 bg-black text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-600 transition-all"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => {
+                  setEditTitle(project.title);
+                  setEditDesc(project.description);
+                  setIsEditingProject(true);
+                }}
+                className="flex items-center gap-2 text-[10px] font-black text-gray-300 hover:text-black transition-all uppercase tracking-widest"
+              >
+                <Settings className="w-4 h-4" />
+                Project Settings
+              </button>
+              <button
+                onClick={() => alert('Activity Log: ' + (project?.title || 'Current Matter'))}
+                className="flex items-center gap-2 text-[10px] font-black text-gray-300 hover:text-black transition-all uppercase tracking-widest"
+              >
+                <Info className="w-4 h-4" />
+                Activity Log
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </motion.div>

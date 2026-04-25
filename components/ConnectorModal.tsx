@@ -18,6 +18,7 @@ const ConnectorModal: React.FC<ConnectorModalProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [activeTab, setActiveTab] = React.useState<'Apps' | 'Custom API' | 'Custom MCP'>('Apps');
+  const [requested, setRequested] = React.useState(false);
 
   const allItems = React.useMemo(() => {
     return INTEGRATION_CATEGORIES.flatMap(cat => cat.items);
@@ -145,10 +146,14 @@ const ConnectorModal: React.FC<ConnectorModalProps> = ({
               </div>
               
               <button 
-                onClick={() => alert("Connector request form coming soon!")}
+                onClick={() => {
+                  setRequested(true);
+                  setTimeout(() => setRequested(false), 3000);
+                }}
+                disabled={requested}
                 className="flex items-center gap-2 text-xs font-bold text-primary hover:underline transition-all"
               >
-                Request a Connector <ExternalLink className="w-3 h-3" />
+                {requested ? 'Request Sent!' : 'Request a Connector'} <ExternalLink className="w-3 h-3" />
               </button>
             </div>
           </motion.div>

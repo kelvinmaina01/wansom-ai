@@ -568,7 +568,78 @@ const CaseManager: React.FC<CaseManagerProps> = ({ activeSubView = 'Cases' }) =>
                   </motion.div>
                 )}
                 
-                {(activeTab !== 'Details' && activeTab !== 'Invoicing') && (
+                {activeTab === 'Documents' && (
+                  <motion.div
+                    key="documents"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="space-y-8"
+                  >
+                    <div className="flex items-center justify-between mb-8">
+                       <div>
+                        <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Case Documents</h2>
+                        <p className="text-gray-500 text-sm font-medium">Manage filings, drafts, and evidence for {selectedCase.title}.</p>
+                      </div>
+                      <div className="flex gap-3">
+                         <button className="px-6 py-3 bg-white border border-gray-200 text-gray-900 rounded-[15px] font-bold text-sm hover:bg-gray-50 transition-all flex items-center gap-2">
+                           <Download className="w-4 h-4" />
+                           Download All
+                         </button>
+                         <button className="px-6 py-3 bg-red-600 text-white rounded-[15px] font-bold text-sm flex items-center gap-2 shadow-lg shadow-red-600/20">
+                           <Plus className="w-4 h-4" />
+                           Add Document
+                         </button>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4">
+                      {loadingFiles ? (
+                        <div className="py-20 flex flex-col items-center justify-center text-gray-400">
+                          <Loader2 className="w-8 h-8 animate-spin mb-4" />
+                          <span className="text-xs font-bold uppercase tracking-widest">Scanning Vault...</span>
+                        </div>
+                      ) : (
+                        <div className="bg-white border border-gray-100 rounded-[2rem] overflow-hidden">
+                          <div className="grid grid-cols-1 divide-y divide-gray-50">
+                            {[
+                              { name: `${selectedCase.title}_Plaint.pdf`, size: '1.2 MB', date: '2 days ago', type: 'PDF' },
+                              { name: 'Supporting_Affidavit.docx', size: '450 KB', date: '1 week ago', type: 'DOCX' },
+                              { name: 'Evidence_Photos.zip', size: '14.5 MB', date: 'Yesterday', type: 'ZIP' }
+                            ].map((doc, i) => (
+                              <div key={i} className="p-6 flex items-center justify-between hover:bg-slate-50 transition-all group">
+                                <div className="flex items-center gap-5">
+                                  <div className="w-12 h-12 bg-white border border-slate-100 rounded-xl flex items-center justify-center text-slate-400">
+                                    <FileText className="w-6 h-6" />
+                                  </div>
+                                  <div>
+                                    <h4 className="text-sm font-bold text-slate-900">{doc.name}</h4>
+                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
+                                      {doc.size} • {doc.date} • {doc.type}
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                  <button className="p-2.5 text-slate-300 hover:text-slate-900 transition-colors">
+                                    <Search className="w-4 h-4" />
+                                  </button>
+                                  <button className="p-2.5 text-slate-300 hover:text-slate-900 transition-colors">
+                                    <Download className="w-4 h-4" />
+                                  </button>
+                                  <button className="p-2.5 text-slate-300 hover:text-red-600 transition-colors">
+                                    <MoreVertical className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+                
+                {(activeTab !== 'Details' && activeTab !== 'Invoicing' && activeTab !== 'Documents') && (
                   <motion.div
                     key="placeholder"
                     initial={{ opacity: 0 }}

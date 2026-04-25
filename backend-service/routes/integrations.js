@@ -404,25 +404,56 @@ router.get('/:provider/files', async (req, res) => {
 });
 
 /**
- * @route DELETE /api/integrations/:provider
- * @desc Remove an integration
+ * POST /api/integrations/:provider/save
+ * Uploads a document to the user's cloud storage.
  */
-router.delete('/:provider', async (req, res) => {
+router.post('/:provider/save', async (req, res) => {
     const { provider } = req.params;
+    const { title, content } = req.body;
     const userId = req.user.id;
 
     try {
-        const { error } = await supabase
+        const { data: integration } = await supabase
             .from('user_integrations')
-            .delete()
+            .select('access_token')
             .eq('user_id', userId)
-            .eq('provider', provider);
+            .eq('provider', provider === 'library' ? 'supabase' : provider)
+            .single();
 
-        if (error) throw error;
-        res.json({ success: true, message: 'Integration removed' });
+        if (!integration && provider !== 'library') {
+            return res.status(401).json({ error: `${provider} not connected` });
+        }
+
+        if (provider === 'gdrive') {
+            const metadata = {
+                name: `${title}.html`,
+                mimeType: 'text/html'
+            };
+            
+            const form = new FormData();
+            form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+            form.append('file', new Blob([content], { type: 'text/html' }));
+
+            await axios.post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', form, {
+                headers: { 
+                    Authorization: `Bearer ${integration.access_token}`,
+                    'Content-Type': 'multipart/related'
+                }
+            });
+        } else if (provider === 'onedrive') {
+            const fileName = encodeURIComponent(`${title}.html`);
+            await axios.put(`https://graph.microsoft.com/v1.0/me/drive/root:/Lawlify/${fileName}:/content`, content, {
+                headers: { 
+                    Authorization: `Bearer ${integration.access_token}`,
+                    'Content-Type': 'text/html'
+                }
+            });
+        }
+
+        res.json({ success: true, message: `Saved to ${provider}` });
     } catch (error) {
-        logger.error(`Error removing ${provider} integration:`, error.message);
-        res.status(500).json({ error: 'Removal failed' });
+        logger.error(`Save to ${provider} error:`, error.response?.data || error.message);
+        res.status(500).json({ error: `Failed to save to ${provider}` });
     }
 });
 

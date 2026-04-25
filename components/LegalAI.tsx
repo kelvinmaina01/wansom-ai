@@ -696,16 +696,53 @@ const LegalAI: React.FC<LegalAIProps> = ({
     setIsSaveModalOpen(true);
   };
 
-  const handleSaveToDestination = (dest: 'library' | 'drive' | 'onedrive' | 'download') => {
+  const handleSaveToDestination = async (dest: 'library' | 'drive' | 'onedrive' | 'download') => {
     setIsSaveModalOpen(false);
-    // TODO: Implement actual save logic per destination
-    console.log('Saving to:', dest, artifactTitle);
+    
+    try {
+      if (dest === 'library') {
+        const res = await apiClient.post('/api/files/save-content', {
+          title: artifactTitle,
+          content: draftContent,
+          type: 'document'
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('Saved to Lawlify Vault');
+        }
+      } else if (dest === 'drive' || dest === 'onedrive') {
+        const provider = dest === 'drive' ? 'gdrive' : 'onedrive';
+        const res = await apiClient.post(`/api/integrations/${provider}/save`, {
+          title: artifactTitle,
+          content: draftContent
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert(`Successfully saved to ${dest === 'drive' ? 'Google Drive' : 'OneDrive'}`);
+        } else {
+          alert(`Failed to save: ${data.error}`);
+        }
+      } else if (dest === 'download') {
+        const blob = new Blob([draftContent], { type: 'text/html' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${artifactTitle}.html`;
+        a.click();
+      }
+    } catch (err) {
+      console.error('Save failed:', err);
+      alert('An error occurred while saving.');
+    }
   };
 
   const handleAction = (action: string) => {
     if (action === 'save') handleSaveDocument();
     else if (action === 'canvas') { setIsCanvasOpen(true); }
-    else if (action === 'export') { /* TODO */ }
+    else if (action === 'export') {
+      // Trigger download as default export behavior
+      handleSaveToDestination('download');
+    }
   };
 
   // ── RECURSIVE AUTO-SCROLL (PREMIUM) ──

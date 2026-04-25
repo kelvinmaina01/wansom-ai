@@ -192,4 +192,45 @@ router.get('/sessions/:id', async (req, res) => {
     }
 });
 
+/**
+ * POST /api/intelligence/edit-artifact
+ * Takes a document's HTML content and an instruction, returns edited HTML.
+ */
+router.post('/edit-artifact', async (req, res) => {
+    const { content, title, instruction } = req.body;
+    
+    if (!content || !instruction) {
+        return res.status(400).json({ error: 'Content and instruction are required' });
+    }
+
+    try {
+        logger.info(`AI Artifact Edit requested for: ${title}`);
+
+        const prompt = `
+        You are a Legal Document Editor. 
+        Current Document Title: ${title}
+        Current HTML Content:
+        ${content}
+
+        Instruction from User: ${instruction}
+
+        Task: Edit the document according to the instruction. 
+        - Keep the output as PURE HTML.
+        - Preserve the overall legal structure and professional tone.
+        - Return ONLY the updated HTML content, no explanations.
+        `;
+
+        const response = await modelDispatcher.dispatch(prompt, { 
+            context: { mode: 'fast', taskType: 'reasoning' } 
+        });
+
+        const editedHtml = response.answer.replace(/```html|```/g, '').trim();
+
+        res.json({ success: true, editedHtml });
+    } catch (error) {
+        logger.error(`Artifact Edit Error:`, error.message);
+        res.status(500).json({ error: 'Failed to edit document with AI' });
+    }
+});
+
 export default router;
