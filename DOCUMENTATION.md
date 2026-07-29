@@ -1,8 +1,8 @@
-# Lawlify AI - Comprehensive Technical Documentation
+# Wansom AI - Comprehensive Technical Documentation
 
 ## 🏗️ Architecture Overview
 
-Lawlify AI is an enterprise-grade Legal Technology platform transitioning to a **High-Architecture Service-Oriented System**. It decouples a high-fidelity React frontend from specialized backend services for Authentication, Data Persistence, and AI Orchestration.
+Wansom AI is an enterprise-grade Legal Technology platform transitioning to a **High-Architecture Service-Oriented System**. It decouples a high-fidelity React frontend from specialized backend se[...]
 
 ### Directory Structure
 ```
