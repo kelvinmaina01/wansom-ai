@@ -1,6 +1,5 @@
-# Lawlify AI - Enterprise Legal Intelligence for East Africa
-
-Lawlify AI is the premier legal technology platform purpose-built for the East African legal ecosystem. We empower advocates, in-house counsels, and law firms across Kenya, Tanzania, Uganda, and Rwanda with a high-architecture, secure, and intelligent platform designed to streamline complex legal workflows.
+#wansom AI - Enterprise Legal Intelligence for East Africa
+wansom AI is the premier legal technology platform purpose-built for the East African legal ecosystem. We empower advocates, in-house counsels, and law firms across Kenya, Tanzania, Uganda, and Rwanda with a high-architecture, secure, and intelligent platform designed to streamline complex legal workflows.
 
 ## 🚀 Key Features
 
@@ -41,4 +40,4 @@ Lawlify AI is designed for the high-security requirements of legal practice:
 
 ## 📄 License
 
-Proprietary software. All rights reserved. LAWLIFY AI © 2026.
+Proprietary software. All rights reserved. wansom AI © 2026.
