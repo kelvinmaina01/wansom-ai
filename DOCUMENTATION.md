@@ -1,4 +1,4 @@
-# Wansom AI - Comprehensive Technical Documentation
+# Lawlify ai - Comprehensive Technical Documentation
 
 ## 🏗️ Architecture Overview
 
